@@ -1,0 +1,81 @@
+version: '3.9'
+
+x-restart-policy: &default-restart-policy
+  restart: always
+
+x-healthcheck: &default-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+services:
+  db:
+    image: postgres:13.14-alpine3.19
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./initdb:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    <<: *default-restart-policy
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}' || exit 1"]
+      <<: *default-healthcheck
+  
+  app_server:
+    image: app_server
+    build:
+      context: ../
+      dockerfile: ${PROJECT_ROOT_NAME}/Dockerfile.app_server
+    expose:
+      - "9090"
+    volumes:
+      - static-volume:/opt/app/static
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    <<: *default-restart-policy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck || exit 1"]
+      <<: *default-healthcheck
+
+  nginx:
+    image: nginx
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile.ngnix
+    ports:
+      - "8000:80"
+    volumes:
+      - static-volume:/data/static:ro
+    depends_on: 
+      app_server:
+        condition: service_healthy
+    <<: *default-restart-policy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1/healthcheck || exit 1"]
+      <<: *default-healthcheck
+
+  swagger:
+    image: swagger
+    build:
+      context: ../
+      dockerfile: ${PROJECT_ROOT_NAME}/Dockerfile.swagger
+    ports:
+      - "3000:8080"
+    env_file:
+      - .env
+    depends_on: 
+      nginx:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:8080/ || exit 1"]
+      <<: *default-healthcheck
+
+volumes:
+  postgres_data:
+  static-volume:
