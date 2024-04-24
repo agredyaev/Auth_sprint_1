@@ -1,0 +1,24 @@
+# Base stage for docker environment setup
+FROM python:3.10.13-alpine3.19 AS python-base
+
+# Set work directory
+WORKDIR /opt/app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    POETRY_HOME="/opt/poetry" \
+    VENV_PATH="/opt/app/.venv" \
+    POETRY_VERSION=1.8.1 \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1
+
+# Ensure scripts in .venv are callable'
+ENV PATH="$POETRY_HOME/bin:$PATH"
+ENV PATH="$VENV_PATH/bin:$PATH"
+
+# Set the default shell to bash with pipefail option
+SHELL ["/bin/sh", "-eo", "pipefail", "-c"]
+
+RUN apk update && \
+    apk add --no-cache curl

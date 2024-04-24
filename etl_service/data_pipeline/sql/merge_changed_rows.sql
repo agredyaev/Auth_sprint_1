@@ -1,0 +1,52 @@
+SELECT
+    fw.id,
+    fw.rating as rating,
+    fw.title,
+    fw.description,
+    fw.type,
+    COALESCE (
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', g.id,
+                'name', g.name
+            )
+        ) FILTER (WHERE g.id is not null),
+        '[]'
+    ) as genres,
+    COALESCE (
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', p.id,
+                'name', p.full_name
+            )
+        ) FILTER (WHERE p.id is not null AND pfw.role = 'director'),
+        '[]'
+    ) as directors,
+    COALESCE (
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', p.id,
+                'name', p.full_name
+            )
+        ) FILTER (WHERE p.id is not null AND pfw.role = 'actor'),
+        '[]'
+    ) as actors,
+    COALESCE (
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', p.id,
+                'name', p.full_name
+            )
+        ) FILTER (WHERE p.id is not null AND pfw.role = 'writer'),
+        '[]'
+    ) as writers
+FROM
+    content.film_work fw
+JOIN content.person_film_work pfw ON pfw.film_work_id = fw.id
+JOIN content.person p ON p.id = pfw.person_id
+JOIN content.genre_film_work gfw ON gfw.film_work_id = fw.id
+JOIN content.genre g ON g.id = gfw.genre_id
+WHERE
+    fw.id IN %s
+GROUP BY
+    fw.id;
