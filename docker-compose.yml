@@ -92,8 +92,8 @@ services:
       - IPC_LOCK
     <<: *default-restart-policy
     depends_on:
-      app_server:
-        condition: service_started
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
       <<: *default-healthcheck
@@ -111,14 +111,13 @@ services:
       - .env
     <<: *default-restart-policy
     depends_on:
-      app_server:
-        condition: service_started
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       <<: *default-healthcheck
     ports:
       - ${REDIS_PORT}:6379
-
 
 volumes:
   postgres-data:
