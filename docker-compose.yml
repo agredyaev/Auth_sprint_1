@@ -74,50 +74,50 @@ services:
       test: ["CMD-SHELL", "curl -f http://127.0.0.1/healthcheck/ || exit 1"]
       <<: *default-healthcheck
 
-#  elasticsearch:
-#    container_name: elasticsearch
-#    image: elasticsearch:8.6.2
-#    volumes:
-#      - elasticsearch-data:/usr/share/elasticsearch/data
-#    env_file:
-#      - .env
-#    ulimits:
-#      memlock:
-#        soft: -1
-#        hard: -1
-#      nofile:
-#        soft: 65536
-#        hard: 65536
-#    cap_add:
-#      - IPC_LOCK
-#    <<: *default-restart-policy
-#    depends_on:
-#      app_server:
-#        condition: service_started
-#    healthcheck:
-#      test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
-#      <<: *default-healthcheck
-#    ports:
-#      - "9200:9200"
-#      - "9300:9300"
-#
-#  redis:
-#    container_name: redis
-#    image: redis:7.2.4-alpine
-#    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-#    volumes:
-#      - redis-cache:/data
-#    env_file:
-#      - .env
-#    <<: *default-restart-policy
-#    depends_on:
-#      app_server:
-#        condition: service_started
-#    healthcheck:
-#      test: ["CMD", "redis-cli", "ping"]
-#      <<: *default-healthcheck
-#    ports:
-#      - ${REDIS_PORT}:6379
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.6.2
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    env_file:
+      - .env
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    <<: *default-restart-policy
+    depends_on:
+      app_server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
+      <<: *default-healthcheck
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  redis:
+    container_name: redis
+    image: redis:7.2.4-alpine
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis-cache:/data
+    env_file:
+      - .env
+    <<: *default-restart-policy
+    depends_on:
+      app_server:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      <<: *default-healthcheck
+    ports:
+      - ${REDIS_PORT}:6379
 
 
 volumes:
