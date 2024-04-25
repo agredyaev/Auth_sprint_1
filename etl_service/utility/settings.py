@@ -72,6 +72,7 @@ class GeneralSettings(BaseSettings):
     backoff_start: float = 0.1
     backoff_max: float = 10.0
     backoff_multiplier: float = 2.0
+    etl_timeout: int = 3
 
     class Config:
         env_prefix = "GENERAL_"
