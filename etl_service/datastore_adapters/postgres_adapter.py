@@ -2,19 +2,21 @@ import contextlib
 from typing import Any
 
 import psycopg2
-from psycopg2.extensions import connection as pg_conn, cursor as pg_cursor
+from psycopg2.extensions import connection as pg_conn
+from psycopg2.extensions import cursor as pg_cursor
 from psycopg2.sql import SQL
 from pydantic import PostgresDsn
 
-from ..datastore_adapters.base_adapter import BaseAdapter, DatastoreAdapter
-from ..utility.backoff import backoff, datastore_reconnect
-from ..utility.logger import setup_logging
+from etl_service.datastore_adapters.base_adapter import BaseAdapter, DatastoreAdapter
+from etl_service.utility.backoff import backoff, datastore_reconnect
+from etl_service.utility.logger import setup_logging
 
 logger = setup_logging()
 
 
 class PostgresAdapter(DatastoreAdapter):
     """Postgres adapter class for managing database connections."""
+
     base_adapter_exceptions = psycopg2.OperationalError
     _connection: pg_conn
 
@@ -30,12 +32,14 @@ class PostgresAdapter(DatastoreAdapter):
     def connect(self) -> None:
         """Establish a database connection."""
         if not self.is_connected:
-            self._connection = psycopg2.connect(dsn=self._dsn, *self.args, **self.kwargs)
+            self._connection = psycopg2.connect(
+                dsn=self._dsn, *self.args, **self.kwargs
+            )
             logger.info("Database connection established.")
 
     @backoff(retry_exceptions=base_adapter_exceptions)
     @contextlib.contextmanager
-    def cursor(self) -> PostgresAdapterCursor:
+    def cursor(self) -> "PostgresAdapterCursor":
         """Provide a transactional scope around a series of operations."""
         cursor = None
         if not self.is_connected:

@@ -1,14 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Tuple, Type, Union, Any
+from typing import Any, Tuple, Type, Union
+
 from pydantic import AnyUrl
 
-from ..utility.logger import setup_logging
+from etl_service.utility.logger import setup_logging
 
 logger = setup_logging()
 
 
 class BaseAdapter(ABC):
     """Base class for data adapters."""
+
     base_adapter_exceptions: Union[Tuple[Type[Exception]], Type[Exception]]
 
     @property
@@ -35,6 +37,7 @@ class BaseAdapter(ABC):
 
 class DatastoreAdapter(BaseAdapter, ABC):
     """Datastore adapter class."""
+
     base_adapter_exceptions: Union[Tuple[Type[Exception]], Type[Exception]]
     _connection: Any
 
@@ -59,7 +62,7 @@ class DatastoreAdapter(BaseAdapter, ABC):
         if not self.is_connected:
             logger.info(
                 "Lost connection to client: %r. Attempting to establish new connection...",
-                self
+                self,
             )
             self.connect()
 
@@ -73,4 +76,3 @@ class DatastoreAdapter(BaseAdapter, ABC):
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self._dsn})"
-

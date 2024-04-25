@@ -1,19 +1,27 @@
-from typing import Optional, Iterable, List, Union
-from mixins import IdMixin
+from typing import Iterable, List, Optional, Union
+
+from etl_service.models.mixins import IdMixin
+
+from etl_service.utility.logger import setup_logging
+
+logger = setup_logging()
 
 
 class Genre(IdMixin):
     """Defines genre model"""
+
     name: str
 
 
 class Person(IdMixin):
     """Defines person model"""
+
     name: str
 
 
 class Filmwork(IdMixin):
     """Defines filmwork model"""
+
     rating: Union[str, Optional[float]]
     title: str
     description: Optional[str]
@@ -34,8 +42,12 @@ class Filmwork(IdMixin):
 
     def transform(self) -> None:
         """Transform data into correct format"""
-        self.genres_names = self._extract_names(self.genres)
-        self.directors_names = self._extract_names(self.directors)
-        self.actors_names = self._extract_names(self.actors)
-        self.writers_names = self._extract_names(self.writers)
-        self.rating = float(self.rating) if self.rating else None
+
+        try:
+            self.genres_names = self._extract_names(self.genres)
+            self.directors_names = self._extract_names(self.directors)
+            self.actors_names = self._extract_names(self.actors)
+            self.writers_names = self._extract_names(self.writers)
+            self.rating = float(self.rating) if self.rating else None
+        except ValueError as e:
+            logger.exception("Can't transform data: %s", e)

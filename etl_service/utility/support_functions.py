@@ -1,8 +1,8 @@
-from logger import setup_logging
-from typing import Any, Optional, Generator, List, Type
+from typing import Any, Generator, List, Optional, Type
+
+from etl_service.utility.logger import setup_logging
 from psycopg2.sql import SQL, Identifier
 from pydantic import BaseModel
-
 
 logger = setup_logging()
 
@@ -14,10 +14,10 @@ def load_query_from_file(filename: str) -> Optional[str] | None:
     :return: A string containing the SQL query, or None if an error occurs.
     """
     try:
-        with open(filename, 'r') as file:
+        with open(filename, "r") as file:
             return file.read()
     except (FileNotFoundError, IOError):
-        logger.error(f'File not found: {filename}')
+        logger.error(f"File not found: {filename}")
         return None
 
 
@@ -43,7 +43,9 @@ def safe_format_sql_query(filename: str, table_name: str) -> SQL | None:
         return None
 
 
-def apply_model_class(results: List[Any], model_class: Type[BaseModel]) -> List[BaseModel]:
+def apply_model_class(
+    results: List[Any], model_class: Type[BaseModel]
+) -> List[BaseModel]:
     """
     Apply Model class to results.
     :param results: List of results
@@ -53,8 +55,9 @@ def apply_model_class(results: List[Any], model_class: Type[BaseModel]) -> List[
     return [model_class(**result) for result in results]
 
 
-
-def split_into_chunks(items: list[Any], chunk_size: int) -> Generator[list[Any], None, None]:
+def split_into_chunks(
+    items: list[Any], chunk_size: int
+) -> Generator[list[Any], None, None]:
     """
     Yield successive chunks from list of items.
 
@@ -65,4 +68,4 @@ def split_into_chunks(items: list[Any], chunk_size: int) -> Generator[list[Any],
     if not items or not chunk_size:
         return []
     for i in range(0, len(items), chunk_size):
-        yield items[i:i + chunk_size]
+        yield items[i : i + chunk_size]

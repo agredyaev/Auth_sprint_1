@@ -1,8 +1,8 @@
 import datetime
 from typing import Callable, Generator
 
-from ..utility.logger import setup_logging
-from ..models.movies import Filmwork
+from etl_service.models.movies import Filmwork
+from etl_service.utility.logger import setup_logging
 
 logger = setup_logging()
 
@@ -10,7 +10,9 @@ logger = setup_logging()
 class FilmworkTransformer:
     def __init__(
         self,
-        next_node: Callable[[], Generator[None, tuple[datetime.datetime, list[Filmwork]] | None, None]]
+        next_node: Callable[
+            [], Generator[None, tuple[datetime.datetime, list[Filmwork]] | None, None]
+        ],
     ):
         self.next_node = next_node
 
@@ -34,7 +36,4 @@ class FilmworkTransformer:
 
                 event_handler.send((last_updated, data_in))
         except GeneratorExit:
-            logger.debug(
-                "Transformer finished with last_updated: %s",
-                last_updated
-            )
+            logger.debug("Transformer finished with last_updated: %s", last_updated)

@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "new-admin-panel-sprint-2"
+name = "new-admin-panel-sprint-3"
 version = "0.1.0"
 description = "..."
 authors = ["Aleksey Gredyaev <aleksey.gredyaev@gmail.com>"]

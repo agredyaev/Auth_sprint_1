@@ -15,13 +15,13 @@ FROM python-base:0.1.0 AS production
 COPY --from=venv-builder "$VENV_PATH" "$VENV_PATH"
 
 # Copy entrypoint and application code
-COPY etl_service ./
+COPY etl_service /opt/app/etl_service
 
 RUN adduser -D etluser && \
-    chown -R etluser:etluser /opt/web_service
+    chown -R etluser:etluser /opt/app
 
 # Switch to non-root user
 USER etluser
 
 # Use entrypoint.sh to perform run tasks
-ENTRYPOINT ["python", "-m", "/opt/app/etl_service.main"]
+ENTRYPOINT ["python", "-m", "etl_service.main"]

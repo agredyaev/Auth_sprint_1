@@ -3,28 +3,28 @@ import time
 from contextlib import closing
 from typing import Type
 
+from etl_service.data_pipeline.extractors.base_extractor import BaseExtractor
+from etl_service.data_pipeline.loader import FilmworkLoader
 from psycopg2 import DatabaseError, OperationalError
 from psycopg2.extras import DictCursor
+from etl_service.data_pipeline.transformer import FilmworkTransformer
 
-from extractors.base_extractor import BaseExtractor
-from loader import FilmworkLoader
-from transformer import FilmworkTransformer
-from ..utility.state_manager import State, RedisStateManager
-from ..datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
-from ..datastore_adapters.postgres_adapter import PostgresAdapter
-from ..datastore_adapters.redis_adapter import RedisAdapter
-from ..utility.settings import Settings, settings
-from ..utility.logger import setup_logging
-
+from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
+from etl_service.datastore_adapters.postgres_adapter import PostgresAdapter
+from etl_service.datastore_adapters.redis_adapter import RedisAdapter
+from etl_service.utility.logger import setup_logging
+from etl_service.utility.settings import Settings, settings
+from etl_service.utility.state_manager import RedisStateManager, State
 
 logging = setup_logging()
 
 
-def etl_process(config: Settings,
-                extractor_type: Type[BaseExtractor],
-                state_key: str,
-                timeout: int = settings.general.etl_timeout
-                ):
+def etl_process(
+    config: Settings,
+    extractor_type: Type[BaseExtractor],
+    state_key: str,
+    timeout: int = settings.general.etl_timeout,
+):
     """
     Execute the Extract-Transform-Load workflow for processing movies data
     from PostgreSQL to Elasticsearch via a Redis-based state management system.
@@ -35,14 +35,20 @@ def etl_process(config: Settings,
     :param timeout: Timeout between state updates
     """
     try:
-        with closing(PostgresAdapter(config.db.dsn, cursor_factory=DictCursor)) as pg_conn, \
-                closing(ElasticsearchAdapter(config.eks.dsn)) as eks_conn, \
-                closing(RedisAdapter(config.redis.dsn)) as redis_conn:
+        with closing(
+            PostgresAdapter(config.db.dsn, cursor_factory=DictCursor)
+        ) as pg_conn, closing(
+            ElasticsearchAdapter(config.eks.dsn)
+        ) as eks_conn, closing(
+            RedisAdapter(config.redis.dsn)
+        ) as redis_conn:
             pg_conn: PostgresAdapter
             eks_conn: ElasticsearchAdapter
             redis_conn: RedisAdapter
 
-            logging.info("Successfully connected to PostgreSQL, Elasticsearch, and Redis.")
+            logging.info(
+                "Successfully connected to PostgreSQL, Elasticsearch, and Redis."
+            )
 
             state = State(RedisStateManager(redis_conn), state_key)
 

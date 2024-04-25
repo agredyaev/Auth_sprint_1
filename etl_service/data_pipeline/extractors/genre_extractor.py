@@ -1,4 +1,4 @@
-from base_extractor import BaseExtractor
+from etl_service.data_pipeline.extractors.base_extractor import BaseExtractor
 
 
 class GenreExtractor(BaseExtractor):
@@ -8,5 +8,4 @@ class GenreExtractor(BaseExtractor):
 
     @property
     def _enrich_data_query(self):
-        return './sql/enrich_changed_rows.sql'
-
+        return "./sql/enrich_changed_rows.sql"

@@ -1,18 +1,19 @@
+import redis.exceptions
+from etl_service.datastore_adapters.base_adapter import DatastoreAdapter
 from pydantic import RedisDsn
 from redis.client import Redis
-from redis.typing import KeyT, EncodableT
-import redis.exceptions
+from redis.typing import EncodableT, KeyT
 
-from base_adapter import DatastoreAdapter
-from ..utility.backoff import backoff, datastore_reconnect
-from ..utility.logger import setup_logging
-from ..utility.exceptions import RedisConnectionError
+from etl_service.utility.backoff import backoff, datastore_reconnect
+from etl_service.utility.exceptions import RedisConnectionError
+from etl_service.utility.logger import setup_logging
 
 logger = setup_logging()
 
 
 class RedisAdapter(DatastoreAdapter):
     """Redis adapter class."""
+
     base_adapter_exceptions = redis.exceptions.RedisError
     _connection: Redis
 
@@ -37,11 +38,13 @@ class RedisAdapter(DatastoreAdapter):
             password=self._dsn.password,
             db=self._dsn.path[1:],
             *self.args,
-            **self.kwargs
+            **self.kwargs,
         )
 
         if not self.is_connected:
-            raise RedisConnectionError(f"Unable to connect to the client {self.__repr__()}")
+            raise RedisConnectionError(
+                f"Unable to connect to the client {self.__repr__()}"
+            )
 
         logger.info("Connected to client: %r", self)
 

@@ -1,27 +1,32 @@
 import datetime
 from abc import ABC, abstractmethod
-from typing import Optional, Callable, Generator, Any, List, Type
+from typing import Any, Callable, Generator, List, Optional, Type
 
-from pydantic import BaseModel
 from psycopg2.sql import SQL
+from pydantic import BaseModel
 
-from ...utility.logger import setup_logging
-from ...utility.state_manager import State
-from ...utility.support_functions import safe_format_sql_query, apply_model_class
-from ...models.state import UpdatedAtId
-from ...models.movies import Filmwork
-from ...datastore_adapters.postgres_adapter import PostgresAdapter, PostgresAdapterCursor
+from etl_service.datastore_adapters.postgres_adapter import (
+    PostgresAdapter,
+    PostgresAdapterCursor,
+)
+from etl_service.models.movies import Filmwork
+from etl_service.models.state import UpdatedAtId
+from etl_service.utility.logger import setup_logging
+from etl_service.utility.state_manager import State
+from etl_service.utility.support_functions import apply_model_class, safe_format_sql_query
 
 logger = setup_logging()
 
 
 class BaseExtractor(ABC):
     def __init__(
-            self,
-            pg_conn: PostgresAdapter,
-            state: State,
-            batch_size: int,
-            next_node: Generator[None, tuple[datetime.datetime, list[Filmwork]] | None, None]
+        self,
+        pg_conn: PostgresAdapter,
+        state: State,
+        batch_size: int,
+        next_node: Generator[
+            None, tuple[datetime.datetime, list[Filmwork]] | None, None
+        ],
     ):
         self.state = state
         self.pg_conn = pg_conn
@@ -29,12 +34,10 @@ class BaseExtractor(ABC):
         self.next_node = next_node
         self.proc_table: Optional[str] = None
 
-    def _process_batches(self,
-                         cursor: PostgresAdapterCursor,
-                         query: SQL,
-                         items: List[Any]
-                         ) -> Generator[Any, None, None]:
-        """ Process a batch of data using the provided cursor and query. """
+    def _process_batches(
+        self, cursor: PostgresAdapterCursor, query: SQL, items: List[Any]
+    ) -> Generator[Any, None, None]:
+        """Process a batch of data using the provided cursor and query."""
         try:
             cursor.execute(query, items)
             while results := cursor.fetchmany(self.batch_size):
@@ -43,7 +46,9 @@ class BaseExtractor(ABC):
         except Exception as e:
             logger.error("Error processing batch: %s", e)
 
-    def _process_data_flow(self, query_filename: str, model_class: Type[BaseModel], next_handler: Callable):
+    def _process_data_flow(
+        self, query_filename: str, model_class: Type[BaseModel], next_handler: Callable
+    ) -> Generator[None, None, None]:
         """
         Implements common logic for enrich and combined data flows.
         :param query_filename: Path to the SQL file.
@@ -62,17 +67,18 @@ class BaseExtractor(ABC):
                     batches = self._process_batches(
                         cursor=cursor,
                         query=safe_format_sql_query(
-                            filename=query_filename,
-                            table_name=self.proc_table
+                            filename=query_filename, table_name=self.proc_table
                         ),
-                        items=[tuple([row.id for row in data_in])]
+                        items=[tuple([row.id for row in data_in])],
                     )
 
-                    data_out = [apply_model_class(batch, model_class) for batch in batches]
+                    data_out = [
+                        apply_model_class(batch, model_class) for batch in batches
+                    ]
                     event_handler.send((last_updated, data_out))
             except GeneratorExit:
                 event_handler.close()
-                logger.debug("End of processing: %s", query_filename.split('-')[0])
+                logger.debug("End of processing: %s", query_filename.split("-")[0])
 
     def extract(self):
         """
@@ -93,10 +99,10 @@ class BaseExtractor(ABC):
                 batches = self._process_batches(
                     cursor=cursor,
                     query=safe_format_sql_query(
-                        filename='./sql/fetch_changed_rows.sql',
-                        table_name=self.proc_table
+                        filename="./sql/fetch_changed_rows.sql",
+                        table_name=self.proc_table,
                     ),
-                    items=[self.state.get().updated_at]
+                    items=[self.state.get().updated_at],
                 )
 
                 data_out = [apply_model_class(batch, UpdatedAtId) for batch in batches]
@@ -131,7 +137,7 @@ class BaseExtractor(ABC):
         Sends the combined data to the next node in the pipeline.
         """
         return self._process_data_flow(
-            query_filename='./combine_data_changed_rows.sql',
+            query_filename="./combine_data_changed_rows.sql",
             model_class=Filmwork,
             next_handler_generator=self.next_node
         )

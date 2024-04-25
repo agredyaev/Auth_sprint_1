@@ -1,10 +1,9 @@
-from abc import ABC, abstractmethod
-from typing import Dict, Any, NoReturn
 import json
+from abc import ABC, abstractmethod
+from typing import Any, Dict, NoReturn
 
-from ..models.state import StateModel
-
-from ..datastore_adapters.redis_adapter import RedisAdapter
+from etl_service.datastore_adapters.redis_adapter import RedisAdapter
+from etl_service.models.state import StateModel
 
 
 class BaseStateManager(ABC):
@@ -29,7 +28,7 @@ class RedisStateManager(BaseStateManager):
     def __init__(self, redis_adapter: RedisAdapter):
         self.redis_adapter = redis_adapter
 
-    def is_state_exists(self, key: str) -> bool | None:
+    def is_state_exists(self, key: str) -> int | None:
         return self.redis_adapter.exists(key)
 
     def save_state(self, key: str, value: Any) -> NoReturn:

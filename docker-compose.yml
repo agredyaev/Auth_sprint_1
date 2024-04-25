@@ -119,6 +119,22 @@ services:
     ports:
       - ${REDIS_PORT}:6379
 
+  etl:
+    container_name: etl_service
+    image: etl_service
+    build:
+      context: .
+      dockerfile: ./etl_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+
 volumes:
   postgres-data:
   static-volume:

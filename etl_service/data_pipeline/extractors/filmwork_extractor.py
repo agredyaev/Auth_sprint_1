@@ -1,4 +1,4 @@
-from base_extractor import BaseExtractor
+from etl_service.data_pipeline.extractors.base_extractor import BaseExtractor
 
 
 class FilmworkExtractor(BaseExtractor):
@@ -19,7 +19,7 @@ class FilmworkExtractor(BaseExtractor):
 
         try:
             while True:
-                last_updated, rows = (yield)
+                last_updated, rows = yield
                 event_handler.send((last_updated, rows))
 
         except GeneratorExit:
