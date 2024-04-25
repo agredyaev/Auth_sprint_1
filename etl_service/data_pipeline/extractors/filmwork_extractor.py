@@ -1,7 +1,7 @@
 from base_extractor import BaseExtractor
 
 
-class FilmworkEtractor(BaseExtractor):
+class FilmworkExtractor(BaseExtractor):
     def __init__(self, pg_conn, state, batch_size, next_node):
         super().__init__(pg_conn, state, batch_size, next_node)
         self.proc_table = "film_work"
