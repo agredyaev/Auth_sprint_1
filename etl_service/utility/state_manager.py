@@ -5,7 +5,6 @@ from typing import Any, Dict, NoReturn
 from etl_service.datastore_adapters.redis_adapter import RedisAdapter
 from etl_service.models.state import StateModel
 
-
 class BaseStateManager(ABC):
     """Base class for state manager."""
 
@@ -35,11 +34,14 @@ class RedisStateManager(BaseStateManager):
         self.redis_adapter.set(key, json.dumps(value))
 
     def retrieve_state(self, key: str) -> Dict[str, Any] | None:
-        return self.redis_adapter.get(key)
+        result = self.redis_adapter.get(key)
+
+        if result:
+            result = json.loads(result)
+        return result
 
 
 class State:
-
     def __init__(self, storage: BaseStateManager, key: str):
         self.storage = storage
         self.key = key
@@ -58,5 +60,4 @@ class State:
 
         if result:
             result = StateModel(**result)
-
         return result
