@@ -13,30 +13,31 @@ from ..utility.state_manager import State, RedisStateManager
 from ..datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
 from ..datastore_adapters.postgres_adapter import PostgresAdapter
 from ..datastore_adapters.redis_adapter import RedisAdapter
-from ..utility.settings import Settings
+from ..utility.settings import Settings, settings
 from ..utility.logger import setup_logging
 
 
 logging = setup_logging()
 
 
-def etl_process(settings: Settings,
+def etl_process(config: Settings,
                 extractor_type: Type[BaseExtractor],
                 state_key: str,
-                timeout: int = 3):
+                timeout: int = settings.general.etl_timeout
+                ):
     """
     Execute the Extract-Transform-Load workflow for processing movies data
     from PostgreSQL to Elasticsearch via a Redis-based state management system.
 
-    :param settings: Application settings
+    :param config: Application settings
     :param extractor_type: Type of the extractor
     :param state_key: State key
     :param timeout: Timeout between state updates
     """
     try:
-        with closing(PostgresAdapter(settings.db.dsn, cursor_factory=DictCursor)) as pg_conn, \
-                closing(ElasticsearchAdapter(settings.eks.dsn)) as eks_conn, \
-                closing(RedisAdapter(settings.redis.dsn)) as redis_conn:
+        with closing(PostgresAdapter(config.db.dsn, cursor_factory=DictCursor)) as pg_conn, \
+                closing(ElasticsearchAdapter(config.eks.dsn)) as eks_conn, \
+                closing(RedisAdapter(config.redis.dsn)) as redis_conn:
             pg_conn: PostgresAdapter
             eks_conn: ElasticsearchAdapter
             redis_conn: RedisAdapter
@@ -52,8 +53,8 @@ def etl_process(settings: Settings,
             loader = FilmworkLoader(
                 eks_conn=eks_conn,
                 state=state,
-                eks_index=settings.eks_index,
-                load_chunk=settings.eks.load_batch_size,
+                eks_index=config.eks_index,
+                load_chunk=config.eks.load_batch_size,
             )
             transformer = FilmworkTransformer(
                 load_pipe=loader.load,
@@ -61,7 +62,7 @@ def etl_process(settings: Settings,
             extractor = extractor_type(
                 pg_conn=pg_conn,
                 state=state,
-                extract_chunk=settings.db.extract_batch_size,
+                extract_chunk=config.db.extract_batch_size,
                 transform_pipe=transformer.transform,
             )
             while True:
@@ -69,10 +70,10 @@ def etl_process(settings: Settings,
                 time.sleep(timeout)
 
     except DatabaseError as db_err:
-        logging.error("Database error occurred: %s", db_err)
+        logging.exception("Database error occurred: %s", db_err)
     except OperationalError as op_err:
-        logging.error("Operational error with database connection: %s", op_err)
+        logging.exception("Operational error with database connection: %s", op_err)
     except Exception as e:
-        logging.error("An unexpected error occurred: %s", e)
+        logging.exception("An unexpected error occurred: %s", e)
     finally:
         logging.info("ETL process completed or terminated with errors.")
