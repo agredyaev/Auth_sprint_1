@@ -1,6 +1,6 @@
 import datetime
 from abc import ABC, abstractmethod
-from typing import Optional, Callable, Generator, Any, List, Tuple, Type
+from typing import Optional, Callable, Generator, Any, List, Type
 
 from pydantic import BaseModel
 from psycopg2.sql import SQL
