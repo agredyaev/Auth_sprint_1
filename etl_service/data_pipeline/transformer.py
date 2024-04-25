@@ -16,8 +16,11 @@ class FilmworkTransformer:
 
     def transform(self):
         """
-        Implements the transformation process.
+        This method handles the transformation of raw film data into a structured format,
+        preparing it for loading into data storage systems. The transformation involves
+        cleaning, formatting, and enriching the data attributes.
         """
+
         global last_updated
         event_handler = self.next_node()
         next(event_handler)
