@@ -60,6 +60,8 @@ black = "^24.2.0"
 pylint-django = "^2.5.5"
 requests = "^2.31.0"
 jsonschema = "^4.21.1"
+ruff = "^0.4.1"
+pytest-mock = "^3.14.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -104,5 +106,9 @@ profile = "black"
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = "-ra -q"
+addopts = "-ra -v"
 testpaths = ["tests"]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"

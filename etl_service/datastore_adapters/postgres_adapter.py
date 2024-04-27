@@ -4,6 +4,7 @@ from typing import Any
 import psycopg2
 from psycopg2.extensions import connection as pg_conn
 from psycopg2.extensions import cursor as pg_cursor
+from psycopg2.extras import DictCursor
 from psycopg2.sql import SQL
 from pydantic import PostgresDsn
 
@@ -18,24 +19,28 @@ class PostgresAdapter(DatastoreAdapter):
     """Postgres adapter class for managing database connections."""
 
     base_adapter_exceptions = psycopg2.OperationalError
-    _connection: pg_conn
+    _connection: pg_conn = None
 
     def __init__(self, dsn: PostgresDsn, *args, **kwargs):
         super().__init__(dsn, *args, **kwargs)
 
     @property
     def is_connected(self) -> bool:
-        """Check if the database connection is open."""
+        """Checks if the database connection is open."""
         return self._connection and not self._connection.closed
 
     @backoff(retry_exceptions=base_adapter_exceptions)
     def connect(self) -> None:
         """Establish a database connection."""
-        if not self.is_connected:
-            self._connection = psycopg2.connect(
-                dsn=self._dsn, *self.args, **self.kwargs
-            )
-            logger.info("Database connection established.")
+        try:
+            if not self.is_connected:
+                self._connection = psycopg2.connect(
+                    dsn=self._dsn.unicode_string(), *self.args, **self.kwargs
+                )
+                logger.info("Database connection established.")
+        except psycopg2.Error as e:
+            logger.error(f"Failed to connect to database: {e}")
+            self._connection = None
 
     @backoff(retry_exceptions=base_adapter_exceptions)
     @contextlib.contextmanager
@@ -90,7 +95,9 @@ class PostgresAdapterCursor(BaseAdapter):
         """Ensure the cursor is ready for use."""
         if not self.is_connection_opened:
             self._connection.connect()
-        self._cursor: pg_cursor = self._connection.connection.cursor(*args, **kwargs)
+        self._cursor: pg_cursor = self._connection.connection.cursor(
+            cursor_factory=DictCursor, *args, **kwargs
+        )
         logger.info("Cursor is opened: `%r.", self)
 
     def reconnect(self) -> None:

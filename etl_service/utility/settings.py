@@ -1,14 +1,8 @@
 import os
 
 from dotenv import load_dotenv
+from pydantic import AnyHttpUrl, Field, PostgresDsn, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings
-from pydantic import (
-    AnyHttpUrl,
-    Field,
-    PostgresDsn,
-    RedisDsn,
-    SecretStr,
-)
 
 env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(env_path, encoding="utf-8")
@@ -51,12 +45,13 @@ class ElasticSearchSettings(BaseSettings):
 
 
 class GeneralSettings(BaseSettings):
-    backoff_start: float = 0.1
-    backoff_max: float = 10.0
-    backoff_multiplier: float = 2.0
-    etl_timeout: int = 3
+    backoff_initial_delay: float = 0.1
+    backoff_max_delay: float = 10.0
+    backoff_factor: float = 2.0
+    etl_timeout: int = 30
     retry_attempts: int = 3
     delay_seconds: int = 1
+    package_name: str = Field(...)
 
     class Config:
         env_prefix = "GENERAL_"

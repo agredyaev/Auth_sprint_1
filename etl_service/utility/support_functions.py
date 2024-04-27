@@ -1,23 +1,27 @@
-from typing import Any, Generator, List, Optional, Type
+from typing import Any, Generator, Optional, Type
 
-from etl_service.utility.logger import setup_logging
 from psycopg2.sql import SQL, Identifier
 from pydantic import BaseModel
+from importlib import resources
+from psycopg2.extras import DictRow
+
+from etl_service.utility.logger import setup_logging
+from etl_service.utility.settings import settings
 
 logger = setup_logging()
 
 
-def load_query_from_file(filename: str) -> Optional[str] | None:
+def load_query_from_file(filename: str) -> Optional[str]:
     """Load SQL query from file.
 
-    :param filename: Path to the SQL file.
+    :param filename: Path to the SQL file relative to the package.
     :return: A string containing the SQL query, or None if an error occurs.
     """
+    sql_package = f"{settings.general.package_name}.sql"
     try:
-        with open(filename, "r") as file:
-            return file.read()
+        return resources.read_text(sql_package, filename)
     except (FileNotFoundError, IOError):
-        logger.error(f"File not found: {filename}")
+        logger.error("File %s not found in package %s ", filename, sql_package)
         return None
 
 
@@ -35,8 +39,15 @@ def safe_format_sql_query(filename: str, table_name: str) -> SQL | None:
         return None
 
     try:
+        table_name_formatted = (
+            f"{table_name}_film_work" if filename.startswith("enrich") else table_name
+        )
+        column_name = f"{table_name}_id"
         query_template = SQL(query_template_str)
-        formatted_query = query_template.format(table_name=Identifier(table_name))
+        formatted_query = query_template.format(
+            table_name=Identifier(table_name_formatted),
+            column_name=Identifier(column_name),
+        )
         return formatted_query
     except Exception as e:
         logger.error("Failed to format the SQL query: %s", e)
@@ -44,15 +55,16 @@ def safe_format_sql_query(filename: str, table_name: str) -> SQL | None:
 
 
 def apply_model_class(
-    results: List[Any], model_class: Type[BaseModel]
-) -> List[BaseModel]:
+    row: DictRow, model_class: Type[BaseModel]
+) -> Optional[BaseModel]:
     """
     Apply Model class to results.
-    :param results: List of results
+    :param row: Dictionary of results
     :param model_class: Model class
-    :return: List of Model class instances
+    :return: Model object
     """
-    return [model_class(**result) for result in results]
+    res = dict(row)
+    return model_class(**res)
 
 
 def split_into_chunks(

@@ -3,8 +3,8 @@ SELECT DISTINCT
 FROM
     content.film_work fw
 JOIN
-    content.{table_name}_film_work tfw ON tfw.film_work_id = fw.id
+    content.{table_name} tfw ON tfw.film_work_id = fw.id
 WHERE
-    tfw.{table_name}_id IN %s
+    tfw.{column_name} IN %s
 ORDER BY
     fw.updated_at;

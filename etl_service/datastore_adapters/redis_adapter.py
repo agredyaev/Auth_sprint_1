@@ -1,9 +1,9 @@
 import redis.exceptions
-from etl_service.datastore_adapters.base_adapter import DatastoreAdapter
 from pydantic import RedisDsn
 from redis.client import Redis
 from redis.typing import EncodableT, KeyT
 
+from etl_service.datastore_adapters.base_adapter import DatastoreAdapter
 from etl_service.utility.backoff import backoff, datastore_reconnect
 from etl_service.utility.exceptions import RedisConnectionError
 from etl_service.utility.logger import setup_logging

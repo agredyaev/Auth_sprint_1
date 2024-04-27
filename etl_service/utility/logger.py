@@ -3,7 +3,7 @@ import logging.config
 
 
 def setup_logging(
-    logger_name: str = "logger", log_file: str = None, log_level: str = "INFO"
+    logger_name: str = "logger", log_file: str = None, log_level: str = "DEBUG"
 ) -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.

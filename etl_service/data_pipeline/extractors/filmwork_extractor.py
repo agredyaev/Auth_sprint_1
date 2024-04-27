@@ -12,9 +12,9 @@ class FilmworkExtractor(BaseExtractor):
 
     def _enrich_data(self):
         """
-        Overrides parent method
+        Overrides parent class method
         """
-        event_handler = self._merge()
+        event_handler = self._combine_data()
         next(event_handler)
 
         try:

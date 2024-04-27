@@ -25,3 +25,4 @@ USER etluser
 
 # Use entrypoint.sh to perform run tasks
 ENTRYPOINT ["python", "-m", "etl_service.main"]
+

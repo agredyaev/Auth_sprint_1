@@ -7,7 +7,7 @@ class StateModel(UpdatedAtMixin):
     pass
 
 
-class UpdatedAtId(UpdatedAtMixin, IdMixin):
+class UpdatedAtId(IdMixin, UpdatedAtMixin):
     """Defines updated_at_id model"""
 
     pass

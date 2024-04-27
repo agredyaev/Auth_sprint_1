@@ -5,6 +5,7 @@ from typing import Any, Dict, NoReturn
 from etl_service.datastore_adapters.redis_adapter import RedisAdapter
 from etl_service.models.state import StateModel
 
+
 class BaseStateManager(ABC):
     """Base class for state manager."""
 

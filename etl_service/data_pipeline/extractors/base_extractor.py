@@ -1,6 +1,7 @@
 import datetime
-from abc import ABC, abstractmethod
-from typing import Any, Callable, Generator, List, Optional, Type
+from typing import Any, Generator, List, Optional, Type
+
+from abc import abstractmethod
 
 from psycopg2.sql import SQL
 from pydantic import BaseModel
@@ -13,19 +14,25 @@ from etl_service.models.movies import Filmwork
 from etl_service.models.state import UpdatedAtId
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.state_manager import State
-from etl_service.utility.support_functions import apply_model_class, safe_format_sql_query
+from etl_service.utility.support_functions import (
+    apply_model_class,
+    safe_format_sql_query,
+)
+from etl_service.data_pipeline.interfaces.data_process_interface import (
+    DataProcessInterface,
+)
 
 logger = setup_logging()
 
 
-class BaseExtractor(ABC):
+class BaseExtractor(DataProcessInterface):
     def __init__(
         self,
         pg_conn: PostgresAdapter,
         state: State,
         batch_size: int,
         next_node: Generator[
-            None, tuple[datetime.datetime, list[Filmwork]] | None, None
+            Optional[tuple[datetime.datetime, list[Filmwork]]], None, None
         ],
     ):
         self.state = state
@@ -44,10 +51,10 @@ class BaseExtractor(ABC):
                 for result in results:
                     yield result
         except Exception as e:
-            logger.error("Error processing batch: %s", e)
+            logger.exception("Error processing batch: %s", e)
 
     def _process_data_flow(
-        self, query_filename: str, model_class: Type[BaseModel], next_handler: Callable
+        self, query_filename: str, model_class: Type[BaseModel], next_handler: Generator
     ) -> Generator[None, None, None]:
         """
         Implements common logic for enrich and combined data flows.
@@ -55,13 +62,18 @@ class BaseExtractor(ABC):
         :param model_class: Model class
         :param next_handler: The next handler in the pipeline.
         """
-        event_handler = next_handler()
+        event_handler = next_handler
         next(event_handler)
+
+        logger.debug("Processing of %s started", query_filename)
 
         with self.pg_conn.cursor() as cursor:
             try:
                 while True:
                     last_updated, data_in = yield
+                    logger.debug(
+                        f"Processing of {query_filename}:state data received: {last_updated}"
+                    )
                     data_in: List[UpdatedAtId]
 
                     batches = self._process_batches(
@@ -69,56 +81,71 @@ class BaseExtractor(ABC):
                         query=safe_format_sql_query(
                             filename=query_filename, table_name=self.proc_table
                         ),
-                        items=[tuple([row.id for row in data_in])],
+                        items=[
+                            tuple([row.id for row in data_in])
+                            if data_in
+                            else tuple([None])
+                        ],
                     )
 
                     data_out = [
                         apply_model_class(batch, model_class) for batch in batches
                     ]
                     event_handler.send((last_updated, data_out))
+                    logger.debug(
+                        f"Processing of {query_filename}: state data sent: {last_updated}"
+                    )
             except GeneratorExit:
-                event_handler.close()
-                logger.debug("End of processing: %s", query_filename.split("-")[0])
+                logger.debug("Processing of %s ended", query_filename)
 
-    def extract(self):
+    def process(self):
         """
         Initializes the extraction process.
-        """
-        self._fetch_data()
-
-    def _fetch_data(self):
-        """
         Monitors the state of the data in the source database.
         Sends the state to the enriched data stage in the pipeline.
         """
         event_handler = self._enrich_data()
         next(event_handler)
 
+        logger.debug(
+            "Initialize processing %s: Start of data fetching", self.proc_table
+        )
+
         with self.pg_conn.cursor() as cursor:
             try:
                 batches = self._process_batches(
                     cursor=cursor,
                     query=safe_format_sql_query(
-                        filename="./sql/fetch_changed_rows.sql",
+                        filename="fetch_changed_rows.sql",
                         table_name=self.proc_table,
                     ),
                     items=[self.state.get().updated_at],
                 )
 
                 data_out = [apply_model_class(batch, UpdatedAtId) for batch in batches]
+                if not data_out:
+                    logger.info(
+                        f"Fetch data: No changed rows to process, sent: state:{None}:data_out:{[]}"
+                    )
+                    event_handler.send((None, []))
+                    return
+
                 last_updated = data_out[-1].updated_at
                 event_handler.send((last_updated, data_out))
+
+                logger.debug(
+                    "Fetch data: %s state %s data sent", self.proc_table, last_updated
+                )
             except GeneratorExit:
-                event_handler.close()
-                logger.debug("End of data fetching")
+                logger.debug("%s: End of data fetching", self.proc_table)
 
     @property
     @abstractmethod
-    def _enrich_data_query(self) -> str | None:
+    def _enrich_data_query(self) -> Optional[str]:
         """
         Defines query for enriching data in the source database.
         """
-        return NotImplementedError
+        raise NotImplementedError("Subclasses must implement this method.")
 
     def _enrich_data(self):
         """
@@ -128,7 +155,7 @@ class BaseExtractor(ABC):
         return self._process_data_flow(
             query_filename=self._enrich_data_query,
             model_class=UpdatedAtId,
-            next_handler_generator=self._combine_data
+            next_handler=self._combine_data(),
         )
 
     def _combine_data(self):
@@ -137,7 +164,7 @@ class BaseExtractor(ABC):
         Sends the combined data to the next node in the pipeline.
         """
         return self._process_data_flow(
-            query_filename="./combine_data_changed_rows.sql",
+            query_filename="combine_data_changed_rows.sql",
             model_class=Filmwork,
-            next_handler_generator=self.next_node
+            next_handler=self.next_node,
         )

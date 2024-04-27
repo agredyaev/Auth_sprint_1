@@ -1,20 +1,12 @@
 
 # Project Overivew
-
 ---
-This project encompasses two main components:
+This ETL (Extract, Transform, Load) project is designed to automate the data handling process by extracting data from PostgreSQL databases, applying necessary transformations, and then loading the processed data into Elasticsearch for enhanced search and analysis capabilities. The system aims to facilitate real-time data integration and analytics by leveraging PostgreSQL's robust data management features along with Elasticsearch's powerful search functionalities.
 
-* Docker Compose Setup: Configuration for Nginx, Docker, and Django to streamline DevOps practices. This setup ensures all system components—Django, Nginx, and PostgreSQL—are launched using docker-compose, enhancing the service's DevOps aspect.
-
-* Django API Development: Implementation of an API providing movie information, including paginated movie listings and details for individual movies by ID.
-
-## Deployment Steps
-
----
-
-* Docker Setup: Write a Dockerfile for Django and configure Nginx as the reverse proxy. Ensure Nginx version is hidden for security and static files are served through Nginx to reduce load on Django.
-
-* Static Files: Configure Nginx to bypass try_files for admin routes, serving static files directly to optimize performance.
+Key Components:
+* Extractor: Connects to PostgreSQL to retrieve data based on specified criteria.
+* Transformer: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
+* Loader: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
 
 ## Getting Started
 
@@ -23,25 +15,27 @@ Instructions to set up the project locally.
 
 ```bash
 # Clone the repository
-git clone https://yourproject.git
+git clone https://github.com/agredyaev/new_admin_panel_sprint_3.git
 
 # Navigate to the project directory
-cd your_project_name
+cd new_admin_panel_sprint_3
 
 # Deploy with Docker Compose
 docker-compose up --build
 ```
+The database is populated from a backup during initialization.
 
 ## Running the Tests
 
 ---
-Tests are included to verify API functionality. To run the tests:
+
+Tests are included to verify the database and elasticsearch integration.
 
 ```bash
 poetry run pytest
 ```
 
-Ensure your docker-compose environment is correctly configured before executing tests.
+Ensure docker-compose environment is correctly configured before executing tests.
 
 ## License
 

@@ -103,8 +103,10 @@ services:
 
   redis:
     container_name: redis
-    image: redis:7.2.4-alpine
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+    image: redis
+    build:
+      context: .
+      dockerfile: ./redis/Dockerfile
     volumes:
       - redis-cache:/data
     env_file:
@@ -114,7 +116,7 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -h redis ping | grep -q PONG"]
       <<: *default-healthcheck
     ports:
       - ${REDIS_PORT}:6379
@@ -122,12 +124,15 @@ services:
   etl:
     container_name: etl_service
     image: etl_service
+    restart: no
     build:
       context: .
       dockerfile: ./etl_service/Dockerfile
     env_file:
       - .env
     depends_on:
+      venv_builder:
+        condition: service_completed_successfully
       db:
         condition: service_healthy
       redis:

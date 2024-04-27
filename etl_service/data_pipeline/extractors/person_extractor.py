@@ -8,4 +8,4 @@ class PersonExtractor(BaseExtractor):
 
     @property
     def _enrich_data_query(self):
-        return "./sql/enrich_changed_rows.sql"
+        return "enrich_changed_rows.sql"

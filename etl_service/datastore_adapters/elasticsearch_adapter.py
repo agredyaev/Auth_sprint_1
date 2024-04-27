@@ -2,11 +2,11 @@ import elastic_transport
 from elasticsearch import Elasticsearch, helpers
 from pydantic import AnyHttpUrl
 
+from etl_service.datastore_adapters.base_adapter import DatastoreAdapter
 from etl_service.utility.backoff import backoff, datastore_reconnect
 from etl_service.utility.exceptions import ElasticsearchConnectionError
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.support_functions import split_into_chunks
-from etl_service.datastore_adapters.base_adapter import DatastoreAdapter
 
 logger = setup_logging()
 
@@ -28,7 +28,10 @@ class ElasticsearchAdapter(DatastoreAdapter):
     @backoff(retry_exceptions=(base_adapter_exceptions, ElasticsearchConnectionError))
     def connect(self) -> None:
         """Connect to client."""
-        self._connection = Elasticsearch(self._dsn, *self.args, **self.kwargs)
+
+        self._connection = Elasticsearch(
+            self._dsn.unicode_string(), *self.args, **self.kwargs
+        )
 
         if not self.is_connected:
             raise ElasticsearchConnectionError(
@@ -66,13 +69,16 @@ class ElasticsearchAdapter(DatastoreAdapter):
         helpers.bulk(self._connection, *args, **kwargs)
 
     @backoff(
-        retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError)
+        retry_exceptions=(
+            base_adapter_exceptions,
+            elastic_transport.SerializationError
+        )
     )
     @datastore_reconnect
-    def chunked_bulk(self, actions: list, batch_size: int, *args, **kwargs) -> None:
+    def chunked_bulk(self, items: list, batch_size: int, *args, **kwargs) -> None:
         """Process actions in chunks and send them to Elasticsearch in bulk."""
 
-        for action_chunk in split_into_chunks(actions, batch_size):
+        for action_chunk in split_into_chunks(items, batch_size):
             try:
                 helpers.bulk(self._connection, actions=action_chunk, *args, **kwargs)
             except Exception as e:

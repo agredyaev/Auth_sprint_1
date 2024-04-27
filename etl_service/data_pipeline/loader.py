@@ -2,11 +2,14 @@ from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAd
 from etl_service.models.movies import Filmwork
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.state_manager import State
+from etl_service.data_pipeline.interfaces.data_process_interface import (
+    DataProcessInterface,
+)
 
 logger = setup_logging()
 
 
-class FilmworkLoader:
+class FilmworkLoader(DataProcessInterface):
     def __init__(
         self,
         eks_conn: ElasticsearchAdapter,
@@ -19,7 +22,7 @@ class FilmworkLoader:
         self.eks_index = eks_index
         self.batch_size = batch_size
 
-    def load(self):
+    def process(self):
         """
         Load data from the database into the Elasticsearch index.
         Receives data from transformer.
@@ -30,13 +33,14 @@ class FilmworkLoader:
         try:
             while True:
                 last_updated, data_in = yield
-                rows: list[Filmwork]
+                data_in: list[Filmwork]
+                logger.debug(f"Loader start:state data received: {last_updated}")
 
                 if not saved_state:
                     saved_state = last_updated
                 elif saved_state != last_updated:
                     logger.warning(
-                        ",Updating index: `%s` with value: `%s`",
+                        ",Loader: State is changed. Updating current state: `%s` with value: `%s`",
                         self.state.key,
                         saved_state,
                     )
@@ -52,9 +56,7 @@ class FilmworkLoader:
                             "imdb_rating": row.rating,
                             "title": row.title,
                             "description": row.description,
-                            "filmwork_type": row.type,
-                            "genres_names": row.genres_names,
-                            "genres": [dict(genre) for genre in row.genres],
+                            "genres": row.genres_names,
                             "directors_names": row.directors_names,
                             "actors_names": row.actors_names,
                             "writers_names": row.writers_names,
@@ -68,16 +70,19 @@ class FilmworkLoader:
                 ]
 
                 self.eks_conn.chunked_bulk(
-                    actions=data,
-                    chunk_size=self.batch_size,
+                    items=data,
+                    batch_size=self.batch_size,
                     index=self.eks_index,
                     raise_on_exception=True,
                 )
 
         except GeneratorExit:
-            logger.debug("Load is finished: `%s`", self.state.key)
+            logger.debug("Loader: Load is finished: `%s`", self.state.key)
             if saved_state:
-                logger.warn(
-                    "Updating index: `%s` with value: `%s`", self.state.key, saved_state
+                logger.warning(
+                    "Loader: Updating current state: `%s` with value: `%s`",
+                    self.state.key,
+                    saved_state,
                 )
                 self.state.set(str(saved_state))
+                logger.debug("Loader end: state: `%s`", self.state.get())

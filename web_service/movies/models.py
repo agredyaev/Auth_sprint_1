@@ -29,6 +29,7 @@ class Genre(TimeStampedMixin, UUIDMixin):
     """Genre represents a category of artistic composition, as in music or literature,
     characterized by similarities in form, style, or subject matter.
     """
+
     name = models.CharField(_("name"), max_length=255)
     description = models.TextField(_("description"), blank=True, null=True)
 
