@@ -5,9 +5,8 @@ FROM python:3.10.13-alpine3.19 AS python-base
 WORKDIR /opt/app
 
 # Set environment variables
-ENV
     # user
-    GID=1000 \
+ENV GID=1000 \
     UID=1000 \
     # python
     PYTHONFAULTHANDLER=1 \
@@ -29,8 +28,8 @@ ENV PATH="$VENV_PATH/bin:$PATH"
 # Set the default shell to bash with pipefail option
 SHELL ["/bin/sh", "-eo", "pipefail", "-c"]
 
-COPY COPY ./docker/setup_user.sh ./
+COPY ./docker/setup_user.sh ./
 
 RUN apk update && \
     apk add --no-cache curl && \
-    chmod +x ./setup_user.sh
+    chmod +x setup_user.sh
