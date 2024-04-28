@@ -17,11 +17,12 @@ COPY --from=venv-builder "$VENV_PATH" "$VENV_PATH"
 # Copy entrypoint and application code
 COPY etl_service /opt/app/etl_service
 
-RUN adduser -D etluser && \
-    chown -R etluser:etluser /opt/app
+RUN addgroup -g "${GID}" etl && \
+    adduser -D -h /opt/app -u "${UID}" -G etl etl && \
+    chown -R etl:etl /opt/app
 
 # Switch to non-root user
-USER etluser
+USER etl
 
 # Use entrypoint.sh to perform run tasks
 ENTRYPOINT ["python", "-m", "etl_service.main"]
