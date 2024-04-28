@@ -17,14 +17,14 @@ COPY --from=venv-builder "$VENV_PATH" "$VENV_PATH"
 # Copy entrypoint and application code
 COPY web_service ./
 
-RUN addgroup -g "${GID}" web && \
-    adduser -D -h /opt/app -u "${UID}" -G web web && \
-    mkdir -p /opt/app/static/admin && \
-    chown -R web:web /opt/app && \
+ARG USERNAME=web
+
+RUN mkdir -p /opt/app/static/admin && \
+    ./setup_user.sh "${GID}" "${UID}" "${USERNAME}" && \
     chmod +x entrypoint.sh gunicorn.conf.py
 
 # Switch to non-root user
-USER web
+USER "${USERNAME}"
 
 # Use entrypoint.sh to perform initial setup tasks
 ENTRYPOINT ["./entrypoint.sh"]

@@ -3,8 +3,6 @@ FROM python-venv-builder:0.1.0 AS venv-builder
 
 WORKDIR /opt/app
 
-SHELL ["/bin/sh", "-eo", "pipefail", "-c"]
-
 # https://python-poetry.org/docs/#installation
 RUN poetry install --only etl --no-root --no-dev
 
@@ -17,12 +15,12 @@ COPY --from=venv-builder "$VENV_PATH" "$VENV_PATH"
 # Copy entrypoint and application code
 COPY etl_service /opt/app/etl_service
 
-RUN addgroup -g "${GID}" etl && \
-    adduser -D -h /opt/app -u "${UID}" -G etl etl && \
-    chown -R etl:etl /opt/app
+ARG USERNAME=etl
+
+RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}"
 
 # Switch to non-root user
-USER etl
+USER "${USERNAME}"
 
 # Use entrypoint.sh to perform run tasks
 ENTRYPOINT ["python", "-m", "etl_service.main"]
