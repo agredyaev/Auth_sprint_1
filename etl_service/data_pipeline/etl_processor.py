@@ -75,7 +75,7 @@ def run_data_pipeline(
 
             while True:
                 extractor.process()
-                logging.debug("Waiting for %s seconds for next state update", timeout)
+                logging.info("Waiting for %s seconds for next state update", timeout)
                 time.sleep(timeout)
 
     except DatabaseError as db_err:
@@ -85,4 +85,4 @@ def run_data_pipeline(
     except Exception as e:
         logging.exception("An unexpected error occurred: %s", e)
     finally:
-        logging.info("Processes completed or terminated.")
+        logging.warning("Processes completed or terminated.")
