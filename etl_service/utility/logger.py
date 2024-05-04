@@ -1,9 +1,26 @@
 import logging
 import logging.config
 
+FMT = "[{levelname:^7}] {name}: {message}"
+
+FORMATS = {
+    logging.DEBUG: f"\33[38m{FMT}\33[0m",
+    logging.INFO: f"\33[36m{FMT}\33[0m",
+    logging.WARNING: f"\33[33m{FMT}\33[0m",
+    logging.ERROR: f"\33[31m{FMT}\33[0m",
+    logging.CRITICAL: f"\33[1m\33[31m{FMT}\33[0m",
+}
+
+
+class CustomFormatter(logging.Formatter):
+    def format(self, record):
+        log_fmt = FORMATS.get(record.levelno)
+        formatter = logging.Formatter(log_fmt, style="{")
+        return formatter.format(record)
+
 
 def setup_logging(
-    logger_name: str = "logger", log_file: str = None, log_level: str = "INFO"
+        logger_name: str = "logger", log_file: str = None, log_level: str = "DEBUG"
 ) -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.
@@ -15,7 +32,7 @@ def setup_logging(
     handlers = {
         "default": {
             "level": log_level,
-            "formatter": "standard",
+            "formatter": "custom",
             "class": "logging.StreamHandler",
         }
     }
@@ -34,8 +51,8 @@ def setup_logging(
             "version": 1,
             "disable_existing_loggers": False,
             "formatters": {
-                "standard": {
-                    "format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+                "custom": {
+                    "()": CustomFormatter
                 },
             },
             "handlers": handlers,
@@ -46,3 +63,4 @@ def setup_logging(
     )
 
     return logging.getLogger(logger_name)
+
