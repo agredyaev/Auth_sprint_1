@@ -1,12 +1,11 @@
 from typing import Any
 
-from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
-
-from etl_service.utility.logger import setup_logging
-from etl_service.utility.state_manager import State
 from etl_service.data_pipeline.interfaces.data_process_interface import (
     DataProcessInterface,
 )
+from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
+from etl_service.utility.logger import setup_logging
+from etl_service.utility.state_manager import State
 
 logger = setup_logging()
 
@@ -34,7 +33,7 @@ class Loader(DataProcessInterface):
 
         try:
             while True:
-                last_updated, data_in, index = (yield)
+                last_updated, data_in, index = yield
                 data_in: list[dict[str, Any]]
                 logger.debug(f"Loader start:state data received: {index}, {last_updated}")
 

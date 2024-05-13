@@ -19,4 +19,3 @@ class FilmworkExtractor(BaseExtractor):
     @property
     def _model_class(self) -> Type[Filmwork]:
         return Filmwork
-

@@ -34,9 +34,7 @@ class PostgresAdapter(DatastoreAdapter):
         """Establish a database connection."""
         try:
             if not self.is_connected:
-                self._connection = psycopg2.connect(
-                    dsn=self._dsn.unicode_string(), *self.args, **self.kwargs
-                )
+                self._connection = psycopg2.connect(dsn=self._dsn.unicode_string(), *self.args, **self.kwargs)
                 logger.info("Database connection established.")
         except psycopg2.Error as e:
             logger.error(f"Failed to connect to database: {e}")
@@ -95,9 +93,7 @@ class PostgresAdapterCursor(BaseAdapter):
         """Ensure the cursor is ready for use."""
         if not self.is_connection_opened:
             self._connection.connect()
-        self._cursor: pg_cursor = self._connection.connection.cursor(
-            cursor_factory=DictCursor, *args, **kwargs
-        )
+        self._cursor: pg_cursor = self._connection.connection.cursor(cursor_factory=DictCursor, *args, **kwargs)
         logger.info("Cursor is opened: `%r.", self)
 
     def reconnect(self) -> None:

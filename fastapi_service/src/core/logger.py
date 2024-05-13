@@ -21,7 +21,7 @@ class CustomFormatter(logging.Formatter):
 
 
 def setup_logging(
-        logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
+    logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
 ) -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.
@@ -52,9 +52,7 @@ def setup_logging(
             "version": 1,
             "disable_existing_loggers": False,
             "formatters": {
-                "custom": {
-                    "()": CustomFormatter
-                },
+                "custom": {"()": CustomFormatter},
             },
             "handlers": handlers,
             "loggers": {
@@ -67,4 +65,3 @@ def setup_logging(
     )
 
     return logging.getLogger(logger_name)
-

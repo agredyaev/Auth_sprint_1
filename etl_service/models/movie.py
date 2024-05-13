@@ -1,4 +1,5 @@
-from typing import Iterable, Optional, Union
+from typing import Optional, Union
+
 from pydantic import Field
 
 from etl_service.models.mixins import IdMixin, NameMixin

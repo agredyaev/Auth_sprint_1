@@ -42,9 +42,7 @@ class RedisAdapter(DatastoreAdapter):
         )
 
         if not self.is_connected:
-            raise RedisConnectionError(
-                f"Unable to connect to the client {self.__repr__()}"
-            )
+            raise RedisConnectionError(f"Unable to connect to the client {self.__repr__()}")
 
         logger.info("Connected to client: %r", self)
 

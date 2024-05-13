@@ -29,14 +29,10 @@ class ElasticsearchAdapter(DatastoreAdapter):
     def connect(self) -> None:
         """Connect to client."""
 
-        self._connection = Elasticsearch(
-            self._dsn.unicode_string(), *self.args, **self.kwargs
-        )
+        self._connection = Elasticsearch(self._dsn.unicode_string(), *self.args, **self.kwargs)
 
         if not self.is_connected:
-            raise ElasticsearchConnectionError(
-                f"Unable to connect to the client {self.__repr__()}"
-            )
+            raise ElasticsearchConnectionError(f"Unable to connect to the client {self.__repr__()}")
 
         logger.info("Connected to client: %r", self)
 
@@ -47,33 +43,22 @@ class ElasticsearchAdapter(DatastoreAdapter):
     def close(self) -> None:
         super().close()
 
-    @backoff(
-        retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError)
-    )
+    @backoff(retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError))
     @datastore_reconnect
     def index_exists(self, index: str) -> None:
         return self._connection.indices.exists(index=index)
 
-    @backoff(
-        retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError)
-    )
+    @backoff(retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError))
     @datastore_reconnect
     def index_create(self, index: str, body: dict) -> None:
         return self._connection.indices.create(index=index, body=body)
 
-    @backoff(
-        retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError)
-    )
+    @backoff(retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError))
     @datastore_reconnect
     def bulk(self, *args, **kwargs) -> None:
         helpers.bulk(self._connection, *args, **kwargs)
 
-    @backoff(
-        retry_exceptions=(
-            base_adapter_exceptions,
-            elastic_transport.SerializationError
-        )
-    )
+    @backoff(retry_exceptions=(base_adapter_exceptions, elastic_transport.SerializationError))
     @datastore_reconnect
     def chunked_bulk(self, items: list, batch_size: int, *args, **kwargs) -> None:
         """Process actions in chunks and send them to Elasticsearch in bulk."""

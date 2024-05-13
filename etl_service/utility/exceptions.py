@@ -8,4 +8,3 @@ class RedisConnectionError(ConnectionError):
     """Redis connection error."""
 
     pass
-

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from etl_service.utility.logger import setup_logging
 
 logger = setup_logging()

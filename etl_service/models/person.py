@@ -2,6 +2,7 @@ from pydantic import Field
 
 from etl_service.models.mixins import IdMixin
 
+
 class PersonFilmwork(IdMixin):
     """Defines person filmwork model"""
 

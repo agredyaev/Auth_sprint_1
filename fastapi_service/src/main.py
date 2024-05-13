@@ -23,5 +23,5 @@ if __name__ == "__main__":
         app=config.settings.uvicorn.app,
         host=config.settings.uvicorn.host,
         port=config.settings.uvicorn.port,
-        reload=True
+        reload=True,
     )

@@ -1,6 +1,6 @@
+import random
 import time
 from functools import wraps
-import random
 from typing import Any, Callable, Tuple, Type
 
 from etl_service.datastore_adapters.base_adapter import BaseAdapter
@@ -81,9 +81,7 @@ def backoff(retry_exceptions=Tuple[Type[Exception]] | Any) -> Any:
                         time.sleep(delay)
                         attempt += 1
             except Exception as e:
-                logger.exception(
-                    "Unexpected error on call %s: %s, Will not retry", e, func.__name__
-                )
+                logger.exception("Unexpected error on call %s: %s, Will not retry", e, func.__name__)
                 raise
 
         return wrapper

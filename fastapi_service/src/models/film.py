@@ -28,4 +28,3 @@ class Film(ORJSONMixin, IdMixin):
 
     writers: list[Person]
     writers_names: list[str]
-

@@ -19,9 +19,7 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logging(
-        logger_name: str = "logger", log_file: str = None, log_level: str = "DEBUG"
-) -> logging.Logger:
+def setup_logging(logger_name: str = "logger", log_file: str = None, log_level: str = "DEBUG") -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.
     :param logger_name: Name of the logger
@@ -51,9 +49,7 @@ def setup_logging(
             "version": 1,
             "disable_existing_loggers": False,
             "formatters": {
-                "custom": {
-                    "()": CustomFormatter
-                },
+                "custom": {"()": CustomFormatter},
             },
             "handlers": handlers,
             "loggers": {
@@ -63,4 +59,3 @@ def setup_logging(
     )
 
     return logging.getLogger(logger_name)
-

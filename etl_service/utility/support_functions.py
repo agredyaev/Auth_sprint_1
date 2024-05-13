@@ -1,9 +1,8 @@
+from importlib import resources
 from typing import Any, Generator, Optional, Type
 
-from psycopg2.sql import SQL, Identifier
+from psycopg2.sql import SQL
 from pydantic import BaseModel
-from importlib import resources
-from psycopg2.extras import DictRow
 
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.settings import settings
@@ -38,7 +37,6 @@ def safe_format_sql_query(filename: str) -> SQL | None:
         return None
 
     try:
-
         query_template = SQL(query_template_str)
 
         return query_template
@@ -47,9 +45,7 @@ def safe_format_sql_query(filename: str) -> SQL | None:
         return None
 
 
-def apply_model_class(
-    row: dict[str, Any], model_class: Type[BaseModel]
-) -> dict[str, Any]:
+def apply_model_class(row: dict[str, Any], model_class: Type[BaseModel]) -> dict[str, Any]:
     """
     Apply Model class to results.
     :param row: Dictionary of results
@@ -59,9 +55,7 @@ def apply_model_class(
     return model_class(**row).model_dump(by_alias=True)
 
 
-def split_into_chunks(
-    items: list[Any], chunk_size: int
-) -> Generator[list[Any], None, None]:
+def split_into_chunks(items: list[Any], chunk_size: int) -> Generator[list[Any], None, None]:
     """
     Yield successive chunks from list of items.
 

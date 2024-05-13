@@ -19,4 +19,3 @@ class GenreExtractor(BaseExtractor):
     @property
     def _model_class(self) -> Type[Genre]:
         return Genre
-
