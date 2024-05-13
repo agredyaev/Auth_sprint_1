@@ -1,22 +1,25 @@
 import datetime
 from typing import Callable, Generator, Optional
 
-from etl_service.models.movies import Filmwork
+from psycopg2.extras import DictRow
+from pydantic import BaseModel
+
 from etl_service.utility.logger import setup_logging
 from etl_service.data_pipeline.interfaces.data_process_interface import (
     DataProcessInterface,
 )
+from etl_service.utility.support_functions import apply_model_class
 
 logger = setup_logging()
 
 
-class FilmworkTransformer(DataProcessInterface):
+class Transformer(DataProcessInterface):
     def __init__(
-        self,
-        next_node: Callable[
-            [],
-            Generator[Optional[tuple[datetime.datetime, list[Filmwork]]], None, None],
-        ],
+            self,
+            next_node: Callable[
+                [],
+                Generator[Optional[list[BaseModel]], None, None],
+            ],
     ):
         self.next_node = next_node
 
@@ -34,17 +37,20 @@ class FilmworkTransformer(DataProcessInterface):
 
         try:
             while True:
-                previous_node_output = yield
+                previous_node_output = (yield)
                 if previous_node_output is None:
                     logger.debug("Transformer: No state data received, skipping")
                     continue
 
-                last_updated, data_in = previous_node_output
-                logger.debug(f"Transformer: state data received: {last_updated}")
-                data_in: list[Filmwork]
-                for row in data_in:
-                    row.transform()
-                event_handler.send((last_updated, data_in))
-                logger.debug(f"Transformer: state data sent: {last_updated}")
+                last_updated, data_in, index, model_class = previous_node_output
+                data_in: list[DictRow]
+
+                logger.debug(f"Transformer: state data received {index}, {last_updated}")
+
+                data_out = [apply_model_class(row, model_class) for row in data_in]
+
+                event_handler.send((last_updated, data_out, index))
+
+                logger.debug(f"Transformer: state data sent: {index}, {last_updated}")
         except GeneratorExit:
             logger.debug("Transformer ended processing")
