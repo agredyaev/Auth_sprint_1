@@ -1,6 +1,8 @@
 from contextlib import asynccontextmanager
-from fastapi_service.src.db import elasticsearch, redis
+
 from fastapi import FastAPI
+
+from fastapi_service.src.db import elasticsearch, redis
 
 
 @asynccontextmanager

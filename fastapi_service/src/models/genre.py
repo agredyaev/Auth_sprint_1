@@ -1,5 +1,6 @@
-from fastapi_service.src.models.mixins import IdMixin, NameMixin
 from pydantic import Field
+
+from fastapi_service.src.models.mixins import IdMixin, NameMixin
 
 
 class Genre(IdMixin, NameMixin):

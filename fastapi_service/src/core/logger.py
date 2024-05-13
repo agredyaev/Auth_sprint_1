@@ -1,5 +1,6 @@
 import logging
 import logging.config
+
 from fastapi_service.src.core.config import settings
 
 FMT = "[{levelname:^7}] {name}: {message}"

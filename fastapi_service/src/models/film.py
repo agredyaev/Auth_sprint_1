@@ -1,5 +1,6 @@
-from fastapi_service.src.models.mixins import NameMixin, IdMixin, ORJSONMixin
 from pydantic import Field
+
+from fastapi_service.src.models.mixins import IdMixin, NameMixin, ORJSONMixin
 
 
 class Person(IdMixin, NameMixin):

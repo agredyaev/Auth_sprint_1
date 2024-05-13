@@ -1,11 +1,9 @@
 import uvicorn
-
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from fastapi_service.src.core import utils, config
 from fastapi_service.src.api import router as api_router
-
+from fastapi_service.src.core import config, utils
 
 app = FastAPI(
     lifespan=utils.lifespan,
