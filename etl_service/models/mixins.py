@@ -13,3 +13,9 @@ class UpdatedAtMixin(BaseModel):
     """Mixin that adds timestamp fields to a model, recording creation and last modification times."""
 
     updated_at: datetime | str
+
+
+class NameMixin(BaseModel):
+    """Mixin that adds a name field to a model."""
+
+    name: str
