@@ -37,7 +37,6 @@ class ElasticSearchSettings(BaseSettings):
     host: SecretStr = Field(...)
     port: int = Field(default=9200)
     dsn: AnyHttpUrl = Field(default="http://localhost:9200")
-    index: str = Field(...)
     load_batch_size: int = Field(default=2000)
 
     class Config:
