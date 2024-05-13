@@ -25,12 +25,11 @@ def load_query_from_file(filename: str) -> Optional[str]:
         return None
 
 
-def safe_format_sql_query(filename: str, table_name: str) -> SQL | None:
+def safe_format_sql_query(filename: str) -> SQL | None:
     """
     Load a SQL query template from a file, then safely format it using psycopg2.sql.
 
     :param filename: Path to the SQL file.
-    :param table_name: Name of the table in the database.
     :return: A psycopg2.sql.SQL object ready for execution, or None if an error occurs.
     """
     query_template_str = load_query_from_file(filename)
@@ -39,32 +38,25 @@ def safe_format_sql_query(filename: str, table_name: str) -> SQL | None:
         return None
 
     try:
-        table_name_formatted = (
-            f"{table_name}_film_work" if filename.startswith("enrich") else table_name
-        )
-        column_name = f"{table_name}_id"
+
         query_template = SQL(query_template_str)
-        formatted_query = query_template.format(
-            table_name=Identifier(table_name_formatted),
-            column_name=Identifier(column_name),
-        )
-        return formatted_query
+
+        return query_template
     except Exception as e:
         logger.error("Failed to format the SQL query: %s", e)
         return None
 
 
 def apply_model_class(
-    row: DictRow, model_class: Type[BaseModel]
-) -> Optional[BaseModel]:
+    row: dict[str, Any], model_class: Type[BaseModel]
+) -> dict[str, Any]:
     """
     Apply Model class to results.
     :param row: Dictionary of results
     :param model_class: Model class
-    :return: Model object
+    :return: Dictionary of results
     """
-    res = dict(row)
-    return model_class(**res)
+    return model_class(**row).model_dump(by_alias=True)
 
 
 def split_into_chunks(
