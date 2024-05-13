@@ -1,9 +1,10 @@
 from elasticsearch import AsyncElasticsearch
+
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.core.exceptions import ElasticsearchConnectionError
 from fastapi_service.src.core.logger import setup_logging
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 es: AsyncElasticsearch | None = None
 
