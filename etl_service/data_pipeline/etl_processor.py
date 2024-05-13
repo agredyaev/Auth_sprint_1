@@ -7,8 +7,8 @@ from psycopg2 import DatabaseError
 from redis.exceptions import RedisError
 
 from etl_service.data_pipeline.extractors.base_extractor import BaseExtractor
-from etl_service.data_pipeline.loader import FilmworkLoader
-from etl_service.data_pipeline.transformer import FilmworkTransformer
+from etl_service.data_pipeline.loader import Loader
+from etl_service.data_pipeline.transformer import Transformer
 from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAdapter
 from etl_service.datastore_adapters.postgres_adapter import PostgresAdapter
 from etl_service.datastore_adapters.redis_adapter import RedisAdapter
@@ -57,13 +57,13 @@ def run_data_pipeline(
 
             logging.debug("Current state: %s", state.get())
 
-            loader = FilmworkLoader(
+            loader = Loader(
                 eks_conn=eks_conn,
                 state=state,
                 eks_index=config.eks.index,
                 batch_size=config.eks.load_batch_size,
             )
-            transformer = FilmworkTransformer(
+            transformer = Transformer(
                 next_node=loader.process(),
             )
             extractor = extractor(
