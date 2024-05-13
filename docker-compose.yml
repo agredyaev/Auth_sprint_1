@@ -103,6 +103,8 @@ services:
       - "9300:9300"
 
   elasticsearch-index-creator:
+    container_name: elastic_index_creator
+    image: elastic_index_creator
     build:
       context: .
       dockerfile: docker/elastic-index-creator.Dockerfile
