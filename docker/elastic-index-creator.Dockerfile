@@ -1,13 +1,12 @@
 FROM python-base:0.1.0 AS base
 
-ENV BASE_DIR="/opt/app" \
-    ES_DSN="http://localhost:9200"
+ENV ES_DSN="http://elasticsearch:9200"
 
-WORKDIR "${BASE_DIR}"
+WORKDIR /opt/app
 
-COPY db/elasticsearch/indices "${BASE_DIR}"
-COPY docker/create_indices.sh "${BASE_DIR}"
+COPY db/elasticsearch/indices ./indices
+COPY docker/create_indices.sh ./
 
 RUN chmod +x create_indices.sh
 
-CMD ["sh", "-c", "create_indices.sh"]
+CMD ["sh", "./create_indices.sh"]
