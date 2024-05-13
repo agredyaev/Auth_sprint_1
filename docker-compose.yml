@@ -27,7 +27,7 @@ services:
     expose:
       - "5432"
     volumes:
-      - ./db/initdb:/docker-entrypoint-initdb.d
+      - ./db/postgres/initdb:/docker-entrypoint-initdb.d
       - postgres-data:/var/lib/postgresql/data/
     env_file:
       - .env
@@ -35,7 +35,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}' || exit 1"]
       <<: *default-healthcheck
-  
+
   app_server:
     container_name: web_service
     image: web_service
@@ -79,6 +79,7 @@ services:
     image: elasticsearch:8.6.2
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+      - ./db/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     env_file:
       - .env
     ulimits:
@@ -91,9 +92,9 @@ services:
     cap_add:
       - IPC_LOCK
     <<: *default-restart-policy
-    depends_on:
-      db:
-        condition: service_healthy
+#    depends_on:
+#      db:
+#        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
       <<: *default-healthcheck
@@ -101,12 +102,22 @@ services:
       - "9200:9200"
       - "9300:9300"
 
+  elasticsearch-index-creator:
+    build:
+      context: .
+      dockerfile: docker/elastic-index-creator.Dockerfile
+    depends_on:
+      python_base:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+
   redis:
     container_name: redis
     image: redis
     build:
       context: .
-      dockerfile: ./redis/Dockerfile
+      dockerfile: db/redis/Dockerfile
     volumes:
       - redis-cache:/data
     env_file:
@@ -140,11 +151,30 @@ services:
       elasticsearch:
         condition: service_healthy
 
+  fastapi:
+    container_name: fastapi_service
+    image: fastapi_service
+    restart: no
+    build:
+      context: .
+      dockerfile: ./fastapi_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      etl:
+        condition: service_completed_successfully
+
 volumes:
   postgres-data:
   static-volume:
   elasticsearch-data:
   redis-cache:
-
-
 
