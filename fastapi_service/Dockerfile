@@ -23,5 +23,4 @@ RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}"
 USER "${USERNAME}"
 
 # Use entrypoint.sh to perform run tasks
-ENTRYPOINT ["python", "-m", "fastapi_service.main"]
-
+ENTRYPOINT ["python", "-m", "fastapi_service.src.main"]
