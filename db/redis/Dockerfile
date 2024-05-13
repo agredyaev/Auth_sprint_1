@@ -1,6 +1,6 @@
 FROM redis:7.2.4-alpine
 
-COPY /redis/entrypoint.sh /etc/redis/entrypoint.sh
+COPY /db/redis/entrypoint.sh /etc/redis/entrypoint.sh
 
 RUN chmod +x /etc/redis/entrypoint.sh
 
