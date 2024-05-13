@@ -7,7 +7,7 @@ from etl_service.data_pipeline.extractors.person_extractor import PersonExtracto
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.settings import settings
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ from pydantic import AnyUrl
 
 from etl_service.utility.logger import setup_logging
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class BaseAdapter(ABC):

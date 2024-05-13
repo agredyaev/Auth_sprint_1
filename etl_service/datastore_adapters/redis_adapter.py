@@ -8,7 +8,7 @@ from etl_service.utility.backoff import backoff, datastore_reconnect
 from etl_service.utility.exceptions import RedisConnectionError
 from etl_service.utility.logger import setup_logging
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class RedisAdapter(DatastoreAdapter):

@@ -8,7 +8,7 @@ from etl_service.utility.exceptions import ElasticsearchConnectionError
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.support_functions import split_into_chunks
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class ElasticsearchAdapter(DatastoreAdapter):

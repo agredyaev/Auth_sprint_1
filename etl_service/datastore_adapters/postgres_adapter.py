@@ -12,7 +12,7 @@ from etl_service.datastore_adapters.base_adapter import BaseAdapter, DatastoreAd
 from etl_service.utility.backoff import backoff, datastore_reconnect
 from etl_service.utility.logger import setup_logging
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class PostgresAdapter(DatastoreAdapter):

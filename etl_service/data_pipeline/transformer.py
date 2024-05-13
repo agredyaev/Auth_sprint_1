@@ -9,7 +9,7 @@ from etl_service.data_pipeline.interfaces.data_process_interface import (
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.support_functions import apply_model_class
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class Transformer(DataProcessInterface):

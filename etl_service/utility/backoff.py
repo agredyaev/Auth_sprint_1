@@ -7,7 +7,7 @@ from etl_service.datastore_adapters.base_adapter import BaseAdapter
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.settings import settings
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 def datastore_reconnect(func: Callable) -> Callable:

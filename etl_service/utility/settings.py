@@ -51,6 +51,7 @@ class GeneralSettings(BaseSettings):
     retry_attempts: int = 3
     delay_seconds: int = 1
     package_name: str = Field(...)
+    log_level: str = Field(default="INFO")
 
     class Config:
         env_prefix = "GENERAL_"

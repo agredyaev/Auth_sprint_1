@@ -1,6 +1,8 @@
 import logging
 import logging.config
 
+from etl_service.utility.settings import settings
+
 FMT = "[{levelname:^7}] {name}: {message}"
 
 FORMATS = {
@@ -19,7 +21,9 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logging(logger_name: str = "logger", log_file: str = None, log_level: str = "DEBUG") -> logging.Logger:
+def setup_logging(
+    logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
+) -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.
     :param logger_name: Name of the logger

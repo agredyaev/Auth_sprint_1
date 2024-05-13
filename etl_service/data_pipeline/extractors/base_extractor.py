@@ -17,7 +17,7 @@ from etl_service.utility.logger import setup_logging
 from etl_service.utility.state_manager import State
 from etl_service.utility.support_functions import safe_format_sql_query
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class BaseExtractor(DataProcessInterface):
@@ -33,10 +33,12 @@ class BaseExtractor(DataProcessInterface):
         self.batch_size = batch_size
         self.next_node = next_node
 
-    def _process_batches(self, cursor: PostgresAdapterCursor, query: SQL, **kwargs) -> Generator[Any, None, None]:
+    def _process_batches(
+        self, cursor: PostgresAdapterCursor, query: SQL, params: Optional[dict[str, Any]] = None
+    ) -> Generator[Any, None, None]:
         """Process a batch of data using the provided cursor and query."""
         try:
-            cursor.execute(query, **kwargs)
+            cursor.execute(query, params)
             while results := cursor.fetchmany(self.batch_size):
                 for result in results:
                     yield result
@@ -70,10 +72,7 @@ class BaseExtractor(DataProcessInterface):
                 last_updated = data_out[-1].get("updated_at")
                 event_handler.send((last_updated, data_out, self._index, self._model_class))
 
-                logger.debug(
-                    "Fetch data: %s state %s data sent",
-                    self._index,
-                )
+                logger.debug(f"Fetch data: {self._index} state {last_updated} data sent")
             except GeneratorExit:
                 logger.debug("%s: End of data fetching", self._index)
 

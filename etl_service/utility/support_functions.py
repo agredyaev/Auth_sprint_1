@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.settings import settings
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 def load_query_from_file(filename: str) -> Optional[str]:

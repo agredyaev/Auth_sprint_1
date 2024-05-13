@@ -7,7 +7,7 @@ from etl_service.datastore_adapters.elasticsearch_adapter import ElasticsearchAd
 from etl_service.utility.logger import setup_logging
 from etl_service.utility.state_manager import State
 
-logger = setup_logging()
+logger = setup_logging(logger_name=__name__)
 
 
 class Loader(DataProcessInterface):
@@ -15,12 +15,10 @@ class Loader(DataProcessInterface):
         self,
         eks_conn: ElasticsearchAdapter,
         state: State,
-        eks_index: str,
         batch_size: int,
     ):
         self.eks_conn = eks_conn
         self.state = state
-        self.eks_index = eks_index
         self.batch_size = batch_size
 
     def process(self):
@@ -61,7 +59,7 @@ class Loader(DataProcessInterface):
                 self.eks_conn.chunked_bulk(
                     items=data_out,
                     batch_size=self.batch_size,
-                    index=self.eks_index,
+                    index=index,
                     raise_on_exception=True,
                 )
 

@@ -16,7 +16,7 @@ from etl_service.utility.logger import setup_logging
 from etl_service.utility.settings import Settings, settings
 from etl_service.utility.state_manager import RedisStateManager, State
 
-logging = setup_logging()
+logging = setup_logging(logger_name=__name__)
 
 
 def run_data_pipeline(
@@ -43,10 +43,7 @@ def run_data_pipeline(
             redis_conn: RedisAdapter
 
             logging.info(
-                """
-                Successfully established connections 
-                to PostgreSQL, Elasticsearch, and Redis.
-                """
+                "Successfully established connections to PostgreSQL, Elasticsearch, and Redis."
             )
 
             state = State(RedisStateManager(redis_conn), state_key)
@@ -60,7 +57,6 @@ def run_data_pipeline(
             loader = Loader(
                 eks_conn=eks_conn,
                 state=state,
-                eks_index=config.eks.index,
                 batch_size=config.eks.load_batch_size,
             )
             transformer = Transformer(
