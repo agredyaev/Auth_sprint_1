@@ -15,9 +15,9 @@ SELECT
     COALESCE(
         json_agg(
             DISTINCT jsonb_build_object(
-                'id', fr.id,
-                'title', fr.title,
-                'roles', fr.roles
+                'id', fwr.id,
+                'title', fwr.title,
+                'roles', fwr.roles
             )
         ), '[]'
     ) as movies
