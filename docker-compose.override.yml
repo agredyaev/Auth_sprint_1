@@ -4,6 +4,6 @@ services:
     image: elastic_dump_loader
     build:
       context: .
-      dockerfile: docker/elastic_dump_loader.Dockerfile
+      dockerfile: docker/elastic-dump-loader.Dockerfile
     env_file:
       - .env
