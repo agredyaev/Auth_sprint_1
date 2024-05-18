@@ -1,20 +1,24 @@
 # Base image
 FROM python-base:0.1.0 AS base
 
-# Set environment variables
 ENV ES_DSN="http://elasticsearch:9200" \
     ES_DIR="db/elasticsearch" \
-    DATA_DIR="indices"
+    SCRIPT_FILE="elasticsearch_operations.sh" \
+    DATA_DIR="indices" \
+    SCRIPT_DIR="docker" \
+    OPERATION="create_index"
 
 # Set work directory
 WORKDIR /opt/app
 
 # Copy entrypoint and application code
 COPY "${ES_DIR}"/"${DATA_DIR}" ./"${DATA_DIR}"
-COPY docker/elasticsearch_operations.sh ./
+COPY "${SCRIPT_DIR}"/"${SCRIPT_FILE}" ./
 
-# Set entrypoint
-RUN chmod +x elasticsearch_operations.sh
+# Install elasticdump
+RUN chmod +x "${SCRIPT_FILE}" \
+    && npm install -g elasticdump
 
 # Set default command
-CMD ["sh", "./elasticsearch_operations.sh", "${DATA_DIR}", "create_index"]
+ENTRYPOINT ["bash", "-c","./${SCRIPT_FILE} ${DATA_DIR} ${OPERATION}"]
+
