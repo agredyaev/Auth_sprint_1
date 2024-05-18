@@ -1,9 +1,31 @@
-services:
+  services:
+  python_base:
+    image: busybox
+    command: ["sh", "-c", "echo 'python_base placeholder'"]
+
+  venv_builder:
+    image: busybox
+    command: ["sh", "-c", "echo 'venv_builder placeholder'"]
+
+  db:
+    image: busybox
+    command: ["sh", "-c", "echo 'db placeholder'"]
+
+  app_server:
+    image: busybox
+    command: ["sh", "-c", "echo 'app_server placeholder'"]
+
+  nginx:
+    image: busybox
+    command: ["sh", "-c", "echo 'nginx placeholder' && sleep 3600"]
+
   elasticsearch-index-creator:
     container_name: elastic_dump_loader
     image: elastic_dump_loader
     build:
       context: .
       dockerfile: docker/elastic-dump-loader.Dockerfile
-    env_file:
-      - .env
+
+  etl:
+    image: busybox
+    command: ["sh", "-c", "echo 'etl placeholder' && sleep 3600"]
