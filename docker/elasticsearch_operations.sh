@@ -51,7 +51,7 @@ DATA_DIR=$1
 OPERATION=$2
 
 # Define the operations
-declare -a operations=(
+declare -A operations=(
     ["create_index"]=create_index
     ["load_dump"]=load_dump
 )
@@ -63,9 +63,9 @@ if [ -z "${operations[$OPERATION]}" ]; then
 fi
 
 # Execute the operation
-for index_file in ./"$DATA_DIR"/*.json; do
-    index_name=$(extract_index_name "$index_file")
-    "${operations[$OPERATION]}" "$index_name" "$index_file"
+for file in ./"$DATA_DIR"/*.json; do
+    file_name=$(extract_index_name "$file")
+    "${operations[$OPERATION]}" "$file" "$file_name"
 done
 
 echo "All tasks completed."
