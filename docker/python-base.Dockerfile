@@ -31,5 +31,5 @@ SHELL ["/bin/sh", "-eo", "pipefail", "-c"]
 COPY ./docker/setup_user.sh ./
 
 RUN apk update && \
-    apk add --no-cache curl && \
+    apk add --no-cache bash curl && \
     chmod +x setup_user.sh
