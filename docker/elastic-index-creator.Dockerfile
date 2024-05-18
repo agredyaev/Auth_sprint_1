@@ -7,6 +7,6 @@ WORKDIR /opt/app
 COPY db/elasticsearch/indices ./indices
 COPY docker/create_indices.sh ./
 
-RUN chmod +x create_indices.sh
+RUN chmod +x elasticsearch_operations.sh
 
 CMD ["sh", "./create_indices.sh"]
