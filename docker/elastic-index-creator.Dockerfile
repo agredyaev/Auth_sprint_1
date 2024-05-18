@@ -1,12 +1,19 @@
+# Base image
 FROM python-base:0.1.0 AS base
 
-ENV ES_DSN="http://elasticsearch:9200"
+# Set environment variables
+ENV ES_DSN="http://elasticsearch:9200" \
+    ES_DIR="db/elasticsearch"
 
+# Set work directory
 WORKDIR /opt/app
 
-COPY db/elasticsearch/indices ./indices
-COPY docker/create_indices.sh ./
+# Copy entrypoint and application code
+COPY "${ES_DIR}"/indices ./indices
+COPY docker/elasticsearch_operations.sh ./
 
+# Set entrypoint
 RUN chmod +x elasticsearch_operations.sh
 
-CMD ["sh", "./create_indices.sh"]
+# Set default command
+CMD ["sh", "./elasticsearch_operations.sh"]
