@@ -16,8 +16,9 @@ COPY "${ES_DIR}"/"${DATA_DIR}" ./"${DATA_DIR}"
 COPY "${SCRIPT_DIR}"/"${SCRIPT_FILE}" ./
 
 # Install elasticdump
-RUN chmod +x "${SCRIPT_FILE}" \
-    && npm install -g elasticdump
+RUN apk add --no-cache npm && \
+    npm install -g elasticdump && \
+    chmod +x "${SCRIPT_FILE}"
 
 # Set default command
 ENTRYPOINT ["bash", "-c","./${SCRIPT_FILE} ${DATA_DIR} ${OPERATION}"]
