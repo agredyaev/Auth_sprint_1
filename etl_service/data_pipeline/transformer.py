@@ -52,4 +52,4 @@ class Transformer(DataProcessInterface):
 
                 logger.debug(f"Transformer: state data sent: {index}, {last_updated}")
         except GeneratorExit:
-            logger.debug("Transformer ended processing")
+            logger.info("Transformer ended processing")
