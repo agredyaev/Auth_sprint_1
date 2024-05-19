@@ -21,6 +21,10 @@ class NameMixin(BaseModel):
     name: str
 
 
+class TitleMixin(BaseModel):
+    title: str
+
+
 class ORJSONMixin(BaseModel):
     """
     Mixin that adds ORJSON encoder/decoder to a model.
