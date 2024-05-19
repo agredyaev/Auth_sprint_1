@@ -8,7 +8,7 @@ from fastapi_service.src.core import config, utils
 app = FastAPI(
     lifespan=utils.lifespan,
     default_response_class=ORJSONResponse,
-    title=config.settings.general.package_name,
+    title=config.settings.general.project_name,
     version=config.settings.general.version,
     docs_url=config.settings.general.docs_url,
     openapi_url=config.settings.general.openapi_url,
