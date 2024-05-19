@@ -42,17 +42,17 @@ def run_data_pipeline(
             eks_conn: ElasticsearchAdapter
             redis_conn: RedisAdapter
 
-            logging.info(
-                "Successfully established connections to PostgreSQL, Elasticsearch, and Redis."
-            )
+            logging.info("Successfully established connections to PostgreSQL, Elasticsearch, and Redis.")
 
             state = State(RedisStateManager(redis_conn), state_key)
+
+            logging.info(f"Initial state: retrieved state from Redis {state.get()}")
 
             if not state.exists():
                 state.set(str(datetime.datetime.min))
                 logging.info("Initialized state: %s", state.get())
 
-            logging.debug("Current state: %s", state.get())
+            logging.debug("Initialized state: with current state: %s", state.get())
 
             loader = Loader(
                 eks_conn=eks_conn,
