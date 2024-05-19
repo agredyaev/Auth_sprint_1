@@ -1,5 +1,7 @@
+# Builder image
 FROM python-base:0.1.0 AS venv-builder
 
+# Set work directory
 WORKDIR /opt/app
 
 # Copy pyproject and poetry.lock

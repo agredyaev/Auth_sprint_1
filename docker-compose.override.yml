@@ -1,0 +1,52 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  app_server:
+    scale: 0
+
+  nginx:
+    scale: 0
+
+  fakedata:
+    container_name: fakedata
+    image: fakedata
+    build:
+      context: .
+      dockerfile: db/postgres/populate_db/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      venv_builder:
+        condition: service_completed_successfully
+
+  elasticsearch-index-creator:
+    depends_on:
+      python_base:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+      fakedata:
+        condition: service_completed_successfully
+
+  etl:
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
+      fakedata:
+        condition: service_completed_successfully
+
+  fastapi:
+    scale: 0
+

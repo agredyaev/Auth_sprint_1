@@ -37,11 +37,10 @@ pydantic-settings = "^2.2.1"
 python-dotenv = "^1.0.1"
 uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_python_implementation == 'CPython'", version = "^0.19.0"}
 
-
 [tool.poetry.group.dev.dependencies]
 pytest = "7.1.1"
 pytest-cov = "4.0.0"
-Faker = "20.0.0"
+Faker = "25.2.0"
 pre-commit = "3.6.0"
 click = "^8.1.7"
 pylint-django = "^2.5.5"
@@ -50,6 +49,12 @@ jsonschema = "^4.21.1"
 ruff = "^0.4.1"
 pytest-mock = "^3.14.0"
 mypy = "^1.8.0"
+
+[tool.poetry.group.fakedata.dependencies]
+faker = "25.2.0"
+asyncpg = "0.29.0"
+aiofiles = "23.2.1"
+python-dotenv = "1.0.1"
 
 [build-system]
 requires = ["poetry-core"]

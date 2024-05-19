@@ -25,5 +25,5 @@ FROM content.person p
 LEFT JOIN film_work_roles fwr on fwr.person_id = p.id
 WHERE p.updated_at > %(updated_at)s
 GROUP BY p.id
-ORDER BY p.updated_at DESC
+ORDER BY p.updated_at
 ;
