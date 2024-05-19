@@ -7,8 +7,3 @@ class Person(IdMixin):
     full_name: str
 
 
-class FilmPerson(IdMixin):
-    """Defines film person model"""
-
-    title: str
-    roles: list[str]
