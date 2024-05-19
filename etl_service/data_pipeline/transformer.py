@@ -38,7 +38,8 @@ class Transformer(DataProcessInterface):
             while True:
                 previous_node_output = yield
                 if previous_node_output is None:
-                    logger.debug("Transformer: No state data received, skipping")
+                    logger.debug("Transformer: No changed rows to process, skipping")
+                    event_handler.send((None, [], None))
                     continue
 
                 last_updated, data_in, index, model_class = previous_node_output

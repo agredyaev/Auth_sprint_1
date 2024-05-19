@@ -54,8 +54,10 @@ class BaseExtractor(DataProcessInterface):
         event_handler = self.next_node
         next(event_handler)
 
-        logger.info(f"Initialize processing with index {self._index} and state {self.state.get().updated_at}: Start "
-                    f"of data fetching")
+        logger.info(
+            f"Initialize processing with index {self._index} and state {self.state.get().updated_at}: Start "
+            f"of data fetching"
+        )
 
         with self.pg_conn.cursor() as cursor:
             try:
@@ -67,7 +69,7 @@ class BaseExtractor(DataProcessInterface):
 
                 data_out = [dict(batch) for batch in batches]
                 if not data_out:
-                    logger.debug(f"Fetch data: No changed rows to process, sent: state:{None}:data_out:{[]}")
+                    logger.debug("Fetch data: No changed rows to process, skipping")
                     event_handler.send((None, [], None, None))
                     return
                 last_updated = data_out[-1].get("updated_at")

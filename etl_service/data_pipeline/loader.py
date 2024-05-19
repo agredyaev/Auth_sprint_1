@@ -31,7 +31,12 @@ class Loader(DataProcessInterface):
 
         try:
             while True:
-                last_updated, data_in, index = yield
+                previous_node_output = yield
+                if previous_node_output is None:
+                    logger.debug("Loader: No changed rows to process, skipping")
+                    continue
+
+                last_updated, data_in, index = previous_node_output
                 data_in: list[dict[str, Any]]
                 logger.debug(f"Loader start:state data received: {index}, {last_updated}")
 
@@ -63,13 +68,14 @@ class Loader(DataProcessInterface):
                     raise_on_exception=True,
                 )
 
+                if saved_state:
+                    logger.warning(
+                        "Loader: Updating current state: `%s` with value: `%s`",
+                        self.state.key,
+                        saved_state,
+                    )
+                    self.state.set(str(saved_state))
+                    logger.debug("Loader end: state: `%s`", self.state.get())
+
         except GeneratorExit:
-            logger.debug("Loader: Load is finished: `%s`", self.state.key)
-            if saved_state:
-                logger.warning(
-                    "Loader: Updating current state: `%s` with value: `%s`",
-                    self.state.key,
-                    saved_state,
-                )
-                self.state.set(str(saved_state))
-                logger.debug("Loader end: state: `%s`", self.state.get())
+            logger.info("Loader: Load is finished: `%s`", self.state.key)
