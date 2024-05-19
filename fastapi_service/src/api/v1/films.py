@@ -4,11 +4,11 @@ from typing import Annotated, List, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
+from fastapi_service.src.api.v1.models_response.film import DefaultFilmResponse, DetailedFilmResponse
+from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
+from fastapi_service.src.api.v1.transformers.film_transromer import DefaultFilmTransformer, DetailedFilmTransformer
 from fastapi_service.src.services.exceptions import BadRequestError
 from fastapi_service.src.services.film import FilmService, get_film_service
-from fastapi_service.src.api.v1.transformers.film_transromer import DefaultFilmTransformer, DetailedFilmTransformer
-from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
-from fastapi_service.src.api.v1.models_response.film import DefaultFilmResponse, DetailedFilmResponse
 
 router = APIRouter(prefix="/films", tags=["films"])
 
@@ -18,6 +18,10 @@ class SortOrder(str, Enum):
     IMDB_RATING_DESC = "-imdb_rating"
 
 
+get_pagination_parameters = Depends(fetch_pagination_parameters)
+get_film_service_dep = Depends(get_film_service)
+
+
 @router.get(
     "",
     summary="Retrieve a list of films based on parameters",
@@ -25,10 +29,10 @@ class SortOrder(str, Enum):
     status_code=status.HTTP_200_OK,
 )
 async def get_films(
-        sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
-        genre: Annotated[List[str], Query()] = None,
-        pagination: PaginationParameters = Depends(fetch_pagination_parameters),
-        film_service: FilmService = Depends(get_film_service),
+    sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    genre: Annotated[List[str], Query()] = None,
+    pagination: PaginationParameters = get_pagination_parameters,
+    film_service: FilmService = get_film_service_dep,
 ) -> List[DefaultFilmResponse]:
     """
     Retrieve a list of films based on sorting, genre, and pagination parameters.
@@ -41,10 +45,7 @@ async def get_films(
     """
     try:
         films = await film_service.get_films(
-            sort=cast(List[str], sort),
-            genre=genre,
-            page_number=pagination.page,
-            page_size=pagination.size
+            sort=cast(List[str], sort), genre=genre, page_number=pagination.page, page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
@@ -60,10 +61,10 @@ async def get_films(
     status_code=status.HTTP_200_OK,
 )
 async def search_films(
-        query: str,
-        sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
-        pagination: PaginationParameters = Depends(fetch_pagination_parameters),
-        film_service: FilmService = Depends(get_film_service),
+    query: str,
+    sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    pagination: PaginationParameters = get_pagination_parameters,
+    film_service: FilmService = get_film_service_dep,
 ) -> List[DefaultFilmResponse]:
     """
     Perform a full-text search for films based on query, sorting, and pagination parameters.
@@ -76,10 +77,7 @@ async def search_films(
     """
     try:
         films = await film_service.search_films(
-            query=query,
-            sort=cast(List[str], sort),
-            page_number=pagination.page,
-            page_size=pagination.size
+            query=query, sort=cast(List[str], sort), page_number=pagination.page, page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
@@ -94,7 +92,7 @@ async def search_films(
     response_model=DetailedFilmResponse,
     status_code=status.HTTP_200_OK,
 )
-async def get_film(film_id: str, film_service: FilmService = Depends(get_film_service)) -> DetailedFilmResponse:
+async def get_film(film_id: str, film_service: FilmService = get_film_service_dep) -> DetailedFilmResponse:
     """
     Retrieve detailed information about a specific film by its ID.
 

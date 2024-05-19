@@ -1,15 +1,26 @@
 from http import HTTPStatus
+
 from fastapi import APIRouter, Depends, HTTPException, status
+
+from fastapi_service.src.api.v1.models_response.person import (
+    DefaultFilmPersonResponse,
+    DefaultPersonResponse,
+    DetailedPersonResponse,
+)
+from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
+from fastapi_service.src.api.v1.transformers.person_transformer import (
+    DefaultFilmPersonTransformer,
+    DefaultPersonTransformer,
+    DetailedPersonTransformer,
+)
 from fastapi_service.src.services.exceptions import BadRequestError
 from fastapi_service.src.services.person import PersonService, get_person_service
-from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
-from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse, DetailedPersonResponse, \
-    DefaultFilmPersonResponse
-from fastapi_service.src.api.v1.transformers.person_transformer import (DefaultPersonTransformer, \
-                                                                        DetailedPersonTransformer,
-                                                                        DefaultFilmPersonTransformer)
 
 router = APIRouter(prefix="/persons", tags=["persons"])
+
+
+get_pagination_parameters = Depends(fetch_pagination_parameters)
+get_person_service_dep = Depends(get_person_service)
 
 
 @router.get(
@@ -19,9 +30,9 @@ router = APIRouter(prefix="/persons", tags=["persons"])
     status_code=status.HTTP_200_OK,
 )
 async def search_person_by_query(
-        query: str,
-        pagination: PaginationParameters = Depends(fetch_pagination_parameters),
-        person_service: PersonService = Depends(get_person_service),
+    query: str,
+    pagination: PaginationParameters = get_pagination_parameters,
+    person_service: PersonService = get_person_service_dep,
 ) -> list[DefaultPersonResponse]:
     """
     Perform a full-text search for persons based on query and pagination parameters.
@@ -49,7 +60,7 @@ async def search_person_by_query(
     status_code=status.HTTP_200_OK,
 )
 async def get_person_info(
-        person_id: str, person_service: PersonService = Depends(get_person_service)
+    person_id: str, person_service: PersonService = get_person_service_dep
 ) -> DetailedPersonResponse:
     """
     Retrieve detailed information about a specific person by their ID.
@@ -77,9 +88,9 @@ async def get_person_info(
     status_code=status.HTTP_200_OK,
 )
 async def get_films_for_person(
-        person_id: str,
-        pagination: PaginationParameters = Depends(fetch_pagination_parameters),
-        person_service: PersonService = Depends(get_person_service),
+    person_id: str,
+    pagination: PaginationParameters = get_pagination_parameters,
+    person_service: PersonService = get_person_service_dep,
 ) -> list[DefaultFilmPersonResponse]:
     """
     Retrieve a list of films that a person participated in based on their ID.
@@ -91,9 +102,7 @@ async def get_films_for_person(
     """
     try:
         persons_with_films = await person_service.get_films_by_person_id(
-            person_id=person_id,
-            page_number=pagination.page,
-            page_size=pagination.size
+            person_id=person_id, page_number=pagination.page, page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)

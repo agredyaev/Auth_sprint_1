@@ -2,24 +2,24 @@ from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
+from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
 from fastapi_service.src.api.v1.transformers.genre_transformer import DefaultGenreTransformer
 from fastapi_service.src.services.exceptions import BadRequestError
 from fastapi_service.src.services.genre import GenreService, get_genre_service
-from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
-from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
 
 router = APIRouter(prefix="/genres", tags=["genres"])
 
+get_pagination_parameters = Depends(fetch_pagination_parameters)
+get_genre_service_dep = Depends(get_genre_service)
+
 
 @router.get(
-    "",
-    summary="Retrieve a list of genres",
-    response_model=list[DefaultGenreResponse],
-    status_code=status.HTTP_200_OK
+    "", summary="Retrieve a list of genres", response_model=list[DefaultGenreResponse], status_code=status.HTTP_200_OK
 )
 async def get_genres(
-        pagination: PaginationParameters = Depends(fetch_pagination_parameters),
-        genre_service: GenreService = Depends(get_genre_service),
+    pagination: PaginationParameters = get_pagination_parameters,
+    genre_service: GenreService = get_genre_service_dep,
 ) -> list[DefaultGenreResponse]:
     """
     Retrieve a list of genres based on pagination parameters.
@@ -43,10 +43,7 @@ async def get_genres(
     response_model=DetailedGenreResponse,
     status_code=status.HTTP_200_OK,
 )
-async def get_genre_info(
-        genre_id: str,
-        genre_service: GenreService = Depends(get_genre_service)
-) -> DetailedGenreResponse:
+async def get_genre_info(genre_id: str, genre_service: GenreService = get_genre_service_dep) -> DetailedGenreResponse:
     """
     Retrieve detailed information about a specific genre by its ID.
 
