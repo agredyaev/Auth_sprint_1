@@ -3,12 +3,12 @@ from pydantic import Field
 from fastapi_service.src.models.mixins import IdMixin, NameMixin, ORJSONMixin
 
 
-class Person(IdMixin, NameMixin):
-    """Defines person model"""
+class FilmPerson(IdMixin, NameMixin):
+    """Defines film person model"""
 
 
-class Genre(IdMixin, NameMixin):
-    """Defines genre model"""
+class FilmGenre(IdMixin, NameMixin):
+    """Defines film genre model"""
 
 
 class Film(ORJSONMixin, IdMixin):
@@ -18,14 +18,14 @@ class Film(ORJSONMixin, IdMixin):
     title: str
     description: str | None = Field("")
 
-    genres: list[Genre]
+    genres: list[FilmGenre]
     genres_names: list[str]
 
-    directors: list[Person]
+    directors: list[FilmPerson]
     directors_names: list[str]
 
-    actors: list[Person]
+    actors: list[FilmPerson]
     actors_names: list[str]
 
-    writers: list[Person]
+    writers: list[FilmPerson]
     writers_names: list[str]
