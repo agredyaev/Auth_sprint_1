@@ -27,7 +27,7 @@ class DatabaseSettings(BaseSettings):
     host: SecretStr = Field(...)
     port: int = Field(default=5432)
     dsn: PostgresDsn = Field(...)
-    extract_batch_size: int = Field(default=2000)
+    extract_batch_size: int = Field(default=5000)
 
     class Config:
         env_prefix = "POSTGRES_"
@@ -37,7 +37,7 @@ class ElasticSearchSettings(BaseSettings):
     host: SecretStr = Field(...)
     port: int = Field(default=9200)
     dsn: AnyHttpUrl = Field(default="http://localhost:9200")
-    load_batch_size: int = Field(default=2000)
+    load_batch_size: int = Field(default=2500)
 
     class Config:
         env_prefix = "ELASTICSEARCH_"
@@ -51,7 +51,7 @@ class GeneralSettings(BaseSettings):
     retry_attempts: int = 3
     delay_seconds: int = 1
     package_name: str = Field(...)
-    log_level: str = Field(default="INFO")
+    log_level: str = Field(default="DEBUG")
 
     class Config:
         env_prefix = "GENERAL_"
