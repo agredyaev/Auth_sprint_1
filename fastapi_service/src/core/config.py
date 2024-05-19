@@ -15,7 +15,7 @@ class RedisSettings(BaseSettings):
     user: SecretStr = Field(...)
     password: SecretStr = Field(...)
     dsn: RedisDsn = Field(...)
-    cache_expire_in_seconds: int = Field(default=(60 * 5))
+    cache_expiration: int = Field(default=(60 * 5))
 
     class Config:
         env_prefix = "REDIS_"
@@ -25,7 +25,9 @@ class ElasticSearchSettings(BaseSettings):
     host: SecretStr = Field(...)
     port: int = Field(default=9200)
     dsn: AnyHttpUrl = Field(default="http://localhost:9200")
-    index: str = Field(...)
+    films_index: str = Field(default="movies")
+    genres_index: str = Field(default="genres")
+    persons_index: str = Field(default="people")
 
     class Config:
         env_prefix = "ELASTICSEARCH_"
