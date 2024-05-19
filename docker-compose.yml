@@ -151,6 +151,10 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
+      app_server:
+        condition: service_completed_successfully
 
   fastapi:
     container_name: fastapi_service
@@ -178,4 +182,3 @@ volumes:
   static-volume:
   elasticsearch-data:
   redis-cache:
-
