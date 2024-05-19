@@ -1,12 +1,12 @@
 from typing import Annotated, Any
 
-from elasticsearch import AsyncElasticsearch, BadRequestError, NotFoundError
+from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 
+from fastapi_service.src.core.logger import setup_logging
 from fastapi_service.src.db.elasticsearch import get_elastic
 from fastapi_service.src.services.exceptions import BadRequestError
-from fastapi_service.src.services.redis_cache import QueryCacheDecorator, ModelCacheDecorator
-from fastapi_service.src.core.logger import setup_logging
+from fastapi_service.src.services.redis_cache import ModelCacheDecorator, QueryCacheDecorator
 
 logger = setup_logging(logger_name=__name__)
 
@@ -48,11 +48,9 @@ class ElasticsearchService:
         except NotFoundError:
             logger.info(f"Model with ID {model_id} not found in index {index}.")
             return None
-        except BadRequestError as exp:
+        except BadRequestError as e:
             logger.error(f"Failed to fetch model with ID {model_id} from index {index}.")
-            raise BadRequestError(
-                status_code=exp.status_code, message=exp.message, body=exp.body, errors=exp.errors
-            ) from exp
+            raise BadRequestError(status_code=e.status_code, message=e.message, body=e.body, errors=e.errors) from e
 
         return document["_source"]
 
@@ -83,13 +81,13 @@ class ElasticsearchService:
 
     @QueryCacheDecorator()
     async def search_models(
-            self,
-            *,
-            index: str,
-            page_number: int,
-            page_size: int,
-            query_match: dict[str, Any] | None = None,
-            sort: list[str] | None = None,
+        self,
+        *,
+        index: str,
+        page_number: int,
+        page_size: int,
+        query_match: dict[str, Any] | None = None,
+        sort: list[str] | None = None,
     ) -> list[dict[str, Any]] | None:
         """
         Search for models in the Elasticsearch index with pagination and optional sorting.
@@ -106,12 +104,12 @@ class ElasticsearchService:
         )
 
     async def _perform_search(
-            self,
-            index: str,
-            query: dict[str, Any] | None = None,
-            page_number: int | None = None,
-            page_size: int | None = None,
-            sort: list[str] | None = None,
+        self,
+        index: str,
+        query: dict[str, Any] | None = None,
+        page_number: int | None = None,
+        page_size: int | None = None,
+        sort: list[str] | None = None,
     ) -> list[dict[str, Any]] | None:
         """
         Perform a search query on the Elasticsearch index.
