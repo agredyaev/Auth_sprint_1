@@ -31,6 +31,6 @@ class ORJSONMixin(BaseModel):
     """
 
     class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+        json_encoders = {dict: orjson_dumps}
+        json_decoders = {dict: orjson.loads}
         extra = "ignore"
