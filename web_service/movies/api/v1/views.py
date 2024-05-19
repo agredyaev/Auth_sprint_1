@@ -78,9 +78,7 @@ class MoviesListApi(MoviesApiMixin, BaseListView):
     def get_context_data(self, **kwargs) -> Dict[str, Any]:
         """Includes pagination information in the context."""
 
-        paginator, page, queryset, _ = self.paginate_queryset(
-            self.get_queryset(), self.paginate_by
-        )
+        paginator, page, queryset, _ = self.paginate_queryset(self.get_queryset(), self.paginate_by)
 
         context = {
             "count": paginator.count,

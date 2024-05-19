@@ -58,22 +58,16 @@ def test_search_by_actor_name():
 
 
 def test_search_by_writer():
-    search_query = {
-        "query": {"term": {"id": {"value": "24eafcd7-1018-4951-9e17-583e2554ef0a"}}}
-    }
+    search_query = {"query": {"term": {"id": {"value": "24eafcd7-1018-4951-9e17-583e2554ef0a"}}}}
     response = elastic_client.search(index="movies", body=search_query)
     assert "hits" in response
     assert "total" in response["hits"]
     assert response["hits"]["total"]["value"] == 1
-    assert response["hits"]["hits"][0]["_source"]["writers_names"] == [
-        "Craig Hutchinson"
-    ]
+    assert response["hits"]["hits"][0]["_source"]["writers_names"] == ["Craig Hutchinson"]
 
 
 def test_no_director_for_specific_movie():
-    search_query = {
-        "query": {"term": {"id": {"value": "479f20b0-58d1-4f16-8944-9b82f5b1f22a"}}}
-    }
+    search_query = {"query": {"term": {"id": {"value": "479f20b0-58d1-4f16-8944-9b82f5b1f22a"}}}}
 
     response = elastic_client.search(index="movies", body=search_query)
     assert "hits" in response

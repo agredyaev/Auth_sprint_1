@@ -40,9 +40,7 @@ class Genre(TimeStampedMixin, UUIDMixin):
         db_table = 'content"."genre'
         verbose_name = _("genre")
         verbose_name_plural = _("genres")
-        indexes = [
-            models.Index(fields=["name", "description"], name="name_description_idx")
-        ]
+        indexes = [models.Index(fields=["name", "description"], name="name_description_idx")]
 
 
 class Filmwork(TimeStampedMixin, UUIDMixin):
@@ -64,9 +62,7 @@ class Filmwork(TimeStampedMixin, UUIDMixin):
         null=True,
         validators=[MinValueValidator(0), MaxValueValidator(100)],
     )
-    type = models.CharField(
-        _("type"), max_length=255, choices=TYPE_CHOICES, default=MOVIE
-    )
+    type = models.CharField(_("type"), max_length=255, choices=TYPE_CHOICES, default=MOVIE)
     file_path = models.FileField(
         _("file"),
         blank=True,
@@ -115,9 +111,7 @@ class GenreFilmwork(UUIDMixin):
     """
 
     film_work = models.ForeignKey("Filmwork", on_delete=models.CASCADE)
-    genre = models.ForeignKey(
-        "Genre", verbose_name=_("genre"), on_delete=models.CASCADE
-    )
+    genre = models.ForeignKey("Genre", verbose_name=_("genre"), on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -126,9 +120,7 @@ class GenreFilmwork(UUIDMixin):
         verbose_name_plural = _("genre film works")
         indexes = [models.Index(fields=["created_at"], name="created_at_idx")]
         constraints = [
-            models.UniqueConstraint(
-                fields=["genre_id", "film_work_id"], name="unique_genre_id_film_work_id"
-            )
+            models.UniqueConstraint(fields=["genre_id", "film_work_id"], name="unique_genre_id_film_work_id")
         ]
 
 
@@ -148,21 +140,15 @@ class PersonFilmwork(UUIDMixin):
     ]
 
     film_work = models.ForeignKey("Filmwork", on_delete=models.CASCADE)
-    person = models.ForeignKey(
-        "Person", verbose_name=_("person"), on_delete=models.CASCADE
-    )
-    role = models.TextField(
-        _("role"), blank=False, null=True, choices=TYPE_CHOICES, default=ACTOR
-    )
+    person = models.ForeignKey("Person", verbose_name=_("person"), on_delete=models.CASCADE)
+    role = models.TextField(_("role"), blank=False, null=True, choices=TYPE_CHOICES, default=ACTOR)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'content"."person_film_work'
         verbose_name = _("person film work")
         verbose_name_plural = _("person film works")
-        indexes = [
-            models.Index(fields=["created_at", "role"], name="created_at_role_idx")
-        ]
+        indexes = [models.Index(fields=["created_at", "role"], name="created_at_role_idx")]
         constraints = [
             models.UniqueConstraint(
                 fields=["id", "person_id", "film_work_id"],
