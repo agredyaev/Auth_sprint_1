@@ -1,6 +1,6 @@
+from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
 from fastapi_service.src.api.v1.transformers.base_transformer import BaseTransformer
 from fastapi_service.src.models.genre import Genre
-from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
 
 
 class DefaultGenreTransformer(BaseTransformer):

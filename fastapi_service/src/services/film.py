@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Annotated, List, Optional, Dict, Any
+from typing import Annotated, Any, Dict, List, Optional
 
 from fastapi import Depends
 
@@ -22,12 +22,7 @@ class FilmService:
         self.elasticsearch_service = elasticsearch_service
 
     async def get_films(
-        self,
-        *,
-        page_size: int,
-        page_number: int,
-        sort: Optional[List[str]] = None,
-        genre: Optional[List[str]] = None
+        self, *, page_size: int, page_number: int, sort: Optional[List[str]] = None, genre: Optional[List[str]] = None
     ) -> List[Film]:
         """
         Retrieve a list of films based on the given parameters.
@@ -44,7 +39,9 @@ class FilmService:
         if genre:
             query_match = {"terms": {"genres_names": genre, "boost": 1.0}}
 
-        return await self._search_films(page_size=page_size, page_number=page_number, sort=sort, query_match=query_match)
+        return await self._search_films(
+            page_size=page_size, page_number=page_number, sort=sort, query_match=query_match
+        )
 
     async def search_films(
         self,
@@ -82,15 +79,12 @@ class FilmService:
                 }
             }
 
-        return await self._search_films(page_size=page_size, page_number=page_number, sort=sort, query_match=query_match)
+        return await self._search_films(
+            page_size=page_size, page_number=page_number, sort=sort, query_match=query_match
+        )
 
     async def _search_films(
-        self,
-        *,
-        page_size: int,
-        page_number: int,
-        sort: Optional[List[str]],
-        query_match: Optional[Dict[str, Any]]
+        self, *, page_size: int, page_number: int, sort: Optional[List[str]], query_match: Optional[Dict[str, Any]]
     ) -> List[Film]:
         """
         Helper method to perform search queries on the Elasticsearch index.

@@ -4,7 +4,8 @@ from typing import Annotated, List, Optional
 from fastapi import Depends
 
 from fastapi_service.src.core.config import settings
-from fastapi_service.src.models.person import Person, FilmPerson
+from fastapi_service.src.models.film import FilmPerson
+from fastapi_service.src.models.person import Person
 from fastapi_service.src.services.elasticsearch import ElasticsearchService
 
 
@@ -29,10 +30,7 @@ class PersonService:
         :param person_id: The ID of the person to retrieve.
         :return: A Person object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(
-            index=settings.es.persons_index,
-            model_id=person_id
-        )
+        data = await self.elasticsearch_service.get_model_by_id(index=settings.es.persons_index, model_id=person_id)
         if not data:
             return None
 
@@ -106,10 +104,7 @@ class PersonService:
         :return: A list of Person objects.
         """
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.persons_index,
-            page_number=page_number,
-            page_size=page_size,
-            sort=sort
+            index=settings.es.persons_index, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:
@@ -135,13 +130,17 @@ class PersonService:
         :param sort: Sorting criteria for the persons.
         :return: A list of Person objects.
         """
-        query_match = {
-            "multi_match": {
-                "query": query,
-                "fuzziness": "auto",
-                "fields": ["full_name"],
+        query_match = (
+            {
+                "multi_match": {
+                    "query": query,
+                    "fuzziness": "auto",
+                    "fields": ["full_name"],
+                }
             }
-        } if query else None
+            if query
+            else None
+        )
 
         data = await self.elasticsearch_service.search_models(
             index=settings.es.persons_index,

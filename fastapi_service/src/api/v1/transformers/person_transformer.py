@@ -1,7 +1,10 @@
+from fastapi_service.src.api.v1.models_response.person import (
+    DefaultFilmPersonResponse,
+    DefaultPersonResponse,
+    DetailedPersonResponse,
+)
 from fastapi_service.src.api.v1.transformers.base_transformer import BaseTransformer
 from fastapi_service.src.models.person import Person
-from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse, DetailedPersonResponse, \
-    DefaultFilmPersonResponse
 
 
 class DefaultPersonTransformer(BaseTransformer):

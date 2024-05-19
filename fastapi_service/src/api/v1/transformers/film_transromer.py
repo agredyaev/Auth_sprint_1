@@ -1,16 +1,15 @@
-from typing import List
-
-from fastapi_service.src.api.v1.transformers.base_transformer import BaseTransformer
-from fastapi_service.src.models.film import Film, FilmPerson, FilmGenre
-from fastapi_service.src.api.v1.models_response.film import DetailedFilmResponse, DefaultFilmResponse
-from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse
+from fastapi_service.src.api.v1.models_response.film import DefaultFilmResponse, DetailedFilmResponse
 from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse
+from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse
+from fastapi_service.src.api.v1.transformers.base_transformer import BaseTransformer
+from fastapi_service.src.models.film import Film, FilmGenre, FilmPerson
 
 
 class DefaultFilmTransformer(BaseTransformer):
     """
     Transform a Film object into a DefaultFilmResponse object.
     """
+
     def to_response(self, film: Film = None) -> DefaultFilmResponse:
         return DefaultFilmResponse(
             uuid=film.id,
@@ -43,4 +42,3 @@ class DetailedFilmTransformer(BaseTransformer):
     @staticmethod
     def _transform_person(person: FilmPerson) -> DefaultPersonResponse:
         return DefaultPersonResponse(uuid=person.id, full_name=person.full_name)
-

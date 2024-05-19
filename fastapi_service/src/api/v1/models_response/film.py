@@ -1,6 +1,6 @@
-from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse
 from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse
-from fastapi_service.src.api.v1.models_response.mixins import UUIDMixin, TitleMixin
+from fastapi_service.src.api.v1.models_response.mixins import TitleMixin, UUIDMixin
+from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse
 
 
 class DefaultFilmResponse(UUIDMixin, TitleMixin):
