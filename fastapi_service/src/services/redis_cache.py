@@ -1,6 +1,7 @@
-import blake3
-import orjson
+import hashlib
 from typing import Any
+
+import orjson
 
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.db.redis import get_redis
@@ -51,7 +52,7 @@ class ModelCacheDecorator(BaseCacheService):
             if not cache_key:
                 cache_key = "".join(tuple(kwargs.values()))
 
-            hasher = blake3.blake3()
+            hasher = hashlib.sha256()
             hasher.update(bytes(cache_key, "utf-8"))
             cache_key = hasher.hexdigest()
 
@@ -72,7 +73,7 @@ class QueryCacheDecorator(BaseCacheService):
 
     def __call__(self, func):
         async def wrapper(*args, **kwargs):
-            hasher = blake3.blake3()
+            hasher = hashlib.sha256()
             for arg in kwargs.values():
                 hasher.update(bytes(str(arg), "utf-8"))
             cache_key = hasher.hexdigest()

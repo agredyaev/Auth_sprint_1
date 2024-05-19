@@ -36,7 +36,6 @@ pydantic = "^2.7.0"
 pydantic-settings = "^2.2.1"
 python-dotenv = "^1.0.1"
 uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_python_implementation == 'CPython'", version = "^0.19.0"}
-blake3 = "0.4.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.1.1"
