@@ -64,5 +64,5 @@ WHERE
 GROUP BY
     fw.id
 ORDER BY
-    fw.updated_at DESC
+    fw.updated_at
  ;

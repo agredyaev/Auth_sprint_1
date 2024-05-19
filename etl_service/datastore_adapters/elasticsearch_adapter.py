@@ -62,9 +62,11 @@ class ElasticsearchAdapter(DatastoreAdapter):
     @datastore_reconnect
     def chunked_bulk(self, items: list, batch_size: int, *args, **kwargs) -> None:
         """Process actions in chunks and send them to Elasticsearch in bulk."""
-
+        raise_on_exception = kwargs.get("raise_on_exception", False)
         for action_chunk in split_into_chunks(items, batch_size):
             try:
                 helpers.bulk(self._connection, actions=action_chunk, *args, **kwargs)
             except Exception as e:
                 logger.error(f"Error during bulk operation: {e}")
+                if raise_on_exception:
+                    raise
