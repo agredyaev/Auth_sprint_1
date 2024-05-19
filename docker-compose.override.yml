@@ -47,6 +47,3 @@ services:
       fakedata:
         condition: service_completed_successfully
 
-  fastapi:
-    scale: 0
-
