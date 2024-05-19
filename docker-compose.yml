@@ -168,14 +168,14 @@ services:
     depends_on:
       venv_builder:
         condition: service_completed_successfully
-      db:
-        condition: service_healthy
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
       etl:
-        condition: service_completed_successfully
+        condition: service_started
 
 volumes:
   postgres-data:
