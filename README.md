@@ -25,11 +25,5 @@ In this sprint, we enhanced the ETL process to handle additional models, prepare
 Instructions to set up the project locally.
 
 ```bash
-# Clone the repository
-git clone https://github.com/agredyaev/new_admin_panel_sprint_3.git
-
-# Navigate to the project directory
-cd new_admin_panel_sprint_3
-
 # Deploy with Docker Compose
 make compose-up
