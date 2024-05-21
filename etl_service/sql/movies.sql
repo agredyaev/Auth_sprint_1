@@ -5,7 +5,7 @@ SELECT
     fw.description,
     fw.updated_at,
     COALESCE(
-        json_agg(DISTINCT g.name),'[]') as genres,
+        json_agg(DISTINCT g.name),'[]') as genres_names,
     COALESCE(
        json_agg(
            DISTINCT p.full_name
@@ -50,7 +50,16 @@ SELECT
             )
         ) FILTER (WHERE p.id is not null AND pfw.role = 'writer'),
         '[]'
-    ) as writers
+    ) as writers,
+    COALESCE (
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', g.id,
+                'name', g.name
+            )
+        ) FILTER (WHERE g.id is not null),
+        '[]'
+    ) as genres
 FROM
     content.film_work fw
 LEFT JOIN content.person_film_work pfw ON pfw.film_work_id = fw.id
