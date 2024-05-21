@@ -9,7 +9,7 @@ from fastapi_service.src.api.v1.models_response.person import (
 )
 from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
 from fastapi_service.src.api.v1.transformers.person_transformer import (
-    DefaultFilmPersonTransformer,
+    DefaultPersonFilmTransformer,
     DefaultPersonTransformer,
     DetailedPersonTransformer,
 )
@@ -107,5 +107,5 @@ async def get_films_for_person(
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
 
-    transformer = DefaultFilmPersonTransformer()
+    transformer = DefaultPersonFilmTransformer()
     return transformer.to_response_list(persons_with_films)

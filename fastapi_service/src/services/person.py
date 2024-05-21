@@ -4,7 +4,7 @@ from typing import Annotated, List, Optional
 from fastapi import Depends
 
 from fastapi_service.src.core.config import settings
-from fastapi_service.src.models.film import FilmPerson
+from fastapi_service.src.models.film import FilmShort
 from fastapi_service.src.models.person import Person
 from fastapi_service.src.services.elasticsearch import ElasticsearchService
 
@@ -30,7 +30,7 @@ class PersonService:
         :param person_id: The ID of the person to retrieve.
         :return: A Person object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(index=settings.es.persons_index, model_id=person_id)
+        data = await self.elasticsearch_service.get_model_by_id(index=settings.eks.persons_index, model_id=person_id)
         if not data:
             return None
 
@@ -43,7 +43,7 @@ class PersonService:
         page_size: int,
         page_number: int,
         sort: Optional[List[str]] = None,
-    ) -> List[FilmPerson]:
+    ) -> List[FilmShort]:
         """
         Retrieve a list of films associated with a person.
 
@@ -70,7 +70,7 @@ class PersonService:
         }
 
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.persons_index,
+            index=settings.eks.persons_index,
             query_match=query_match,
             page_number=page_number,
             page_size=page_size,
@@ -85,7 +85,7 @@ class PersonService:
         if not data_films:
             return []
 
-        return [FilmPerson(**row["_source"]) for row in data_films]
+        return [FilmShort(**row["_source"]) for row in data_films]
 
     async def fetch_persons(
         self,
@@ -143,7 +143,7 @@ class PersonService:
         )
 
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.persons_index,
+            index=settings.eks.persons_index,
             query_match=query_match,
             page_number=page_number,
             page_size=page_size,
