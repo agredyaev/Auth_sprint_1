@@ -3,7 +3,10 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from fastapi_service.src.api import router as api_router
-from fastapi_service.src.core import config, utils
+from fastapi_service.src.core import config, logger, utils
+
+log_config = logger.get_log_config()
+
 
 app = FastAPI(
     lifespan=utils.lifespan,
@@ -22,4 +25,5 @@ if __name__ == "__main__":
         host=config.settings.uvicorn.host,
         port=config.settings.uvicorn.port,
         reload=True,
+        log_config=log_config,
     )
