@@ -4,10 +4,29 @@ services:
       - "5432:5432"
 
   app_server:
-    scale: 0
-
-  nginx:
-    scale: 0
+    container_name: app_server
+    image: app_server
+    restart: no
+    expose:
+      - "9090"
+    build:
+      context: .
+      dockerfile: ./fastapi_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      etl:
+        condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
 
   fakedata:
     container_name: fakedata
@@ -31,19 +50,3 @@ services:
         condition: service_healthy
       fakedata:
         condition: service_completed_successfully
-
-  etl:
-    depends_on:
-      venv_builder:
-        condition: service_completed_successfully
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-      elasticsearch-index-creator:
-        condition: service_completed_successfully
-      fakedata:
-        condition: service_completed_successfully
-
