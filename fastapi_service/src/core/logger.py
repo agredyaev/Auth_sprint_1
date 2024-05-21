@@ -1,3 +1,4 @@
+# src/core/logger.py
 import logging
 import logging.config
 
@@ -21,15 +22,12 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 
-def setup_logging(
-    logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
-) -> logging.Logger:
+def get_log_config(log_file: str = None, log_level: str = settings.general.log_level) -> dict:
     """
-    Setup logging configuration for the application and return a logger instance.
-    :param logger_name: Name of the logger
+    Return a logging configuration dictionary.
     :param log_file: File to write logs to (optional)
     :param log_level: Log level (default: 'INFO')
-    :return: Logger instance
+    :return: Logging configuration dictionary
     """
     handlers = {
         "default": {
@@ -48,21 +46,31 @@ def setup_logging(
             "mode": "a",
         }
 
-    logging.config.dictConfig(
-        {
-            "version": 1,
-            "disable_existing_loggers": False,
-            "formatters": {
-                "custom": {"()": CustomFormatter},
-            },
-            "handlers": handlers,
-            "loggers": {
-                "": {"handlers": ["default"], "level": log_level, "propagate": True},
-                "uvicorn": {"handlers": ["default"], "level": log_level},
-                "uvicorn.error": {"handlers": ["default"], "level": log_level},
-                "uvicorn.access": {"handlers": ["default"], "level": log_level},
-            },
-        }
-    )
+    return {
+        "version": 1,
+        "disable_existing_loggers": False,
+        "formatters": {
+            "custom": {"()": CustomFormatter},
+        },
+        "handlers": handlers,
+        "loggers": {
+            "": {"handlers": ["default"], "level": log_level},
+            "uvicorn": {"level": log_level},
+            "uvicorn.error": {"level": log_level},
+            "uvicorn.access": {"handlers": ["default"], "level": log_level, "propagate": False},
+        },
+    }
 
+
+def setup_logging(
+    logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
+) -> logging.Logger:
+    """
+    Setup logging configuration for the application and return a logger instance.
+    :param logger_name: Name of the logger
+    :param log_file: File to write logs to (optional)
+    :param log_level: Log level (default: 'INFO')
+    :return: Logger instance
+    """
+    logging.config.dictConfig(get_log_config(log_file, log_level))
     return logging.getLogger(logger_name)
