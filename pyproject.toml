@@ -30,6 +30,7 @@ redis = "^5.0.3"
 fastapi = "^0.109.0"
 uvicorn = "^0.26.0"
 redis = "^5.0.3"
+gunicorn = "^21.2.0"
 elasticsearch = { version = "^8.12.1", extras = ["async"] }
 orjson = "^3.9.12"
 pydantic = "^2.7.0"
