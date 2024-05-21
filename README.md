@@ -25,5 +25,14 @@ In this sprint, we enhanced the ETL process to handle additional models, prepare
 Instructions to set up the project locally.
 
 ```bash
+# Clone the repository 
+https://github.com/agredyaev/Async_API_sprint_1.git
+ 
+# Navigate to the project directory 
+cd Async_API_sprint_1 
+
+# Create .env file
+cp .env.example .env
+
 # Deploy with Docker Compose
 make compose-up
