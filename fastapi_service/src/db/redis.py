@@ -14,8 +14,8 @@ async def redis_open():
     redis = Redis(
         host=settings.redis.host,
         port=settings.redis.port,
-        username=settings.redis.user,
-        password=settings.redis.password,
+        username=settings.redis.user.get_secret_value(),
+        password=settings.redis.password.get_secret_value(),
         db=settings.redis.db_number,
     )
 
