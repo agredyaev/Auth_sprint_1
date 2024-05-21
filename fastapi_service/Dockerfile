@@ -4,7 +4,7 @@ FROM python-venv-builder:0.1.0 AS venv-builder
 WORKDIR /opt/app
 
 # https://python-poetry.org/docs/#installation
-RUN poetry install --only fastapi --no-root --no-dev
+RUN poetry install --only fastapi --no-root --only main
 
 # Final stage for the production image
 FROM python-base:0.1.0 AS production
@@ -18,6 +18,7 @@ COPY fastapi_service /opt/app/fastapi_service
 ARG USERNAME=fastapi
 
 RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}"
+
 
 # Switch to non-root user
 USER "${USERNAME}"
