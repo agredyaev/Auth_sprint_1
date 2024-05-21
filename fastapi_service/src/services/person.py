@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional
 
 from fastapi import Depends
 
@@ -42,8 +42,8 @@ class PersonService:
         person_id: str,
         page_size: int,
         page_number: int,
-        sort: Optional[List[str]] = None,
-    ) -> List[FilmShort]:
+        sort: Optional[list[str]] = None,
+    ) -> list[FilmShort]:
         """
         Retrieve a list of films associated with a person.
 
@@ -92,8 +92,8 @@ class PersonService:
         *,
         page_size: int,
         page_number: int,
-        sort: Optional[List[str]] = None,
-    ) -> List[Person]:
+        sort: Optional[list[str]] = None,
+    ) -> list[Person]:
         """
         Retrieve a list of persons based on the given parameters.
         May return an empty list if no persons are found.
@@ -118,8 +118,8 @@ class PersonService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[List[str]] = None,
-    ) -> List[Person]:
+        sort: Optional[list[str]] = None,
+    ) -> list[Person]:
         """
         Retrieve a list of persons based on a search query.
         May return an empty list if no persons match the query.

@@ -1,4 +1,3 @@
-
 from fastapi_service.src.api.v1.models_response.mixins import TitleMixin, UUIDMixin
 
 

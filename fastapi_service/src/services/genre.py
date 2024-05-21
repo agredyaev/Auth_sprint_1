@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Annotated, List, Optional
+from typing import Annotated, Optional
 
 from fastapi import Depends
 
@@ -26,8 +26,8 @@ class GenreService:
         *,
         page_size: int,
         page_number: int,
-        sort: Optional[List[str]] = None,
-    ) -> List[Genre]:
+        sort: Optional[list[str]] = None,
+    ) -> list[Genre]:
         """
         Retrieve a list of genres based on the given parameters.
         May return an empty list if no genres are found.
@@ -52,8 +52,8 @@ class GenreService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[List[str]] = None,
-    ) -> List[Genre]:
+        sort: Optional[list[str]] = None,
+    ) -> list[Genre]:
         """
         Retrieve a list of genres based on a search query.
         May return an empty list if no genres match the query.

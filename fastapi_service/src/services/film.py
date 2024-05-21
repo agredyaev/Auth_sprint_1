@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Annotated, Any, Dict, List, Optional
+from typing import Annotated, Any, Optional
 
 from fastapi import Depends
 
@@ -22,8 +22,8 @@ class FilmService:
         self.elasticsearch_service = elasticsearch_service
 
     async def get_films(
-        self, *, page_size: int, page_number: int, sort: Optional[List[str]] = None, genre: Optional[List[str]] = None
-    ) -> List[Film]:
+        self, *, page_size: int, page_number: int, sort: Optional[list[str]] = None, genre: Optional[list[str]] = None
+    ) -> list[Film]:
         """
         Retrieve a list of films based on the given parameters.
         May return an empty list if no films are found.
@@ -49,8 +49,8 @@ class FilmService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[List[str]] = None,
-    ) -> List[Film]:
+        sort: Optional[list[str]] = None,
+    ) -> list[Film]:
         """
         Retrieve a list of films based on a search query.
         May return an empty list if no films match the query.
@@ -84,8 +84,8 @@ class FilmService:
         )
 
     async def _search_films(
-        self, *, page_size: int, page_number: int, sort: Optional[List[str]], query_match: Optional[Dict[str, Any]]
-    ) -> List[Film]:
+        self, *, page_size: int, page_number: int, sort: Optional[list[str]], query_match: Optional[dict[str, Any]]
+    ) -> list[Film]:
         """
         Helper method to perform search queries on the Elasticsearch index.
 

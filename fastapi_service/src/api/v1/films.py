@@ -1,6 +1,6 @@
 from enum import Enum
 from http import HTTPStatus
-from typing import Annotated, List, cast
+from typing import Annotated, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
@@ -25,15 +25,15 @@ get_film_service_dep = Depends(get_film_service)
 @router.get(
     "",
     summary="Retrieve a list of films based on parameters",
-    response_model=List[DefaultFilmResponse],
+    response_model=list[DefaultFilmResponse],
     status_code=status.HTTP_200_OK,
 )
 async def get_films(
-    sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
-    genre: Annotated[List[str], Query()] = None,
+    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    genre: Annotated[list[str], Query()] = None,
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
-) -> List[DefaultFilmResponse]:
+) -> list[DefaultFilmResponse]:
     """
     Retrieve a list of films based on sorting, genre, and pagination parameters.
 
@@ -45,7 +45,7 @@ async def get_films(
     """
     try:
         films = await film_service.get_films(
-            sort=cast(List[str], sort), genre=genre, page_number=pagination.page, page_size=pagination.size
+            sort=cast(list[str], sort), genre=genre, page_number=pagination.page, page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
@@ -57,15 +57,15 @@ async def get_films(
 @router.get(
     "/search",
     summary="Full-text search for films",
-    response_model=List[DefaultFilmResponse],
+    response_model=list[DefaultFilmResponse],
     status_code=status.HTTP_200_OK,
 )
 async def search_films(
     query: str,
-    sort: Annotated[List[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
-) -> List[DefaultFilmResponse]:
+) -> list[DefaultFilmResponse]:
     """
     Perform a full-text search for films based on query, sorting, and pagination parameters.
 
@@ -77,7 +77,7 @@ async def search_films(
     """
     try:
         films = await film_service.search_films(
-            query=query, sort=cast(List[str], sort), page_number=pagination.page, page_size=pagination.size
+            query=query, sort=cast(list[str], sort), page_number=pagination.page, page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
