@@ -96,9 +96,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
       <<: *default-healthcheck
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    expose:
+      - "9200"
+      - "9300"
 
   elasticsearch-index-creator:
     container_name: elastic_index_creator
@@ -129,8 +129,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "redis-cli -h redis ping | grep -q PONG"]
       <<: *default-healthcheck
-    ports:
-      - ${REDIS_PORT}:6379
+    expose:
+      - ${REDIS_PORT}
 
   etl:
     container_name: etl_service

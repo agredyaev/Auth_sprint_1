@@ -3,6 +3,15 @@ services:
     ports:
       - "5432:5432"
 
+  elasticsearch:
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  redis:
+    ports:
+      - "6379:6379"
+
   app_server:
     container_name: app_server
     image: app_server
