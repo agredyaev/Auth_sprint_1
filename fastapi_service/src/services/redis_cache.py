@@ -39,6 +39,15 @@ class BaseCacheService:
         adapter = await redis_client()
         await adapter.set(key, data, settings.redis.cache_expiration)
 
+    async def cached_result(self, cache_key: str, func, *args, **kwargs):
+        result = await self.fetch_from_cache(cache_key)
+        if not result:
+            result = await func(*args, **kwargs)
+            if not result:
+                return None
+            await self.store_in_cache(cache_key, orjson.dumps(result).decode("utf-8"))
+        return result
+
 
 class ModelCacheDecorator(BaseCacheService):
     """Decorator that caches model data for database queries."""
@@ -56,14 +65,7 @@ class ModelCacheDecorator(BaseCacheService):
             hasher.update(bytes(cache_key, "utf-8"))
             cache_key = hasher.hexdigest()
 
-            result = await self.fetch_from_cache(cache_key)
-            if not result:
-                result = await func(*args, **kwargs)
-                if not result:
-                    return None
-                await self.store_in_cache(cache_key, orjson.dumps(result).decode("utf-8"))
-
-            return result
+            return await self.cached_result(cache_key, func, *args, **kwargs)
 
         return wrapper
 
@@ -78,13 +80,6 @@ class QueryCacheDecorator(BaseCacheService):
                 hasher.update(bytes(str(arg), "utf-8"))
             cache_key = hasher.hexdigest()
 
-            result = await self.fetch_from_cache(cache_key)
-            if not result:
-                result = await func(*args, **kwargs)
-                if not result:
-                    return None
-                await self.store_in_cache(cache_key, orjson.dumps(result).decode("utf-8"))
-
-            return result
+            return await self.cached_result(cache_key, func, *args, **kwargs)
 
         return wrapper
