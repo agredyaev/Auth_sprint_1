@@ -37,7 +37,7 @@ class FilmService:
         query_match = None
 
         if genre:
-            query_match = {"terms": {"genres_names": genre, "boost": 1.0}}
+            query_match = {"terms": {"genres_names": genre}}
 
         return await self._search_films(
             page_size=page_size, page_number=page_number, sort=sort, query_match=query_match
@@ -95,8 +95,9 @@ class FilmService:
         :param query_match: The query match conditions.
         :return: A list of Film objects.
         """
+
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.films_index,
+            index=settings.eks.films_index,
             page_number=page_number,
             page_size=page_size,
             query_match=query_match,
@@ -116,7 +117,7 @@ class FilmService:
         :param film_id: The ID of the film to retrieve.
         :return: A Film object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(index=settings.es.films_index, model_id=film_id)
+        data = await self.elasticsearch_service.get_model_by_id(index=settings.eks.films_index, model_id=film_id)
         if not data:
             return None
 
