@@ -9,7 +9,7 @@ load_dotenv(env_path, encoding="utf-8")
 
 
 class RedisSettings(BaseSettings):
-    host: SecretStr = Field(...)
+    host: str = Field("redis")
     port: int = Field(default=6379)
     db_number: int = Field(default=0)
     user: SecretStr = Field(...)
@@ -24,7 +24,7 @@ class RedisSettings(BaseSettings):
 class ElasticSearchSettings(BaseSettings):
     host: SecretStr = Field(...)
     port: int = Field(default=9200)
-    dsn: AnyHttpUrl = Field(default="http://localhost:9200")
+    dsn: AnyHttpUrl = Field(default="http://elasticsearch:9200")
     films_index: str = Field(default="movies")
     genres_index: str = Field(default="genres")
     persons_index: str = Field(default="people")
@@ -43,20 +43,21 @@ class ApiSettings(BaseSettings):
 
 
 class GeneralSettings(BaseSettings):
-    log_level: str = Field(default="INFO")
+    log_level: str = Field(default="DEBUG")
     package_name: str = Field(...)
-    docs_url: str = Field(default="/docs")
-    openapi_url: str = Field(default="/openapi.json")
-    version: str = Field(...)
+    docs_url: str = Field(default="/api/openapi")
+    openapi_url: str = Field(default="/api//openapi.json")
+    version: str = Field(default="0.1.0")
+    project_name: str = Field(default="FastAPI Movies")
 
     class Config:
         env_prefix = "GENERAL_"
 
 
 class UvicornSettings(BaseSettings):
-    app: str = Field(default="main:app")
+    app: str = Field(default="fastapi_service.src.main:app")
     host: str = Field(default="0.0.0.0")
-    port: int = Field(default=8000)
+    port: int = Field(default=9090)
 
     class Config:
         env_prefix = "UVICORN_"
