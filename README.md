@@ -1,15 +1,26 @@
-
-# Project Overivew
+# Project Overview
 ---
-This ETL (Extract, Transform, Load) project is designed to automate the data handling process by extracting data from PostgreSQL databases, applying necessary transformations, and then loading the processed data into Elasticsearch for enhanced search and analysis capabilities. The system aims to facilitate real-time data integration and analytics by leveraging PostgreSQL's robust data management features along with Elasticsearch's powerful search functionalities.
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Django](https://img.shields.io/badge/Django-3.2-blue)
+![Redis](https://img.shields.io/badge/Redis-6.2-red)
+![Elasticsearch](https://img.shields.io/badge/Elasticsearch-7.10-yellow)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.68.1-green)
+![Docker](https://img.shields.io/badge/Docker-20.10-blue)
+[![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
+
 
 Key Components:
-* Extractor: Connects to PostgreSQL to retrieve data based on specified criteria.
-* Transformer: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
-* Loader: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
+* **Fake data generator**: Generates fake data for the application and loads it into the database.
+* **Extractor**: Connects to PostgreSQL to retrieve data based on specified criteria.
+* **Transformer**: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
+* **Loader**: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
+* **API**: Provides a RESTful API for the application, allowing for data retrieval, filtering, and aggregation.
+
+## Sprint Update
+---
+In this sprint, we enhanced the ETL process to handle additional models, prepared a process to populate the database with test data for further development of tests for the FastAPI service, and added the FastAPI service.
 
 ## Getting Started
-
 ---
 Instructions to set up the project locally.
 
@@ -21,23 +32,4 @@ git clone https://github.com/agredyaev/new_admin_panel_sprint_3.git
 cd new_admin_panel_sprint_3
 
 # Deploy with Docker Compose
-docker-compose up --build
-```
-The database is populated from a backup during initialization.
-
-## Running the Tests
-
----
-
-Tests are included to verify the database and elasticsearch integration.
-
-```bash
-poetry run pytest
-```
-
-Ensure docker-compose environment is correctly configured before executing tests.
-
-## License
-
----
-This project is open source and available under the [MIT License](LICENSE).
+make compose-up
