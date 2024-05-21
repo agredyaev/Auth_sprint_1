@@ -26,13 +26,6 @@ class ElasticsearchService:
 
     @ModelCacheDecorator(key="model_id")
     async def get_model_by_id(self, *, index: str, model_id: str) -> dict[str, Any] | None:
-        """
-        Retrieve a specific model by ID from the Elasticsearch index.
-
-        :param index: The name of the Elasticsearch index.
-        :param model_id: The ID of the model to retrieve.
-        :return: The model data if found, otherwise None.
-        """
         return await self._fetch_model(index=index, model_id=model_id)
 
     async def _fetch_model(self, index: str, model_id: str) -> dict[str, Any] | None:
@@ -45,14 +38,16 @@ class ElasticsearchService:
         """
         try:
             document = await self.elasticsearch_client.get(index=index, id=model_id)
-        except NotFoundError:
+            return document["_source"]
+        except NotFoundError as e:
             logger.info(f"Model with ID {model_id} not found in index {index}.")
-            return None
+            raise NotFoundError(f"Model with ID {model_id} not found in index {index}.") from e
         except BadRequestError as e:
             logger.error(f"Failed to fetch model with ID {model_id} from index {index}.")
             raise BadRequestError(status_code=e.status_code, message=e.message, body=e.body, errors=e.errors) from e
-
-        return document["_source"]
+        except Exception as e:
+            logger.error(f"Failed to fetch model with ID {model_id} from index {index}.")
+            raise e
 
     @staticmethod
     def calculate_offset(page_number: int | None, page_size: int | None) -> int | None:
@@ -132,10 +127,8 @@ class ElasticsearchService:
         except NotFoundError:
             logger.info(f"No documents found in index {index}.")
             return None
-        except BadRequestError as exp:
+        except BadRequestError as e:
             logger.error(f"Failed to search in index {index}.")
-            raise BadRequestError(
-                status_code=exp.status_code, message=exp.message, body=exp.body, errors=exp.errors
-            ) from exp
+            raise BadRequestError(status_code=e.status_code, message=e.message, body=e.body, errors=e.errors) from e
 
         return documents["hits"]["hits"]
