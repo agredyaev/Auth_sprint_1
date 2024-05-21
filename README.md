@@ -2,9 +2,9 @@
 ---
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Django](https://img.shields.io/badge/Django-3.2-blue)
-![Redis](https://img.shields.io/badge/Redis-6.2-red)
-![Elasticsearch](https://img.shields.io/badge/Elasticsearch-7.10-yellow)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.68.1-green)
+![Redis](https://img.shields.io/badge/Redis-5.0.4-red)
+![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.12-yellow)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109.1-green)
 ![Docker](https://img.shields.io/badge/Docker-20.10-blue)
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 
