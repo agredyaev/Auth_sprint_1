@@ -22,6 +22,8 @@ class NameMixin(BaseModel):
 
 
 class TitleMixin(BaseModel):
+    """Mixin that adds a title field to a model."""
+
     title: str
 
 
