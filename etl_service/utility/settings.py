@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, Field, PostgresDsn, RedisDsn, SecretStr
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_path = os.path.join(os.path.dirname(__file__), "..", "..", ".env")
 load_dotenv(env_path, encoding="utf-8")
@@ -16,8 +16,8 @@ class RedisSettings(BaseSettings):
     password: SecretStr = Field(...)
     dsn: RedisDsn = Field(...)
 
-    class Config:
-        env_prefix = "REDIS_"
+    model_config = SettingsConfigDict(env_prefix="REDIS_")
+
 
 
 class DatabaseSettings(BaseSettings):
@@ -29,8 +29,7 @@ class DatabaseSettings(BaseSettings):
     dsn: PostgresDsn = Field(...)
     extract_batch_size: int = Field(default=5000)
 
-    class Config:
-        env_prefix = "POSTGRES_"
+    model_config = SettingsConfigDict(env_prefix="POSTGRES_")
 
 
 class ElasticSearchSettings(BaseSettings):
@@ -39,8 +38,7 @@ class ElasticSearchSettings(BaseSettings):
     dsn: AnyHttpUrl = Field(default="http://localhost:9200")
     load_batch_size: int = Field(default=5000)
 
-    class Config:
-        env_prefix = "ELASTICSEARCH_"
+    model_config = SettingsConfigDict(env_prefix="ELASTICSEARCH_")
 
 
 class GeneralSettings(BaseSettings):
@@ -53,8 +51,7 @@ class GeneralSettings(BaseSettings):
     package_name: str = Field(...)
     log_level: str = Field(default="INFO")
 
-    class Config:
-        env_prefix = "GENERAL_"
+    model_config = SettingsConfigDict(env_prefix="GENERAL_")
 
 
 class Settings(BaseSettings):
@@ -63,8 +60,7 @@ class Settings(BaseSettings):
     general: GeneralSettings = Field(default=GeneralSettings())
     redis: RedisSettings = Field(default=RedisSettings())
 
-    class Config:
-        validate_default = True
+    model_config = SettingsConfigDict(validate_default=True)
 
 
 settings = Settings()

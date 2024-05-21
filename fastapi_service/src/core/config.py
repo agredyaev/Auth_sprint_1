@@ -2,7 +2,7 @@ import os
 
 from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, Field, RedisDsn, SecretStr
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", ".env")
 load_dotenv(env_path, encoding="utf-8")
@@ -17,8 +17,7 @@ class RedisSettings(BaseSettings):
     dsn: RedisDsn = Field(...)
     cache_expiration: int = Field(default=(60 * 5))
 
-    class Config:
-        env_prefix = "REDIS_"
+    model_config = SettingsConfigDict(env_prefix="REDIS_")
 
 
 class ElasticSearchSettings(BaseSettings):
@@ -29,8 +28,7 @@ class ElasticSearchSettings(BaseSettings):
     genres_index: str = Field(default="genres")
     persons_index: str = Field(default="people")
 
-    class Config:
-        env_prefix = "ELASTICSEARCH_"
+    model_config = SettingsConfigDict(env_prefix="ELASTICSEARCH_")
 
 
 class ApiSettings(BaseSettings):
@@ -38,8 +36,7 @@ class ApiSettings(BaseSettings):
     default_page_size: int = 50
     prefix: str = Field(default="/api")
 
-    class Config:
-        env_prefix = "API_"
+    model_config = SettingsConfigDict(env_prefix="API_")
 
 
 class GeneralSettings(BaseSettings):
@@ -50,8 +47,7 @@ class GeneralSettings(BaseSettings):
     version: str = Field(default="0.1.0")
     project_name: str = Field(default="FastAPI Movies")
 
-    class Config:
-        env_prefix = "GENERAL_"
+    model_config = SettingsConfigDict(env_prefix="GENERAL_")
 
 
 class UvicornSettings(BaseSettings):
@@ -59,8 +55,7 @@ class UvicornSettings(BaseSettings):
     host: str = Field(default="0.0.0.0")
     port: int = Field(default=9090)
 
-    class Config:
-        env_prefix = "UVICORN_"
+    model_config = SettingsConfigDict(env_prefix="UVICORN_")
 
 
 class Settings(BaseSettings):
@@ -70,8 +65,7 @@ class Settings(BaseSettings):
     api: ApiSettings = Field(default=ApiSettings())
     uvicorn: UvicornSettings = Field(default=UvicornSettings())
 
-    class Config:
-        validate_default = True
+    model_config = SettingsConfigDict(validate_default=True)
 
 
 settings = Settings()
