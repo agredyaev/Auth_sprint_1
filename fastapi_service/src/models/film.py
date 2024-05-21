@@ -14,7 +14,7 @@ class FilmGenre(IdMixin, NameMixin):
 class FilmShort(ORJSONMixin, IdMixin):
     """Defines film short model"""
 
-    imdb_rating: float | None
+    imdb_rating: float | None = Field(None)
     title: str
     description: str | None = Field("")
 
