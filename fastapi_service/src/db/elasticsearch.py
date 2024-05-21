@@ -11,9 +11,18 @@ es: AsyncElasticsearch | None = None
 
 async def es_open():
     global es
-    es = AsyncElasticsearch(
-        hosts=[settings.eks.dsn],
-    )
+    if es is None:
+        es = AsyncElasticsearch(
+            hosts=[settings.eks.dsn.unicode_string()],
+        )
+        logger.info("Elasticsearch client has been initialized.")
+
+
+async def es_close():
+    global es
+    if es is not None:
+        await es.close()
+        logger.info("Elasticsearch client has been closed.")
 
 
 async def get_elastic() -> AsyncElasticsearch:
