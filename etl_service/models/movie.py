@@ -12,13 +12,18 @@ class Person(IdMixin, NameMixin):
     """Defines person model"""
 
 
+class Genre(IdMixin, NameMixin):
+    """Defines genre model"""
+
+
 class Filmwork(IdMixin):
     """Defines filmwork model"""
 
     rating: Union[str, float, None] = Field(default=None, serialization_alias="imdb_rating")
     title: str
     description: Optional[str] = None
-    genres: Optional[list[str]] = Field(default_factory=list, serialization_alias="genres")
+    genres_names: Optional[list[str]] = Field(default_factory=list, serialization_alias="genres_names")
+    genres: list[Genre] = Field(default_factory=list, serialization_alias="genres")
     directors_names: Optional[list[str]] = Field(default_factory=list, serialization_alias="directors_names")
     directors: list[Person] = Field(default_factory=list, serialization_alias="directors")
     actors_names: Optional[list[str]] = Field(default_factory=list, serialization_alias="actors_names")
