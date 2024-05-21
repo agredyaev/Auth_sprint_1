@@ -1,6 +1,9 @@
-from fastapi_service.src.api.v1.models_response.film import DefaultFilmResponse, DetailedFilmResponse
+from fastapi_service.src.api.v1.models_response.film import (
+    DefaultFilmPersonResponse,
+    DefaultFilmResponse,
+    DetailedFilmResponse,
+)
 from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse
-from fastapi_service.src.api.v1.models_response.person import DefaultPersonResponse
 from fastapi_service.src.api.v1.transformers.base_transformer import BaseTransformer
 from fastapi_service.src.models.film import Film, FilmGenre, FilmPerson
 
@@ -40,5 +43,5 @@ class DetailedFilmTransformer(BaseTransformer):
         return DefaultGenreResponse(uuid=genre.id, name=genre.name)
 
     @staticmethod
-    def _transform_person(person: FilmPerson) -> DefaultPersonResponse:
-        return DefaultPersonResponse(uuid=person.id, full_name=person.full_name)
+    def _transform_person(person: FilmPerson) -> DefaultFilmPersonResponse:
+        return DefaultFilmPersonResponse(uuid=person.id, name=person.name)

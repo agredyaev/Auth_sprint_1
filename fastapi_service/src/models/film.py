@@ -11,12 +11,16 @@ class FilmGenre(IdMixin, NameMixin):
     """Defines film genre model"""
 
 
-class Film(ORJSONMixin, IdMixin):
-    """Defines film model"""
+class FilmShort(ORJSONMixin, IdMixin):
+    """Defines film short model"""
 
-    imdb_rating: float | None = Field(None)
+    imdb_rating: float | None
     title: str
     description: str | None = Field("")
+
+
+class Film(FilmShort):
+    """Defines film model"""
 
     genres: list[FilmGenre]
     genres_names: list[str]
