@@ -38,7 +38,7 @@ class GenreService:
         :return: A list of Genre objects.
         """
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.genre_index, page_number=page_number, page_size=page_size, sort=sort
+            index=settings.eks.genres_index, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:
@@ -80,7 +80,7 @@ class GenreService:
         )
 
         data = await self.elasticsearch_service.search_models(
-            index=settings.es.genre_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
+            index=settings.es.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:
@@ -96,10 +96,9 @@ class GenreService:
         :param genre_id: The ID of the genre to retrieve.
         :return: A Genre object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(index=settings.es.genre_index, model_id=genre_id)
+        data = await self.elasticsearch_service.get_model_by_id(index=settings.eks.genres_index, model_id=genre_id)
         if not data:
             return None
-
         return Genre(**data)
 
 

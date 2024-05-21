@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
 from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
-from fastapi_service.src.api.v1.transformers.genre_transformer import DefaultGenreTransformer
+from fastapi_service.src.api.v1.transformers.genre_transformer import DefaultGenreTransformer, DetailedGenreTransformer
 from fastapi_service.src.services.exceptions import BadRequestError
 from fastapi_service.src.services.genre import GenreService, get_genre_service
 
@@ -59,5 +59,5 @@ async def get_genre_info(genre_id: str, genre_service: GenreService = get_genre_
     if genre is None:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Genre not found")
 
-    transformer = DetailedGenreResponse()
+    transformer = DetailedGenreTransformer()
     return transformer.to_response(genre)
