@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi_service.src.api.v1.models_response.film import DefaultFilmResponse, DetailedFilmResponse
 from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
 from fastapi_service.src.api.v1.transformers.film_transromer import DefaultFilmTransformer, DetailedFilmTransformer
-from fastapi_service.src.services.exceptions import BadRequestError
+from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.services.film import FilmService, get_film_service
 
 router = APIRouter(prefix="/films", tags=["films"])
@@ -68,12 +68,6 @@ async def search_films(
 ) -> list[DefaultFilmResponse]:
     """
     Perform a full-text search for films based on query, sorting, and pagination parameters.
-
-    :param query: The search query string.
-    :param sort: List of sorting options (default: IMDB_RATING_DESC).
-    :param pagination: Pagination parameters including page number and page size.
-    :param film_service: Dependency injection of FilmService.
-    :return: List of DefaultFilmResponse objects.
     """
     try:
         films = await film_service.search_films(
@@ -95,10 +89,6 @@ async def search_films(
 async def get_film(film_id: str, film_service: FilmService = get_film_service_dep) -> DetailedFilmResponse:
     """
     Retrieve detailed information about a specific film by its ID.
-
-    :param film_id: The unique identifier of the film.
-    :param film_service: Dependency injection of FilmService.
-    :return: DetailedFilmResponse object containing detailed information about the film.
     """
     try:
         film = await film_service.get_film_by_id(film_id)

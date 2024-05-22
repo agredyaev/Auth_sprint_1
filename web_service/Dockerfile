@@ -21,7 +21,7 @@ ARG USERNAME=web
 
 RUN mkdir -p /opt/app/static/admin && \
     ./setup_user.sh "${GID}" "${UID}" "${USERNAME}" && \
-    chmod +x entrypoint.sh gunicorn.conf.py
+    chmod +x entrypoint.sh gunicorn_conf.py
 
 # Switch to non-root user
 USER "${USERNAME}"
@@ -30,4 +30,4 @@ USER "${USERNAME}"
 ENTRYPOINT ["./entrypoint.sh"]
 
 # Use Gunicorn to serve the web_service
-CMD ["gunicorn", "-c", "./gunicorn.conf.py"]
+CMD ["gunicorn", "-c", "./gunicorn_conf.py"]

@@ -24,4 +24,4 @@ RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}"
 USER "${USERNAME}"
 
 # Use entrypoint.sh to perform run tasks
-CMD ["gunicorn", "-c", "./fastapi_service/gunicorn.conf.py", "fastapi_service.src.main:app"]
+CMD ["gunicorn", "-c", "./fastapi_service/gunicorn_conf.py", "fastapi_service.src.main:app"]
