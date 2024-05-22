@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi_service.src.api.v1.models_response.genre import DefaultGenreResponse, DetailedGenreResponse
 from fastapi_service.src.api.v1.parameters.pagination import PaginationParameters, fetch_pagination_parameters
 from fastapi_service.src.api.v1.transformers.genre_transformer import DefaultGenreTransformer, DetailedGenreTransformer
-from fastapi_service.src.services.exceptions import BadRequestError
+from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.services.genre import GenreService, get_genre_service
 
 router = APIRouter(prefix="/genres", tags=["genres"])
@@ -23,10 +23,6 @@ async def get_genres(
 ) -> list[DefaultGenreResponse]:
     """
     Retrieve a list of genres based on pagination parameters.
-
-    :param pagination: Pagination parameters including page number and page size.
-    :param genre_service: Dependency injection of GenreService.
-    :return: List of DefaultGenreResponse objects.
     """
     try:
         genres = await genre_service.fetch_genres(page_number=pagination.page, page_size=pagination.size)
@@ -46,10 +42,6 @@ async def get_genres(
 async def get_genre_info(genre_id: str, genre_service: GenreService = get_genre_service_dep) -> DetailedGenreResponse:
     """
     Retrieve detailed information about a specific genre by its ID.
-
-    :param genre_id: The unique identifier of the genre.
-    :param genre_service: Dependency injection of GenreService.
-    :return: DetailedGenreResponse object containing detailed information about the genre.
     """
     try:
         genre = await genre_service.get_genre_by_id(genre_id)

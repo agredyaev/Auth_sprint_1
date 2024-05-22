@@ -1,12 +1,10 @@
-from functools import lru_cache
-from typing import Annotated, Optional
-
-from fastapi import Depends
+from typing import Optional
 
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.models.film import FilmShort
 from fastapi_service.src.models.person import Person
-from fastapi_service.src.services.elasticsearch import ElasticsearchService
+from fastapi_service.src.services.elasticsearch.model_service import ModelService
+from fastapi_service.src.services.elasticsearch.search_service import SearchService
 
 
 class PersonService:
@@ -14,23 +12,16 @@ class PersonService:
     Contains business logic for working with persons.
     """
 
-    def __init__(self, elasticsearch_service: ElasticsearchService):
-        """
-        Initialize the service with an Elasticsearch service instance.
-
-        :param elasticsearch_service: An instance of ElasticsearchService.
-        """
-        self.elasticsearch_service = elasticsearch_service
+    def __init__(self, model_service: ModelService, search_service: SearchService):
+        self.model_service = model_service
+        self.search_service = search_service
 
     async def get_person_by_id(self, person_id: str) -> Optional[Person]:
         """
         Retrieve a person by their ID (UUID).
         May return None if the person is not found.
-
-        :param person_id: The ID of the person to retrieve.
-        :return: A Person object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(index=settings.eks.persons_index, model_id=person_id)
+        data = await self.model_service.get_model_by_id(index=settings.eks.persons_index, model_id=person_id)
         if not data:
             return None
 
@@ -46,12 +37,6 @@ class PersonService:
     ) -> list[FilmShort]:
         """
         Retrieve a list of films associated with a person.
-
-        :param person_id: The ID of the person.
-        :param page_size: Number of films per page.
-        :param page_number: The page number to retrieve.
-        :param sort: Sorting criteria for the films.
-        :return: A list of FilmPerson objects.
         """
         query_match = {
             "bool": {
@@ -62,14 +47,14 @@ class PersonService:
                         "query": {"match_all": {}},
                         "inner_hits": {
                             "size": page_size,
-                            "from": self.elasticsearch_service.calculate_offset(page_number, page_size),
+                            "from": self.search_service.calculate_offset(page_number, page_size),
                         },
                     }
                 },
             }
         }
 
-        data = await self.elasticsearch_service.search_models(
+        data = await self.search_service.search_models(
             index=settings.eks.persons_index,
             query_match=query_match,
             page_number=page_number,
@@ -97,13 +82,8 @@ class PersonService:
         """
         Retrieve a list of persons based on the given parameters.
         May return an empty list if no persons are found.
-
-        :param page_size: Number of persons per page.
-        :param page_number: The page number to retrieve.
-        :param sort: Sorting criteria for the persons.
-        :return: A list of Person objects.
         """
-        data = await self.elasticsearch_service.search_models(
+        data = await self.search_service.search_models(
             index=settings.es.persons_index, page_number=page_number, page_size=page_size, sort=sort
         )
 
@@ -123,12 +103,6 @@ class PersonService:
         """
         Retrieve a list of persons based on a search query.
         May return an empty list if no persons match the query.
-
-        :param page_size: Number of persons per page.
-        :param page_number: The page number to retrieve.
-        :param query: The search query string.
-        :param sort: Sorting criteria for the persons.
-        :return: A list of Person objects.
         """
         query_match = (
             {
@@ -142,7 +116,7 @@ class PersonService:
             else None
         )
 
-        data = await self.elasticsearch_service.search_models(
+        data = await self.search_service.search_models(
             index=settings.eks.persons_index,
             query_match=query_match,
             page_number=page_number,
@@ -154,16 +128,3 @@ class PersonService:
             return []
 
         return [Person(**row["_source"]) for row in data]
-
-
-@lru_cache()
-def get_person_service(
-    elasticsearch_service: Annotated[ElasticsearchService, Depends()],
-) -> PersonService:
-    """
-    Provider for PersonService.
-
-    :param elasticsearch_service: An instance of ElasticsearchService.
-    :return: An instance of PersonService.
-    """
-    return PersonService(elasticsearch_service)

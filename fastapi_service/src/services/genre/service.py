@@ -1,11 +1,9 @@
-from functools import lru_cache
-from typing import Annotated, Optional
-
-from fastapi import Depends
+from typing import Optional
 
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.models.genre import Genre
-from fastapi_service.src.services.elasticsearch import ElasticsearchService
+from fastapi_service.src.services.elasticsearch.model_service import ModelService
+from fastapi_service.src.services.elasticsearch.search_service import SearchService
 
 
 class GenreService:
@@ -13,13 +11,9 @@ class GenreService:
     Contains business logic for working with genres.
     """
 
-    def __init__(self, elasticsearch_service: ElasticsearchService):
-        """
-        Initialize the service with an Elasticsearch service instance.
-
-        :param elasticsearch_service: An instance of ElasticsearchService.
-        """
-        self.elasticsearch_service = elasticsearch_service
+    def __init__(self, model_service: ModelService, search_service: SearchService):
+        self.model_service = model_service
+        self.search_service = search_service
 
     async def fetch_genres(
         self,
@@ -37,7 +31,7 @@ class GenreService:
         :param sort: Sorting criteria for the genres.
         :return: A list of Genre objects.
         """
-        data = await self.elasticsearch_service.search_models(
+        data = await self.search_service.search_models(
             index=settings.eks.genres_index, page_number=page_number, page_size=page_size, sort=sort
         )
 
@@ -79,7 +73,7 @@ class GenreService:
             else None
         )
 
-        data = await self.elasticsearch_service.search_models(
+        data = await self.search_service.search_models(
             index=settings.es.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
         )
 
@@ -92,24 +86,8 @@ class GenreService:
         """
         Retrieve a genre by its ID (UUID).
         Returns None if the genre is not found.
-
-        :param genre_id: The ID of the genre to retrieve.
-        :return: A Genre object if found, otherwise None.
         """
-        data = await self.elasticsearch_service.get_model_by_id(index=settings.eks.genres_index, model_id=genre_id)
+        data = await self.model_service.get_model_by_id(index=settings.eks.genres_index, model_id=genre_id)
         if not data:
             return None
         return Genre(**data)
-
-
-@lru_cache()
-def get_genre_service(
-    elasticsearch_service: Annotated[ElasticsearchService, Depends()],
-) -> GenreService:
-    """
-    Provider for GenreService.
-
-    :param elasticsearch_service: An instance of ElasticsearchService.
-    :return: An instance of GenreService.
-    """
-    return GenreService(elasticsearch_service)

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
 from fastapi_service.src.api import router as api_router
-from fastapi_service.src.core import config, logger, utils
+from fastapi_service.src.core import config, exceptions, logger, utils
 
 log_config = logger.get_log_config()
 
@@ -18,6 +18,8 @@ app = FastAPI(
 )
 
 app.include_router(api_router, prefix=config.settings.api.prefix)
+
+exceptions.register_exception_handlers(app=app)
 
 if __name__ == "__main__":
     uvicorn.run(

@@ -13,7 +13,7 @@ from fastapi_service.src.api.v1.transformers.person_transformer import (
     DefaultPersonTransformer,
     DetailedPersonTransformer,
 )
-from fastapi_service.src.services.exceptions import BadRequestError
+from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.services.person import PersonService, get_person_service
 
 router = APIRouter(prefix="/persons", tags=["persons"])
@@ -36,11 +36,6 @@ async def search_person_by_query(
 ) -> list[DefaultPersonResponse]:
     """
     Perform a full-text search for persons based on query and pagination parameters.
-
-    :param query: The search query string.
-    :param pagination: Pagination parameters including page number and page size.
-    :param person_service: Dependency injection of PersonService.
-    :return: List of DefaultPersonResponse objects.
     """
     try:
         persons = await person_service.search_persons(
@@ -64,10 +59,6 @@ async def get_person_info(
 ) -> DetailedPersonResponse:
     """
     Retrieve detailed information about a specific person by their ID.
-
-    :param person_id: The unique identifier of the person.
-    :param person_service: Dependency injection of PersonService.
-    :return: DetailedPersonResponse object containing detailed information about the person.
     """
     try:
         person = await person_service.get_person_by_id(person_id)
@@ -94,11 +85,6 @@ async def get_films_for_person(
 ) -> list[DefaultFilmPersonResponse]:
     """
     Retrieve a list of films that a person participated in based on their ID.
-
-    :param person_id: The unique identifier of the person.
-    :param pagination: Pagination parameters including page number and page size.
-    :param person_service: Dependency injection of PersonService.
-    :return: List of DefaultFilmPersonResponse objects.
     """
     try:
         persons_with_films = await person_service.get_films_by_person_id(
