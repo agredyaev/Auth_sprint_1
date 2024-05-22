@@ -1,0 +1,61 @@
+services:
+  db:
+    ports:
+      - "5432:5432"
+
+  elasticsearch:
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+
+  redis:
+    ports:
+      - "6379:6379"
+
+  app_server:
+    container_name: app_server
+    image: app_server
+    restart: no
+    expose:
+      - "9090"
+    build:
+      context: .
+      dockerfile: ./fastapi_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      etl:
+        condition: service_started
+    healthcheck:
+      test: [ "CMD-SHELL", "exit 0" ]
+
+  fakedata:
+    container_name: fakedata
+    image: fakedata
+    build:
+      context: .
+      dockerfile: db/postgres/populate_db/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      venv_builder:
+        condition: service_completed_successfully
+
+  elasticsearch-index-creator:
+    depends_on:
+      python_base:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+      fakedata:
+        condition: service_completed_successfully

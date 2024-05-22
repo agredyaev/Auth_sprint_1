@@ -1,9 +1,37 @@
-# Проектная работа 5 спринта
+# Project Overview
+---
+![Python](https://img.shields.io/badge/Python-3.12-blue)
+![Django](https://img.shields.io/badge/Django-3.2-blue)
+![Redis](https://img.shields.io/badge/Redis-5.0.4-red)
+![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.12-yellow)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109.1-green)
+![Docker](https://img.shields.io/badge/Docker-20.10-blue)
+[![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 
-В папке **tasks** ваша команда найдёт задачи, которые необходимо выполнить во втором спринте модуля "Сервис Async API".
+Key Components:
+* **Fake data generator**: Generates fake data for the application and loads it into the database.
+* **Extractor**: Connects to PostgreSQL to retrieve data based on specified criteria.
+* **Transformer**: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
+* **Loader**: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
+* **API**: Provides a RESTful API for the application, allowing for data retrieval, filtering, and aggregation.
 
-Как и в прошлом спринте, мы оценили задачи в стори поинтах.
+## Sprint Update
+---
+In this sprint, we enhanced the ETL process to handle additional models, prepared a process to populate the database with test data for further development of tests for the FastAPI service, and added the FastAPI service.
 
-Вы можете разбить эти задачи на более маленькие, например, распределять между участниками команды не большие куски задания, а маленькие подзадачи. В таком случае не забудьте зафиксировать изменения в issues в репозитории.
+## Getting Started
+---
+Instructions to set up the project locally.
 
-**От каждого разработчика ожидается выполнение минимум 40% от общего числа стори поинтов в спринте.**
+```bash
+# Clone the repository 
+https://github.com/agredyaev/Async_API_sprint_1.git
+ 
+# Navigate to the project directory 
+cd Async_API_sprint_1 
+
+# Create .env file
+cp .env.example .env
+
+# Deploy with Docker Compose
+make compose-up

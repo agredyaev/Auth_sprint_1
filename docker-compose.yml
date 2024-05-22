@@ -1,0 +1,160 @@
+x-restart-policy: &default-restart-policy
+  restart: always
+
+x-healthcheck: &default-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 2
+  start_period: 40s
+
+services:
+  python_base:
+    build:
+      context: .
+      dockerfile: ./docker/python-base.Dockerfile
+    image: python-base:0.1.0
+  venv_builder:
+    build:
+      context: .
+      dockerfile: ./docker/python-venv-builder.Dockerfile
+    image: python-venv-builder:0.1.0
+    depends_on:
+      python_base:
+        condition: service_completed_successfully
+  db:
+    container_name: db
+    image: postgres:13.14-alpine3.19
+    expose:
+      - "5432"
+    volumes:
+      - ./db/postgres/initdb:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data/
+    env_file:
+      - .env
+    <<: *default-restart-policy
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}' || exit 1"]
+      <<: *default-healthcheck
+
+  app_server:
+    container_name: web_service
+    image: web_service
+    build:
+      context: .
+      dockerfile: ./web_service/Dockerfile
+    expose:
+      - "9090"
+    volumes:
+      - static-volume:/opt/app/static
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      venv_builder:
+        condition: service_completed_successfully
+    <<: *default-restart-policy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
+      <<: *default-healthcheck
+
+  nginx:
+    container_name: nginx
+    image: nginx:mainline-alpine3.18-perl
+    ports:
+      - "8000:80"
+    volumes:
+      - static-volume:/data/static:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/configs:/etc/nginx/conf.d
+    depends_on:
+      app_server:
+        condition: service_started
+    <<: *default-restart-policy
+
+
+  elasticsearch:
+    container_name: elasticsearch
+    image: elasticsearch:8.6.2
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    env_file:
+      - .env
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    <<: *default-restart-policy
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://elasticsearch:9200 || exit 1"]
+      <<: *default-healthcheck
+    expose:
+      - "9200"
+      - "9300"
+
+  elasticsearch-index-creator:
+    container_name: elastic_index_creator
+    image: elastic_index_creator
+    build:
+      context: .
+      dockerfile: docker/elastic-index-creator.Dockerfile
+    depends_on:
+      python_base:
+        condition: service_completed_successfully
+      elasticsearch:
+        condition: service_healthy
+
+  redis:
+    container_name: redis
+    image: redis
+    build:
+      context: .
+      dockerfile: db/redis/Dockerfile
+    volumes:
+      - redis-cache:/data
+    env_file:
+      - .env
+    <<: *default-restart-policy
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -h redis ping | grep -q PONG"]
+      <<: *default-healthcheck
+    expose:
+      - ${REDIS_PORT}
+
+  etl:
+    container_name: etl_service
+    image: etl_service
+    restart: no
+    build:
+      context: .
+      dockerfile: ./etl_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+      elasticsearch-index-creator:
+        condition: service_completed_successfully
+
+volumes:
+  postgres-data:
+  static-volume:
+  elasticsearch-data:
+  redis-cache:
