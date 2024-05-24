@@ -39,4 +39,4 @@ class ElasticsearchClient:
         self, index: str, query: dict[str, Any], sort: list[str], size: int, from_: int
     ) -> list[dict[str, Any]]:
         response = await self._elastic.search(index=index, query=query, sort=sort, size=size, from_=from_)
-        return [hit["_source"] for hit in response["hits"]["hits"]]
+        return [hit["_source"] for hit in response["hits"]["hits"] if "_source" in hit]
