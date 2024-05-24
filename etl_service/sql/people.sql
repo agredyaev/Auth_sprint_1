@@ -2,6 +2,7 @@ WITH film_work_roles as (
     SELECT
         fw.id,
         fw.title,
+        fw.rating,
         array_agg(pfw.role) as roles,
         pfw.person_id
         FROM content.film_work fw
@@ -17,7 +18,8 @@ SELECT
             DISTINCT jsonb_build_object(
                 'id', fwr.id,
                 'title', fwr.title,
-                'roles', fwr.roles
+                'roles', fwr.roles,
+                'rating', fwr.rating
             )
         ), '[]'
     ) as movies
