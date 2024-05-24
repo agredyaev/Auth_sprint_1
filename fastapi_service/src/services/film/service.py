@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any
 
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.models.film import Film
@@ -37,7 +37,7 @@ class FilmService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[Film]:
         """
         Retrieve a list of films based on a search query.
@@ -66,7 +66,7 @@ class FilmService:
         )
 
     async def _search_films(
-        self, *, page_size: int, page_number: int, sort: Optional[list[str]], query_match: Optional[dict[str, Any]]
+        self, *, page_size: int, page_number: int, sort: list[str] | None, query_match: dict[str, Any] | None
     ) -> list[Film]:
         """
         Helper method to perform search queries on the Elasticsearch index.
@@ -83,9 +83,9 @@ class FilmService:
         if not data:
             return []
 
-        return [Film(**row["_source"]) for row in data]
+        return [Film(**row) for row in data]
 
-    async def get_film_by_id(self, film_id: str) -> Optional[Film]:
+    async def get_film_by_id(self, film_id: str) -> Film | None:
         """
         Retrieve a film by its ID (UUID).
         May return None if the film is not found.

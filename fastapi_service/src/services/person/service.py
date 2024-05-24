@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.models.film import FilmShort
 from fastapi_service.src.models.person import Person
@@ -16,7 +14,7 @@ class PersonService:
         self.model_service = model_service
         self.search_service = search_service
 
-    async def get_person_by_id(self, person_id: str) -> Optional[Person]:
+    async def get_person_by_id(self, person_id: str) -> Person | None:
         """
         Retrieve a person by their ID (UUID).
         May return None if the person is not found.
@@ -33,7 +31,7 @@ class PersonService:
         person_id: str,
         page_size: int,
         page_number: int,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[FilmShort]:
         """
         Retrieve a list of films associated with a person.
@@ -65,19 +63,19 @@ class PersonService:
         if not data:
             return []
 
-        data_films = data[0]["inner_hits"]["films"]["hits"]["hits"]
+        data_films = data[0].get("films")
 
         if not data_films:
             return []
 
-        return [FilmShort(**row["_source"]) for row in data_films]
+        return [FilmShort(**row) for row in data_films]
 
     async def fetch_persons(
         self,
         *,
         page_size: int,
         page_number: int,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[Person]:
         """
         Retrieve a list of persons based on the given parameters.
@@ -90,7 +88,7 @@ class PersonService:
         if not data:
             return []
 
-        return [Person(**row["_source"]) for row in data]
+        return [Person(**row) for row in data]
 
     async def search_persons(
         self,
@@ -98,7 +96,7 @@ class PersonService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[Person]:
         """
         Retrieve a list of persons based on a search query.
@@ -127,4 +125,4 @@ class PersonService:
         if not data:
             return []
 
-        return [Person(**row["_source"]) for row in data]
+        return [Person(**row) for row in data]
