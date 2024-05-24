@@ -1,12 +1,10 @@
 # Builder stage for installing dependencies and Poetry
 FROM python-venv-builder:0.1.0 AS venv-builder
 
-WORKDIR /opt/app
-
-SHELL ["/bin/sh", "-eo", "pipefail", "-c"]
+WORKDIR "${BASE_PATH}"
 
 # https://python-poetry.org/docs/#installation
-RUN poetry install --only backend --no-root --no-dev
+RUN poetry install --only backend --no-root --only main
 
 # Final stage for the production image
 FROM python-base:0.1.0 AS production
@@ -19,7 +17,7 @@ COPY web_service ./
 
 ARG USERNAME=web
 
-RUN mkdir -p /opt/app/static/admin && \
+RUN mkdir -p "${BASE_PATH}"/static/admin && \
     ./setup_user.sh "${GID}" "${UID}" "${USERNAME}" && \
     chmod +x entrypoint.sh gunicorn_conf.py
 

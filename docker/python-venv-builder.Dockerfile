@@ -2,7 +2,7 @@
 FROM python-base:0.1.0 AS venv-builder
 
 # Set work directory
-WORKDIR /opt/app
+WORKDIR "${BASE_PATH}"
 
 # Copy pyproject and poetry.lock
 COPY poetry.lock ./
