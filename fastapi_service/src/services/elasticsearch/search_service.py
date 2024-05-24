@@ -2,8 +2,8 @@ from typing import Any
 
 from elasticsearch import NotFoundError
 
-from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.core.config import settings
+from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.core.logger import setup_logging
 from fastapi_service.src.services.elasticsearch.client import ElasticsearchClientProtocol
 from fastapi_service.src.services.redis.cache import QueryCacheDecorator
