@@ -19,7 +19,6 @@ class RedisSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="REDIS_")
 
 
-
 class DatabaseSettings(BaseSettings):
     db: SecretStr = Field(...)
     user: SecretStr = Field(...)

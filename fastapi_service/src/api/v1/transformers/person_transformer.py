@@ -17,7 +17,7 @@ class DefaultPersonTransformer(BaseTransformer):
     Transforms a Person object into a DefaultPersonResponse object
     """
 
-    def to_response(self, person: Person = None) -> DefaultPersonResponse:
+    def to_response(self, person: Person) -> DefaultPersonResponse:
         return DefaultPersonResponse(uuid=person.id, full_name=person.full_name)
 
 
@@ -26,7 +26,7 @@ class DetailedPersonTransformer(BaseTransformer):
     Transforms a Person object into a DetailedPersonResponse object
     """
 
-    def to_response(self, person: Person = None) -> DetailedPersonResponse:
+    def to_response(self, person: Person) -> DetailedPersonResponse:
         films = [DefaultPersonFilmResponse(uuid=film.id, title=film.title, roles=film.roles) for film in person.films]
         return DetailedPersonResponse(uuid=person.id, full_name=person.full_name, films=films)
 
@@ -36,5 +36,5 @@ class DefaultPersonFilmTransformer(BaseTransformer):
     Transforms a Person object into a DefaultPersonFilmResponse object
     """
 
-    def to_response(self, film: FilmShort = None) -> DefaultFilmPersonResponse:
+    def to_response(self, film: FilmShort) -> DefaultFilmPersonResponse:
         return DefaultFilmPersonResponse(uuid=film.id, title=film.title, imdb_rating=film.imdb_rating)

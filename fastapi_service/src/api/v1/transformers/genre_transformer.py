@@ -8,7 +8,7 @@ class DefaultGenreTransformer(BaseTransformer):
     Transforms a Genre object into a DefaultGenreResponse object
     """
 
-    def to_response(self, genre: Genre = None) -> DefaultGenreResponse:
+    def to_response(self, genre: Genre) -> DefaultGenreResponse:
         return DefaultGenreResponse(uuid=genre.id, name=genre.name)
 
 
@@ -17,5 +17,5 @@ class DetailedGenreTransformer(BaseTransformer):
     Transforms a Genre object into a DetailedGenreResponse object
     """
 
-    def to_response(self, genre: Genre = None) -> DetailedGenreResponse:
+    def to_response(self, genre: Genre) -> DetailedGenreResponse:
         return DetailedGenreResponse(uuid=genre.id, name=genre.name)

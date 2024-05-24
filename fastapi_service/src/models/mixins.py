@@ -1,8 +1,10 @@
+from typing import Any, Callable
+
 import orjson
 from pydantic import BaseModel
 
 
-def orjson_dumps(v, *, default):
+def orjson_dumps(v: Any, *, default: Callable[[Any], Any]) -> str:
     """
     orjson.dumps returns bytes, to match standard json.dumps we need to decode
     """

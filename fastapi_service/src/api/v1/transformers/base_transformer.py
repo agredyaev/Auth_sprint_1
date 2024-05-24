@@ -6,13 +6,13 @@ from pydantic import BaseModel
 
 class BaseTransformer(ABC):
     @abstractmethod
-    def to_response(self, model: BaseModel) -> Any:
+    def to_response(self, *args: Any, **kwargs: Any) -> Any:
         """
         This method takes in the data as input and performs some processing on it.
         """
         raise NotImplementedError
 
-    def to_response_list(self, model_list: list[BaseModel]) -> list[Any]:
+    def to_response_list(self, model_list: list[Any]) -> list[Any]:
         """
         This method takes in the data as input and performs some processing on it.
 

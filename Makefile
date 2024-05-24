@@ -15,7 +15,8 @@ fmt:
 	poetry run ruff format
 
 lint:
-	poetry run ruff check --fix
+	poetry run ruff check --fix .
+	poetry run mypy .
 
 # Help command
 help:

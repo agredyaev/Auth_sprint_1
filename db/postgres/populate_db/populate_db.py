@@ -182,6 +182,7 @@ class DatabasePopulator:
                     people[0]["count"] >= self.pople_count,
                 ]
             )
+
     async def populate(self):
         await self.disable_indexes()
         await asyncio.gather(
@@ -211,6 +212,7 @@ async def main():
     else:
         logger.info("DB is already populated")
     await processor.close()
+
 
 if __name__ == "__main__":
     asyncio.run(main())

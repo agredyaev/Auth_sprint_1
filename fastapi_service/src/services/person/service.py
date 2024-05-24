@@ -84,7 +84,7 @@ class PersonService:
         May return an empty list if no persons are found.
         """
         data = await self.search_service.search_models(
-            index=settings.es.persons_index, page_number=page_number, page_size=page_size, sort=sort
+            index=settings.eks.persons_index, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:

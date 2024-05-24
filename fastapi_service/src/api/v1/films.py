@@ -29,8 +29,8 @@ get_film_service_dep = Depends(get_film_service)
     status_code=status.HTTP_200_OK,
 )
 async def get_films(
-    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
-    genre: Annotated[list[str], Query()] = None,
+    sort: Annotated[list[SortOrder], Query()] = [SortOrder.IMDB_RATING_DESC],
+    genre: Annotated[list[str], Query()] | None = None,
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
 ) -> list[DefaultFilmResponse]:
@@ -62,7 +62,7 @@ async def get_films(
 )
 async def search_films(
     query: str,
-    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    sort: Annotated[list[SortOrder], Query()] = [SortOrder.IMDB_RATING_DESC],
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
 ) -> list[DefaultFilmResponse]:

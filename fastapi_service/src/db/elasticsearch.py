@@ -9,7 +9,10 @@ logger = setup_logging(logger_name=__name__)
 es: AsyncElasticsearch | None = None
 
 
-async def es_open():
+async def es_open() -> None:
+    """
+    Open Elasticsearch connection
+    """
     global es
     if es is None:
         es = AsyncElasticsearch(
@@ -18,7 +21,10 @@ async def es_open():
         logger.info("Elasticsearch client has been initialized.")
 
 
-async def es_close():
+async def es_close() -> None:
+    """
+    Close Elasticsearch connection
+    """
     global es
     if es is not None:
         await es.close()

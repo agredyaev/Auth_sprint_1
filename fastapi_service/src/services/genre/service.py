@@ -74,7 +74,7 @@ class GenreService:
         )
 
         data = await self.search_service.search_models(
-            index=settings.es.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
+            index=settings.eks.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:

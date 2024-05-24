@@ -1,4 +1,5 @@
 import os
+from typing import Any
 
 from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, Field, RedisDsn, SecretStr
@@ -27,6 +28,10 @@ class ElasticSearchSettings(BaseSettings):
     films_index: str = Field(default="movies")
     genres_index: str = Field(default="genres")
     persons_index: str = Field(default="people")
+    page_size: int = Field(default=10)
+    page_number: int = Field(default=1)
+    query: dict[str, Any] = Field(default={})
+    sort: list[str] = Field(default=[])
 
     model_config = SettingsConfigDict(env_prefix="ELASTICSEARCH_")
 

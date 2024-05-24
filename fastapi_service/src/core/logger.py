@@ -1,6 +1,7 @@
 # src/core/logger.py
 import logging
 import logging.config
+from typing import Any
 
 from fastapi_service.src.core.config import settings
 
@@ -16,13 +17,13 @@ FORMATS = {
 
 
 class CustomFormatter(logging.Formatter):
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         log_fmt = FORMATS.get(record.levelno)
         formatter = logging.Formatter(log_fmt, style="{")
         return formatter.format(record)
 
 
-def get_log_config(log_file: str = None, log_level: str = settings.general.log_level) -> dict:
+def get_log_config(log_file: str | None = None, log_level: str = settings.general.log_level) -> dict[str, Any]:
     """
     Return a logging configuration dictionary.
     :param log_file: File to write logs to (optional)
@@ -63,7 +64,7 @@ def get_log_config(log_file: str = None, log_level: str = settings.general.log_l
 
 
 def setup_logging(
-    logger_name: str = "logger", log_file: str = None, log_level: str = settings.general.log_level
+    logger_name: str = "logger", log_file: str | None = None, log_level: str = settings.general.log_level
 ) -> logging.Logger:
     """
     Setup logging configuration for the application and return a logger instance.
