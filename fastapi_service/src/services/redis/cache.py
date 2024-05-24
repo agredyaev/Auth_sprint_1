@@ -1,5 +1,5 @@
 import hashlib
-from typing import Any, Callable, Awaitable
+from typing import Any, Awaitable, Callable
 
 import orjson
 
