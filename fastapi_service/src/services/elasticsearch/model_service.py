@@ -28,13 +28,13 @@ class ModelService:
             return document["_source"]
 
         except NotFoundError:
-            logger.info(msg="Model with ID {model_id} not found in index {index}.")
+            logger.info(msg=f"Model with ID {model_id} not found in index {index}.")
             return None
 
         except BadRequestError:
-            logger.exception(msg="Failed to fetch model with ID {model_id} from index {index}.")
+            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}.")
             return None
 
-        except Exception:
-            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}.")
+        except Exception as e:
+            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}. {e.__traceback__}")
             return None
