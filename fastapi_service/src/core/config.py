@@ -48,7 +48,7 @@ class GeneralSettings(BaseSettings):
     log_level: str = Field(default="DEBUG")
     package_name: str = Field(...)
     docs_url: str = Field(default="/api/openapi")
-    openapi_url: str = Field(default="/api//openapi.json")
+    openapi_url: str = Field(default="/api/openapi.json")
     version: str = Field(default="0.1.0")
     project_name: str = Field(default="FastAPI Movies")
 
