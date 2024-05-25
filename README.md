@@ -14,10 +14,13 @@ Key Components:
 * **Transformer**: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
 * **Loader**: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
 * **API**: Provides a RESTful API for the application, allowing for data retrieval, filtering, and aggregation.
+* **Tests**: Functional and performance tests to ensure the API is working as expected.
 
 ## Sprint Update
 ---
-In this sprint, we enhanced the ETL process to handle additional models, prepared a process to populate the database with test data for further development of tests for the FastAPI service, and added the FastAPI service.
+In this sprint, we are working on 
+    * Refactoring the API implementation regarding SOLID principles.
+    * Adding functional tests to ensure the API is working as expected.
 
 ## Getting Started
 ---
@@ -25,10 +28,10 @@ Instructions to set up the project locally.
 
 ```bash
 # Clone the repository 
-https://github.com/agredyaev/Async_API_sprint_1.git
+https://github.com/agredyaev/Async_API_sprint_2.git
  
 # Navigate to the project directory 
-cd Async_API_sprint_1 
+cd Async_API_sprint_2
 
 # Create .env file
 cp .env.example .env
