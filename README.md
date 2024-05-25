@@ -27,14 +27,18 @@ In this sprint, we are working on
 Instructions to set up the project locally.
 
 ```bash
+# Install Poetry if it's not already installed
+# https://python-poetry.org/docs/#installation
+curl -sSL https://install.python-poetry.org | python3 -
+
 # Clone the repository 
 https://github.com/agredyaev/Async_API_sprint_2.git
  
-# Navigate to the project directory 
+# Navigate to the project directory
 cd Async_API_sprint_2
 
 # Create .env file
 cp .env.example .env
 
-# Deploy with Docker Compose
+# Deploy API service and run tests with Docker Compose
 make compose-up
