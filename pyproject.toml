@@ -95,6 +95,7 @@ select = [
 extend-ignore = ["B904", "S311", "S104"]
 
 [tool.mypy]
+mypy_path = ["tests"]
 plugins = [
   "pydantic.mypy"
 ]
