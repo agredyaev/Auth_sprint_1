@@ -19,7 +19,6 @@ class RedisSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="REDIS_")
 
 
-
 class DatabaseSettings(BaseSettings):
     db: SecretStr = Field(...)
     user: SecretStr = Field(...)
@@ -45,7 +44,7 @@ class GeneralSettings(BaseSettings):
     backoff_initial_delay: float = 0.1
     backoff_max_delay: float = 10.0
     backoff_factor: float = 2.0
-    etl_timeout: int = 30
+    etl_timeout: int = 60
     retry_attempts: int = 3
     delay_seconds: int = 1
     package_name: str = Field(...)

@@ -8,6 +8,7 @@ class PersonFilmwork(IdMixin):
 
     title: str
     roles: list[str]
+    rating: float | None = Field(default=None, serialization_alias="imdb_rating")
 
 
 class Person(IdMixin):

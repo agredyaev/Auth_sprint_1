@@ -2,16 +2,17 @@ from typing import Any
 
 from elasticsearch import NotFoundError
 
+from fastapi_service.src.core.config import settings
 from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.core.logger import setup_logging
-from fastapi_service.src.services.elasticsearch.client import ElasticsearchClientInterface
+from fastapi_service.src.services.elasticsearch.client import ElasticsearchClientProtocol
 from fastapi_service.src.services.redis.cache import QueryCacheDecorator
 
 logger = setup_logging(logger_name=__name__)
 
 
 class SearchService:
-    def __init__(self, client: ElasticsearchClientInterface):
+    def __init__(self, client: ElasticsearchClientProtocol):
         self.client = client
 
     @QueryCacheDecorator()
@@ -31,10 +32,10 @@ class SearchService:
     async def _perform_search(
         self,
         index: str,
-        query: dict[str, Any] | None = None,
-        page_number: int | None = None,
-        page_size: int | None = None,
-        sort: list[str] | None = None,
+        query: dict[str, Any] = settings.eks.query,
+        page_number: int = settings.eks.page_number,
+        page_size: int = settings.eks.page_size,
+        sort: list[str] = settings.eks.sort,
     ) -> list[dict[str, Any]] | None:
         try:
             documents = await self.client.search(
@@ -44,7 +45,7 @@ class SearchService:
                 size=page_size,
                 from_=self.calculate_offset(page_number, page_size),
             )
-            return documents["hits"]["hits"]
+            return documents
 
         except NotFoundError as e:
             logger.info(f"No documents found in index {index} {e}")

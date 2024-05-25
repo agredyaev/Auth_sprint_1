@@ -4,7 +4,7 @@ from elasticsearch import NotFoundError
 
 from fastapi_service.src.core.exceptions import BadRequestError
 from fastapi_service.src.core.logger import setup_logging
-from fastapi_service.src.services.elasticsearch.client import ElasticsearchClientInterface
+from fastapi_service.src.services.elasticsearch.client import ElasticsearchClientProtocol
 from fastapi_service.src.services.redis.cache import ModelCacheDecorator
 
 logger = setup_logging(logger_name=__name__)
@@ -15,7 +15,7 @@ class ModelService:
     Contains business logic for working with Elasticsearch models.
     """
 
-    def __init__(self, client: ElasticsearchClientInterface):
+    def __init__(self, client: ElasticsearchClientProtocol):
         self.client = client
 
     @ModelCacheDecorator(key="model_id")
@@ -28,13 +28,13 @@ class ModelService:
             return document["_source"]
 
         except NotFoundError:
-            logger.info(msg="Model with ID {model_id} not found in index {index}.")
+            logger.info(msg=f"Model with ID {model_id} not found in index {index}.")
             return None
 
         except BadRequestError:
-            logger.exception(msg="Failed to fetch model with ID {model_id} from index {index}.")
+            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}.")
             return None
 
-        except Exception:
-            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}.")
+        except Exception as e:
+            logger.exception(msg=f"Failed to fetch model with ID {model_id} from index {index}. {e.__traceback__}")
             return None

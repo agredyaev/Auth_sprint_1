@@ -13,7 +13,7 @@ class DefaultFilmTransformer(BaseTransformer):
     Transform a Film object into a DefaultFilmResponse object.
     """
 
-    def to_response(self, film: Film = None) -> DefaultFilmResponse:
+    def to_response(self, film: Film) -> DefaultFilmResponse:
         return DefaultFilmResponse(
             uuid=film.id,
             title=film.title,
@@ -26,7 +26,7 @@ class DetailedFilmTransformer(BaseTransformer):
     Transform a Film object into a DetailedFilmResponse object.
     """
 
-    def to_response(self, film: Film = None) -> DetailedFilmResponse:
+    def to_response(self, film: Film) -> DetailedFilmResponse:
         return DetailedFilmResponse(
             uuid=film.id,
             title=film.title,

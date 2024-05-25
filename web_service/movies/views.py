@@ -1,6 +1,6 @@
-from django.shortcuts import render
-from django.http import HttpResponse
 from django.core.handlers.wsgi import WSGIRequest
+from django.http import HttpResponse
+from django.shortcuts import render
 
 
 def health_check(request: WSGIRequest) -> HttpResponse:

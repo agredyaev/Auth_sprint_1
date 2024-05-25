@@ -14,8 +14,10 @@ clean:
 fmt:
 	poetry run ruff format
 
-lint:
-	poetry run ruff check --fix
+lint-mp:
+	poetry run mypy .
+lint-rf:
+	poetry run ruff check --fix .
 
 # Help command
 help:
@@ -24,7 +26,8 @@ help:
 	@echo "  compose-down     Stop the Docker Compose services"
 	@echo "  clean            Stop and remove all Docker Compose services, images, volumes, and caches"
 	@echo "  fmt              Format Python code using Ruff"
-	@echo "  lint             Lint Python code using Ruff"
+	@echo "  lint-mp              Lint Python code using Mypy"
+	@echo "  lint-rf             Lint Python code using Ruff"
 	@echo "  help             Show this help message"
 
-.PHONY: compose-up compose-down clean help fmt lint
+.PHONY: compose-up compose-down clean help fmt lint-rf lint-mp

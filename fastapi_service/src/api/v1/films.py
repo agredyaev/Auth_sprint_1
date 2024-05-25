@@ -29,23 +29,20 @@ get_film_service_dep = Depends(get_film_service)
     status_code=status.HTTP_200_OK,
 )
 async def get_films(
-    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
-    genre: Annotated[list[str], Query()] = None,
+    sort: list[SortOrder] = Query([SortOrder.IMDB_RATING_DESC]),
+    genre: str | None = Query(None),
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
 ) -> list[DefaultFilmResponse]:
     """
     Retrieve a list of films based on sorting, genre, and pagination parameters.
-
-    :param sort: List of sorting options (default: IMDB_RATING_DESC).
-    :param genre: List of genres to filter by (optional).
-    :param pagination: Pagination parameters including page number and page size.
-    :param film_service: Dependency injection of FilmService.
-    :return: List of DefaultFilmResponse objects.
     """
     try:
         films = await film_service.get_films(
-            sort=cast(list[str], sort), genre=genre, page_number=pagination.page, page_size=pagination.size
+            sort=[item.value for item in sort],
+            genre=genre,
+            page_number=pagination.page,
+            page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)
@@ -62,7 +59,7 @@ async def get_films(
 )
 async def search_films(
     query: str,
-    sort: Annotated[list[SortOrder], Query()] = SortOrder.IMDB_RATING_DESC,
+    sort: list[SortOrder] = Query([SortOrder.IMDB_RATING_DESC]),
     pagination: PaginationParameters = get_pagination_parameters,
     film_service: FilmService = get_film_service_dep,
 ) -> list[DefaultFilmResponse]:
@@ -71,7 +68,10 @@ async def search_films(
     """
     try:
         films = await film_service.search_films(
-            query=query, sort=cast(list[str], sort), page_number=pagination.page, page_size=pagination.size
+            query=query,
+            sort=[item.value for item in sort],
+            page_number=pagination.page,
+            page_size=pagination.size
         )
     except BadRequestError as e:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=e.message)

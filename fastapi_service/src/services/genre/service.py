@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi_service.src.core.config import settings
 from fastapi_service.src.models.genre import Genre
 from fastapi_service.src.services.elasticsearch.model_service import ModelService
@@ -20,16 +18,11 @@ class GenreService:
         *,
         page_size: int,
         page_number: int,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[Genre]:
         """
         Retrieve a list of genres based on the given parameters.
         May return an empty list if no genres are found.
-
-        :param page_size: Number of genres per page.
-        :param page_number: The page number to retrieve.
-        :param sort: Sorting criteria for the genres.
-        :return: A list of Genre objects.
         """
         data = await self.search_service.search_models(
             index=settings.eks.genres_index, page_number=page_number, page_size=page_size, sort=sort
@@ -38,7 +31,7 @@ class GenreService:
         if not data:
             return []
 
-        return [Genre(**row["_source"]) for row in data]
+        return [Genre(**row) for row in data]
 
     async def search_genres(
         self,
@@ -46,17 +39,11 @@ class GenreService:
         page_size: int,
         page_number: int,
         query: str,
-        sort: Optional[list[str]] = None,
+        sort: list[str] | None = None,
     ) -> list[Genre]:
         """
         Retrieve a list of genres based on a search query.
         May return an empty list if no genres match the query.
-
-        :param page_size: Number of genres per page.
-        :param page_number: The page number to retrieve.
-        :param query: The search query string.
-        :param sort: Sorting criteria for the genres.
-        :return: A list of Genre objects.
         """
         query_match = (
             {
@@ -74,15 +61,15 @@ class GenreService:
         )
 
         data = await self.search_service.search_models(
-            index=settings.es.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
+            index=settings.eks.genres_index, query=query_match, page_number=page_number, page_size=page_size, sort=sort
         )
 
         if not data:
             return []
 
-        return [Genre(**row["_source"]) for row in data]
+        return [Genre(**row) for row in data]
 
-    async def get_genre_by_id(self, genre_id: str) -> Optional[Genre]:
+    async def get_genre_by_id(self, genre_id: str) -> Genre | None:
         """
         Retrieve a genre by its ID (UUID).
         Returns None if the genre is not found.

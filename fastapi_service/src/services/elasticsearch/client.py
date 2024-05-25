@@ -1,18 +1,18 @@
-from typing import Any
+from typing import Any, Protocol
 
 from elasticsearch import AsyncElasticsearch
 
 
-class ElasticsearchClientInterface:
+class ElasticsearchClientProtocol(Protocol):
     """
-    Interface for Elasticsearch client.
+    Protocol for Elasticsearch client.
     """
 
     async def get(self, index: str, id_: str) -> dict[str, Any]:
         """
         Get document by ID from the Elasticsearch index.
         """
-        raise NotImplementedError
+        ...
 
     async def search(
         self, index: str, query: dict[str, Any], sort: list[str], size: int, from_: int
@@ -20,10 +20,10 @@ class ElasticsearchClientInterface:
         """
         Search documents in the Elasticsearch index.
         """
-        raise NotImplementedError
+        ...
 
 
-class ElasticsearchClient(ElasticsearchClientInterface):
+class ElasticsearchClient:
     """
     Elasticsearch client implementation.
     """
@@ -32,9 +32,11 @@ class ElasticsearchClient(ElasticsearchClientInterface):
         self._elastic = elastic
 
     async def get(self, index: str, id_: str) -> dict[str, Any]:
-        return await self._elastic.get(index=index, id=id_)
+        response = await self._elastic.get(index=index, id=id_)
+        return response.body
 
     async def search(
         self, index: str, query: dict[str, Any], sort: list[str], size: int, from_: int
     ) -> list[dict[str, Any]]:
-        return await self._elastic.search(index=index, query=query, sort=sort, size=size, from_=from_)
+        response = await self._elastic.search(index=index, query=query, sort=sort, size=size, from_=from_)
+        return [hit["_source"] for hit in response["hits"]["hits"] if "_source" in hit]

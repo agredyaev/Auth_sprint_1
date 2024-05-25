@@ -1,7 +1,8 @@
-#!/bin/sh
+#!/bin/bash
 
 # Exit script in case of error
 set -e
+set -x
 
 # Apply database migrations
 echo "Applying database migrations..."

@@ -9,7 +9,10 @@ logger = setup_logging(logger_name=__name__)
 redis: Redis | None = None
 
 
-async def redis_open():
+async def redis_open() -> None:
+    """
+    Open Redis connection
+    """
     global redis
     redis = Redis(
         host=settings.redis.host,

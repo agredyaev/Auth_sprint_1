@@ -1,7 +1,7 @@
 # Builder stage for installing dependencies and Poetry
 FROM python-venv-builder:0.1.0 AS venv-builder
 
-WORKDIR /opt/app
+WORKDIR "${BASE_PATH}"
 
 # https://python-poetry.org/docs/#installation
 RUN poetry install --only fastapi --no-root --only main

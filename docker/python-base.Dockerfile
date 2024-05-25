@@ -18,10 +18,12 @@ ENV GID=1000 \
     POETRY_VERSION=1.8.1 \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
-    # venv
-    VENV_PATH="/opt/app/.venv"
+    # paths
+    BASE_PATH="/opt/app"
 
 # Ensure scripts in .venv are callable
+ENV PYTHONPATH="$BASE_PATH"
+ENV VENV_PATH="$BASE_PATH/.venv"
 ENV PATH="$POETRY_HOME/bin:$PATH"
 ENV PATH="$VENV_PATH/bin:$PATH"
 

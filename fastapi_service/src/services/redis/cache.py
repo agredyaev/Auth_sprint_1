@@ -1,5 +1,5 @@
 import hashlib
-from typing import Any
+from typing import Any, Awaitable, Callable
 
 import orjson
 
@@ -29,7 +29,7 @@ class BaseCacheService:
         return orjson.loads(data)
 
     @staticmethod
-    async def store_in_cache(key: str, data: str):
+    async def store_in_cache(key: str, data: str) -> None:
         """
         Store data in the cache with a key.
 
@@ -39,7 +39,9 @@ class BaseCacheService:
         adapter = await redis_client()
         await adapter.set(key, data, settings.redis.cache_expiration)
 
-    async def cached_result(self, cache_key: str, func, *args, **kwargs):
+    async def cached_result(
+        self, cache_key: str, func: Callable[..., Awaitable[Any]], *args: Any, **kwargs: Any
+    ) -> Any:
         result = await self.fetch_from_cache(cache_key)
         if not result:
             result = await func(*args, **kwargs)
@@ -55,8 +57,8 @@ class ModelCacheDecorator(BaseCacheService):
     def __init__(self, *, key: str = ""):
         self.key = key
 
-    def __call__(self, func):
-        async def wrapper(*args, **kwargs):
+    def __call__(self, func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             cache_key = kwargs.get(self.key)
             if not cache_key:
                 cache_key = "".join(tuple(kwargs.values()))
@@ -73,8 +75,8 @@ class ModelCacheDecorator(BaseCacheService):
 class QueryCacheDecorator(BaseCacheService):
     """Decorator that caches query results."""
 
-    def __call__(self, func):
-        async def wrapper(*args, **kwargs):
+    def __call__(self, func: Callable[..., Awaitable[Any]]) -> Callable[..., Awaitable[Any]]:
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
             hasher = hashlib.sha256()
             for arg in kwargs.values():
                 hasher.update(bytes(str(arg), "utf-8"))
