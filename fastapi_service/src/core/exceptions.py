@@ -1,7 +1,7 @@
 from typing import Any
 
 from elasticsearch import NotFoundError
-from fastapi import Request, FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from fastapi_service.src.core.logger import setup_logging
