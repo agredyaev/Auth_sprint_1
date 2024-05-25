@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
 ![Django](https://img.shields.io/badge/Django-3.2-blue)
 ![Redis](https://img.shields.io/badge/Redis-5.0.4-red)
+![Pytest](https://img.shields.io/badge/pytest-7.7.7-blue)
 ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-8.12-yellow)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.109.1-green)
 ![Docker](https://img.shields.io/badge/Docker-20.10-blue)
