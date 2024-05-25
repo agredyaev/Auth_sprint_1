@@ -16,7 +16,7 @@ class FilmService:
         self.search_service = search_service
 
     async def get_films(
-        self, *, page_size: int, page_number: int, sort: list[str] | None = None, genre: list[str] | None = None
+        self, *, page_size: int, page_number: int, sort: list[str] | None = None, genre: str | None = None
     ) -> list[Film]:
         """
         Retrieve a list of films based on the given parameters.
