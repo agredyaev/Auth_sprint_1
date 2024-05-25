@@ -106,8 +106,9 @@ class PersonService:
             {
                 "multi_match": {
                     "query": query,
-                    "fuzziness": "auto",
-                    "fields": ["full_name"],
+                    "fuzziness": "AUTO",
+                    "fields": ["full_name^3"],
+                    "operator": "and",
                 }
             }
             if query
