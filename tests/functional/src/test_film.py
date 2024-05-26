@@ -4,28 +4,37 @@ import pytest
 from faker import Faker
 
 from tests.functional.settings import config
-from tests.functional.testdata.film import STATIC_FILM_ID, STATIC_FILM_TITLE, STATIC_GENRE
+from tests.functional.testdata.film import STATIC_FILM_ID, STATIC_FILM_TITLE, STATIC_GENRE, film_data
 
 fake = Faker()
 
 
 @pytest.mark.parametrize(
-    "query_data, expected_answer",
+    "query_data, expected_answer, expected_data",
     [
         (
             {"query": STATIC_FILM_TITLE, "page_number": 1, "page_size": 50, "sort": "-imdb_rating"},
             {"status": HTTPStatus.OK, "length": 50},
+            film_data,
         ),
-        ({"query": STATIC_FILM_TITLE, "page_number": 1, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"query": STATIC_FILM_TITLE, "page_size": 50, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"query": STATIC_FILM_TITLE, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"query": STATIC_FILM_TITLE, "sort": "imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"query": "Unknown_Name", "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 0}),
+        (
+            {"query": STATIC_FILM_TITLE, "page_number": 1, "sort": "-imdb_rating"},
+            {"status": HTTPStatus.OK, "length": 50},
+            film_data,
+        ),
+        (
+            {"query": STATIC_FILM_TITLE, "page_size": 50, "sort": "-imdb_rating"},
+            {"status": HTTPStatus.OK, "length": 50},
+            film_data,
+        ),
+        ({"query": STATIC_FILM_TITLE, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"query": STATIC_FILM_TITLE, "sort": "imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"query": "Unknown_Name", "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 0}, []),
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("prepare_films_data")
-async def test_films_search(make_get_request, query_data, expected_answer):
+async def test_films_search(make_get_request, query_data, expected_answer, expected_data):
     """
     Check films search
     """
@@ -35,21 +44,34 @@ async def test_films_search(make_get_request, query_data, expected_answer):
     assert status == expected_answer["status"]
     assert len(body) == expected_answer["length"]
 
+    if expected_data:
+        for film_response in body:
+            film_id = film_response["uuid"]
+            expected_film_list = [film for film in expected_data if film["id"] == film_id]
+            assert len(expected_film_list) == 1, f"Film with ID {film_id} not found or multiple found in expected data."
+            expected_film = expected_film_list[0]
+            assert film_response["title"] == expected_film["title"]
+            assert film_response["imdb_rating"] == expected_film["imdb_rating"]
+
 
 @pytest.mark.parametrize(
-    "query_data, expected_answer",
+    "query_data, expected_answer, expected_data",
     [
-        ({"page_number": 1, "page_size": 50, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"page_size": 50, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"page_number": 1, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"sort": "imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}),
-        ({"sort": "-imdb_rating", "genre": "Unknown"}, {"status": HTTPStatus.OK, "length": 0}),
+        (
+            {"page_number": 1, "page_size": 50, "sort": "-imdb_rating"},
+            {"status": HTTPStatus.OK, "length": 50},
+            film_data,
+        ),
+        ({"page_size": 50, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"page_number": 1, "sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"sort": "-imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"sort": "imdb_rating"}, {"status": HTTPStatus.OK, "length": 50}, film_data),
+        ({"sort": "-imdb_rating", "genre": "Unknown"}, {"status": HTTPStatus.OK, "length": 0}, []),
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("prepare_films_data")
-async def test_films(make_get_request, query_data, expected_answer):
+async def test_films(make_get_request, query_data, expected_answer, expected_data):
     """
     Films list
     """
@@ -59,23 +81,45 @@ async def test_films(make_get_request, query_data, expected_answer):
     assert status == expected_answer["status"]
     assert len(body) == expected_answer["length"]
 
+    if expected_data:
+        for film_response in body:
+            film_id = film_response["uuid"]
+            expected_film_list = [film for film in expected_data if film["id"] == film_id]
+            assert len(expected_film_list) == 1, f"Film with ID {film_id} not found or multiple found in expected data."
+            expected_film = expected_film_list[0]
+            assert film_response["title"] == expected_film["title"]
+            assert film_response["imdb_rating"] == expected_film["imdb_rating"]
+
 
 @pytest.mark.parametrize(
-    "query_data, expected_answer",
+    "query_data, expected_answer, expected_data",
     [
-        ({"page_number": 1, "page_size": 50, "sort": "-imdb_rating", "genre": STATIC_GENRE}, {"status": HTTPStatus.OK}),
+        (
+            {"page_number": 1, "page_size": 50, "sort": "-imdb_rating", "genre": STATIC_GENRE},
+            {"status": HTTPStatus.OK},
+            [film for film in film_data if STATIC_GENRE in film.get("genres_names")],
+        ),
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("prepare_films_data")
-async def test_films_genre(make_get_request, query_data, expected_answer):
+async def test_films_genre(make_get_request, query_data, expected_answer, expected_data):
     """
     Genre films
     """
     url = config.infra.api.dsn + "/api/v1/films"
-    _, _, status = await make_get_request(url, query_data)
+    body, _, status = await make_get_request(url, query_data)
 
     assert status == expected_answer["status"]
+
+    if expected_data:
+        for film_response in body:
+            film_id = film_response["uuid"]
+            expected_film_list = [film for film in expected_data if film["id"] == film_id]
+            assert len(expected_film_list) == 1, f"Film with ID {film_id} not found or multiple found in expected data."
+            expected_film = expected_film_list[0]
+            assert film_response["title"] == expected_film["title"]
+            assert film_response["imdb_rating"] == expected_film["imdb_rating"]
 
 
 @pytest.mark.parametrize(

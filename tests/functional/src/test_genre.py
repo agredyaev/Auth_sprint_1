@@ -4,38 +4,41 @@ import pytest
 from faker import Faker
 
 from tests.functional.settings import config
-from tests.functional.testdata.genre import STATIC_GENRE_ID
+from tests.functional.testdata.genre import STATIC_GENRE_ID, genre_data
 
 fake = Faker()
 
 
 @pytest.mark.parametrize(
-    "query_data, expected_answer",
+    "query_data, expected_answer, expected_data",
     [
         (
-                {
-                    "page_number": 1,
-                    "page_size": 50,
-                },
-                {"status": HTTPStatus.OK, "length": 50},
+            {
+                "page_number": 1,
+                "page_size": 50,
+            },
+            {"status": HTTPStatus.OK, "length": 50},
+            genre_data,
         ),
         (
-                {
-                    "page_size": 50,
-                },
-                {"status": HTTPStatus.OK, "length": 50},
+            {
+                "page_size": 50,
+            },
+            {"status": HTTPStatus.OK, "length": 50},
+            genre_data,
         ),
         (
-                {
-                    "page_number": 1,
-                },
-                {"status": HTTPStatus.OK, "length": 50},
+            {
+                "page_number": 1,
+            },
+            {"status": HTTPStatus.OK, "length": 50},
+            genre_data,
         ),
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("prepare_genres_data")
-async def test_genres(make_get_request, query_data, expected_answer):
+async def test_genres(make_get_request, query_data, expected_answer, expected_data):
     """
     Genres list
     """
@@ -44,6 +47,16 @@ async def test_genres(make_get_request, query_data, expected_answer):
 
     assert status == expected_answer["status"]
     assert len(body) == expected_answer["length"]
+
+    if expected_data:
+        for genre_response in body:
+            genre_id = genre_response["uuid"]
+            expected_genre_list = [genre for genre in expected_data if genre["id"] == genre_id]
+            assert (
+                len(expected_genre_list) == 1
+            ), f"Genre with ID {genre_id} not found or multiple found in expected data."
+            expected_genre = expected_genre_list[0]
+            assert genre_response["name"] == expected_genre["name"]
 
 
 @pytest.mark.parametrize(
