@@ -11,4 +11,5 @@ fi
 cd "${BASE_PATH}"
 python -m tests.functional.utils.wait_for_es
 python -m tests.functional.utils.wait_for_redis
+python -m tests.functional.utils.wait_for_app
 pytest tests/functional/src
