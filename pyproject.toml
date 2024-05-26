@@ -69,6 +69,7 @@ elasticsearch = { version = "^8.12.1", extras = ["async"] }
 pytest = "^7.4.4"
 pytest-asyncio = "0.21.1"
 Faker = "25.2.0"
+backoff = "^2.2.1"
 
 [build-system]
 requires = ["poetry-core"]
