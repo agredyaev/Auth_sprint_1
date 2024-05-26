@@ -12,6 +12,7 @@ class DefaultSettings(BaseSettings):
 
 class ApiSettings(DefaultSettings):
     dsn: str = Field(default="http://nginx:80")
+    health_check: str = Field(default="http://nginx:80/api/healthcheck")
 
 
 class ElasticSearchSettings(DefaultSettings):
