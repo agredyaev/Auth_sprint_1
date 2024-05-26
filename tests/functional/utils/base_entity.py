@@ -4,10 +4,20 @@ from faker import Faker
 from pydantic import BaseModel
 
 
-class BaseEntity:
-    def __init__(self, id_: str, fake: Faker, num: int = 2) -> None:
+class SingletonEntity(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(SingletonEntity, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class BaseEntity(metaclass=SingletonEntity):
+    def __init__(self, id_: str, fake: Faker, num: int = 2, faker_seed: int = 12345) -> None:
         self._id = id_
         self._fake = fake
+        self._fake.seed_instance(faker_seed)
         self._num = num
 
     @property
