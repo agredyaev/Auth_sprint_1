@@ -29,4 +29,3 @@ async def prepare_persons_data(person_index, persons_data):
     await person_index.delete()
     await person_index.create()
     await person_index.update(persons_data)
-

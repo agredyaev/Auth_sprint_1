@@ -4,43 +4,52 @@ import pytest
 from faker import Faker
 
 from tests.functional.settings import config
-from tests.functional.testdata.person import STATIC_PERSON_FULL_NAME, STATIC_PERSON_ID, STATIC_PERSON_NUMBER_OF_FILMS
+from tests.functional.testdata.person import (
+    STATIC_PERSON_FULL_NAME,
+    STATIC_PERSON_ID,
+    STATIC_PERSON_NUMBER_OF_FILMS,
+    person_data,
+)
 
 fake = Faker()
 
 
 @pytest.mark.parametrize(
-    "query_data, expected_answer",
+    "query_data, expected_answer, expected_data",
     [
         (
             {
                 "query": STATIC_PERSON_FULL_NAME,
             },
             {"status": HTTPStatus.OK, "length": 1},
+            person_data,
         ),
         (
             {
                 "query": "Unknown_Name",
             },
             {"status": HTTPStatus.OK, "length": 0},
+            [],
         ),
         (
             {
                 "query": STATIC_PERSON_FULL_NAME[:-1] + "x",
             },
             {"status": HTTPStatus.OK, "length": 1},
+            person_data,
         ),
         (
             {
                 "query": STATIC_PERSON_FULL_NAME.split(" ")[0],
             },
             {"status": HTTPStatus.OK, "length": 4},
+            person_data,
         ),
     ],
 )
 @pytest.mark.asyncio
 @pytest.mark.usefixtures("prepare_persons_data")
-async def test_persons_search(make_get_request, query_data, expected_answer):
+async def test_persons_search(make_get_request, query_data, expected_answer, expected_data):
     """
     Persons search
     """
@@ -49,6 +58,16 @@ async def test_persons_search(make_get_request, query_data, expected_answer):
 
     assert status == expected_answer["status"]
     assert len(body) == expected_answer["length"]
+
+    if expected_data:
+        for person_response in body:
+            person_id = person_response["uuid"]
+            expected_person_list = [person for person in expected_data if person["id"] == person_id]
+            assert (
+                len(expected_person_list) == 1
+            ), f"Person with ID {person_id} not found or multiple found in expected data."
+            expected_person = expected_person_list[0]
+            assert person_response["full_name"] == expected_person["full_name"]
 
 
 @pytest.mark.parametrize(
