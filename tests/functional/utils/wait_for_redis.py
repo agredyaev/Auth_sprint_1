@@ -5,7 +5,7 @@ from redis import Redis, exceptions
 from tests.functional.settings import config
 
 
-@backoff.on_exception(backoff.expo, exceptions.ConnectionError, max_time=60)
+@backoff.on_exception(backoff.expo, exceptions.ConnectionError, max_time=60, max_tries=50)
 def wait_for_redis() -> None:
     if not redis_client.ping():
         raise exceptions.ConnectionError("Redis is not available. Backoff...")
