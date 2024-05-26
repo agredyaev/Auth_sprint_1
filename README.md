@@ -20,8 +20,8 @@ Key Components:
 ## Sprint Update
 ---
 In this sprint, we are working on 
-    * Refactoring the API implementation regarding SOLID principles.
-    * Adding functional tests to ensure the API is working as expected.
+* Refactoring the API implementation regarding SOLID principles.
+* Adding functional tests to ensure the API is working as expected.
 
 ## Getting Started
 ---
