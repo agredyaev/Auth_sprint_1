@@ -1,14 +1,7 @@
 services:
   db:
-    scale: 0
-
-  etl:
-    scale: 0
-
-  elasticsearch:
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "5432:5432"
 
   redis:
     ports:
@@ -22,36 +15,17 @@ services:
       - "9090"
     build:
       context: .
-      dockerfile: ./fastapi_service/Dockerfile
+      dockerfile: ./auth_service/Dockerfile
     env_file:
       - .env
     depends_on:
       venv_builder:
         condition: service_completed_successfully
-      elasticsearch-index-creator:
-        condition: service_completed_successfully
       redis:
         condition: service_healthy
-      elasticsearch:
+      db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "exit 0" ]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
 
-  elasticsearch-index-creator:
-    depends_on:
-      python_base:
-        condition: service_completed_successfully
-      elasticsearch:
-        condition: service_healthy
 
-  functional_tests:
-    container_name: functional_tests
-    image: functional_tests
-    build:
-      context: .
-      dockerfile: tests/functional/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      app_server:
-        condition: service_started
