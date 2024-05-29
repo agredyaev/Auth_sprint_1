@@ -1,7 +1,7 @@
 import aiohttp
 import asyncio
 import backoff
-from tests.functional.settings import config
+from tests.fastapi_service.settings import config
 
 
 async def check_nginx(session):

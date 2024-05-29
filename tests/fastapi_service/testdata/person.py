@@ -5,7 +5,7 @@ from typing import Any
 from faker import Faker
 from pydantic import BaseModel
 
-from tests.functional.utils.base_entity import BaseEntity
+from tests.fastapi_service.utils.base_entity import BaseEntity
 
 fake = Faker()
 

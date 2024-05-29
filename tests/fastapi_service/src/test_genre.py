@@ -3,8 +3,8 @@ from http import HTTPStatus
 import pytest
 from faker import Faker
 
-from tests.functional.settings import config
-from tests.functional.testdata.genre import STATIC_GENRE_ID, genre_data
+from tests.fastapi_service.settings import config
+from tests.fastapi_service.testdata.genre import STATIC_GENRE_ID, genre_data
 
 fake = Faker()
 
@@ -13,26 +13,26 @@ fake = Faker()
     "query_data, expected_answer, expected_data",
     [
         (
-            {
-                "page_number": 1,
-                "page_size": 50,
-            },
-            {"status": HTTPStatus.OK, "length": 50},
-            genre_data,
+                {
+                    "page_number": 1,
+                    "page_size": 50,
+                },
+                {"status": HTTPStatus.OK, "length": 50},
+                genre_data,
         ),
         (
-            {
-                "page_size": 50,
-            },
-            {"status": HTTPStatus.OK, "length": 50},
-            genre_data,
+                {
+                    "page_size": 50,
+                },
+                {"status": HTTPStatus.OK, "length": 50},
+                genre_data,
         ),
         (
-            {
-                "page_number": 1,
-            },
-            {"status": HTTPStatus.OK, "length": 50},
-            genre_data,
+                {
+                    "page_number": 1,
+                },
+                {"status": HTTPStatus.OK, "length": 50},
+                genre_data,
         ),
     ],
 )
@@ -53,7 +53,7 @@ async def test_genres(make_get_request, query_data, expected_answer, expected_da
             genre_id = genre_response["uuid"]
             expected_genre_list = [genre for genre in expected_data if genre["id"] == genre_id]
             assert (
-                len(expected_genre_list) == 1
+                    len(expected_genre_list) == 1
             ), f"Genre with ID {genre_id} not found or multiple found in expected data."
             expected_genre = expected_genre_list[0]
             assert genre_response["name"] == expected_genre["name"]
@@ -104,10 +104,8 @@ async def test_genre_not_found_by_uuid(make_get_request, uuid, expected_status):
 async def test_genre_by_uuid_from_cache(make_get_request, uuid, expected_status):
     """Genre by uuid from cache"""
     url = config.infra.api.dsn + "/api/v1/genres/" + uuid
-    print(url)
-    body, _, status = await make_get_request(url)
 
-    print(body, status)
+    body, _, status = await make_get_request(url)
 
     assert status == expected_status
     assert body["uuid"] == uuid

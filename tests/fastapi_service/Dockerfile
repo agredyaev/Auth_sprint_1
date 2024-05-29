@@ -9,7 +9,7 @@ RUN poetry install --only functionaltest --no-root --only main
 # Final stage for the production image
 FROM python-base:0.1.0 AS production
 
-ENV TESTS_PATH="/tests/functional"
+ENV TESTS_PATH="/tests/fastapi_service"
 
 # Copy installed python dependencies
 COPY --from=venv-builder "$VENV_PATH" "$VENV_PATH"

@@ -4,7 +4,7 @@ from faker import Faker
 from faker.providers import DynamicProvider
 from pydantic import BaseModel
 
-from tests.functional.utils.base_entity import BaseEntity
+from tests.fastapi_service.utils.base_entity import BaseEntity
 
 STATIC_GENRE = "popular"
 STATIC_GENRE_ID = "be0da6c2-fb3f-4ce3-9970-68078a5cf7ba"

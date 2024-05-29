@@ -3,8 +3,8 @@ from http import HTTPStatus
 import pytest
 from faker import Faker
 
-from tests.functional.settings import config
-from tests.functional.testdata.person import (
+from tests.fastapi_service.settings import config
+from tests.fastapi_service.testdata.person import (
     STATIC_PERSON_FULL_NAME,
     STATIC_PERSON_ID,
     STATIC_PERSON_NUMBER_OF_FILMS,

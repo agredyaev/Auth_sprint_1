@@ -3,7 +3,7 @@ from typing import Any
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from tests.functional.testdata import es_mapping
+from tests.fastapi_service.testdata import es_mapping
 
 
 class DefaultSettings(BaseSettings):

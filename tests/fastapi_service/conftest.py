@@ -1,4 +1,4 @@
-BASE_PATH = "tests.functional.src.fixtures"
+BASE_PATH = "tests.fastapi_service.src.fixtures"
 
 pytest_plugins = (
     f"{BASE_PATH}.asyncio",

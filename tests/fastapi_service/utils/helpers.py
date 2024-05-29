@@ -3,7 +3,7 @@ from typing import Any
 from elasticsearch import AsyncElasticsearch
 from elasticsearch.helpers import BulkIndexError, async_bulk
 
-from tests.functional.settings import ElasticSearchSettings
+from tests.fastapi_service.settings import ElasticSearchSettings
 
 
 class ElasticSearchHelper:

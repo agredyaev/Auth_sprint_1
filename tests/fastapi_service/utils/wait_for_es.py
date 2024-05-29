@@ -2,7 +2,7 @@ import backoff
 
 from elasticsearch import Elasticsearch, exceptions
 
-from tests.functional.settings import config
+from tests.fastapi_service.settings import config
 
 
 @backoff.on_exception(backoff.expo, exceptions.ConnectionError, max_time=60, max_tries=50)

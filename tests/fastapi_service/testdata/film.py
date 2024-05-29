@@ -6,7 +6,7 @@ from faker import Faker
 from faker.providers import DynamicProvider
 from pydantic import BaseModel
 
-from tests.functional.utils.base_entity import BaseEntity
+from tests.fastapi_service.utils.base_entity import BaseEntity
 
 STATIC_FILM_ID = "fcbcd7fe-5213-4917-b5f3-edc92716e076"
 STATIC_FILM_TITLE = "Born best score."

@@ -3,8 +3,8 @@ from http import HTTPStatus
 import pytest
 from faker import Faker
 
-from tests.functional.settings import config
-from tests.functional.testdata.film import STATIC_FILM_ID, STATIC_FILM_TITLE, STATIC_GENRE, film_data
+from tests.fastapi_service.settings import config
+from tests.fastapi_service.testdata.film import STATIC_FILM_ID, STATIC_FILM_TITLE, STATIC_GENRE, film_data
 
 fake = Faker()
 

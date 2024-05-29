@@ -3,9 +3,9 @@ from typing import Any
 import pytest
 import pytest_asyncio
 
-from tests.functional.settings import config
-from tests.functional.testdata.person import person_data
-from tests.functional.utils.helpers import ElasticSearchHelper as ESIndex
+from tests.fastapi_service.settings import config
+from tests.fastapi_service.testdata.person import person_data
+from tests.fastapi_service.utils.helpers import ElasticSearchHelper as ESIndex
 
 
 @pytest.fixture(scope="module", name="persons_data")
