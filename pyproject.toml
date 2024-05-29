@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "async-api-sprint-1"
+name = "auth-sprint-1"
 version = "0.1.0"
 description = "..."
 authors = ["Aleksey Gredyaev <aleksey.gredyaev@gmail.com>"]
@@ -54,6 +54,9 @@ asyncpg = "^0.29.0"
 redis = "^5.0.4"
 pytest = "^7.4.4"
 pytest-asyncio = "0.21.1"
+pyotp = "^2.9.0"
+python-multipart = "^0.0.9"
+tqdm = "^4.66.4"
 
 [tool.poetry.group.fakedata.dependencies]
 faker = "25.2.0"
@@ -70,6 +73,21 @@ pytest = "^7.4.4"
 pytest-asyncio = "0.21.1"
 Faker = "25.2.0"
 backoff = "^2.2.1"
+
+
+[tool.poetry.group.auth.dependencies]
+redis = "^5.0.4"
+orjson = "^3.10.3"
+pydantic = "^2.7.2"
+pydantic-settings = "^2.2.1"
+async-fastapi-jwt-auth = "^0.6.5"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.30"}
+asyncpg = "^0.29.0"
+uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_python_implementation == 'CPython'", version = "^0.19.0"}
+gunicorn = "^21.2.0"
+uvicorn = "^0.26.0"
+alembic = "^1.13.1"
+Werkzeug = "^3.0.3"
 
 [build-system]
 requires = ["poetry-core"]
