@@ -1,12 +1,15 @@
-import os
-from typing import Any
-
-from pydantic import AnyHttpUrl, Field, RedisDsn, SecretStr
+from pydantic import Field, RedisDsn, PostgresDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class DefaultSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
+
+
+class JWTSettings(DefaultSettings):
+    secret_key: SecretStr = Field(...)
+
+    model_config = SettingsConfigDict(env_prefix="AUTH_JWT_")
 
 
 class PostgresSettings(DefaultSettings):
@@ -15,7 +18,9 @@ class PostgresSettings(DefaultSettings):
     user: SecretStr = Field(...)
     password: SecretStr = Field(...)
     db_name: str = Field(...)
-    dsn: str = Field(...)
+    dsn: PostgresDsn = Field(...)
+
+    echo_sql_queries: bool = Field(default=False)
 
     model_config = SettingsConfigDict(env_prefix="AUTH_POSTGRES_")
 
@@ -23,11 +28,10 @@ class PostgresSettings(DefaultSettings):
 class RedisSettings(DefaultSettings):
     host: str = Field("redis")
     port: int = Field(default=6379)
-    db_number: int = Field(default=0)
+    db_number: int = Field(default=2)
     user: SecretStr = Field(...)
     password: SecretStr = Field(...)
     dsn: RedisDsn = Field(...)
-    cache_expiration: int = Field(default=(60 * 5))
 
     model_config = SettingsConfigDict(env_prefix="AUTH_REDIS_")
 

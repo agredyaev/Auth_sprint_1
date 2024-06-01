@@ -87,7 +87,7 @@ uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_pyt
 gunicorn = "^21.2.0"
 uvicorn = "^0.26.0"
 alembic = "^1.13.1"
-Werkzeug = "^3.0.3"
+werkzeug = "^3.0.3"
 
 [build-system]
 requires = ["poetry-core"]
