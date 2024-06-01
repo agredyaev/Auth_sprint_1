@@ -2,30 +2,47 @@ services:
   db:
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${AUTH_POSTGRES_USER} -d ${AUTH_POSTGRES_DB}"]
 
   redis:
     ports:
       - "6379:6379"
 
+  elasticsearch:
+    scale: 0
+
+  nginx:
+    scale: 0
+
   app_server:
-    container_name: app_server
-    image: app_server
-    restart: no
-    expose:
-      - "9090"
-    build:
-      context: .
-      dockerfile: ./auth_service/Dockerfile
-    env_file:
-      - .env
-    depends_on:
-      venv_builder:
-        condition: service_completed_successfully
-      redis:
-        condition: service_healthy
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
+    scale: 0
+
+  etl:
+    scale: 0
+
+  elasticsearch-index-creator:
+    scale: 0
+
+#  app_server:
+#    container_name: app_server
+#    image: app_server
+#    restart: no
+#    expose:
+#      - "9090"
+#    build:
+#      context: .
+#      dockerfile: ./auth_service/Dockerfile
+#    env_file:
+#      - .env
+#    depends_on:
+#      venv_builder:
+#        condition: service_completed_successfully
+#      redis:
+#        condition: service_healthy
+#      db:
+#        condition: service_healthy
+#    healthcheck:
+#      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
 
 
