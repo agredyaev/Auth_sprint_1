@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.responses import ORJSONResponse
 
-from auth_service.src.api import router as api_router
+# from auth_service.src.api import router as api_router
 from auth_service.src.core import config, exceptions, logger
 from auth_service.src.utils import lifespan
 
@@ -17,7 +17,7 @@ app = FastAPI(
     openapi_url=config.settings.general.openapi_url,
 )
 
-app.include_router(api_router, prefix=config.settings.api.prefix)
+# app.include_router(api_router, prefix=config.settings.api.prefix)
 
 exceptions.register_exception_handlers(app=app)
 
