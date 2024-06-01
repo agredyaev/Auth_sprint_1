@@ -3,7 +3,7 @@ import logging
 import logging.config
 from typing import Any
 
-from fastapi_service.src.core.config import settings
+from auth_service.src.core.config import settings
 
 FMT = "[{levelname:^7}] {name}: {message}"
 

@@ -15,8 +15,8 @@ services:
   nginx:
     scale: 0
 
-  app_server:
-    scale: 0
+#  app_server:
+#    scale: 0
 
   etl:
     scale: 0
@@ -24,24 +24,26 @@ services:
   elasticsearch-index-creator:
     scale: 0
 
-#  app_server:
-#    container_name: app_server
-#    image: app_server
-#    restart: no
-#    expose:
-#      - "9090"
-#    build:
-#      context: .
-#      dockerfile: ./auth_service/Dockerfile
-#    env_file:
-#      - .env
-#    depends_on:
-#      venv_builder:
-#        condition: service_completed_successfully
-#      redis:
-#        condition: service_healthy
-#      db:
-#        condition: service_healthy
+  app_server:
+    container_name: app_server
+    image: app_server
+    restart: no
+    expose:
+      - "9090"
+    ports:
+      - "9090:9090"
+    build:
+      context: .
+      dockerfile: ./auth_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      venv_builder:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
 #    healthcheck:
 #      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
 

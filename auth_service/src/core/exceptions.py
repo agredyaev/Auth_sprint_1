@@ -1,10 +1,9 @@
 from typing import Any
 
-from elasticsearch import NotFoundError
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from fastapi_service.src.core.logger import setup_logging
+from auth_service.src.core.logger import setup_logging
 
 logger = setup_logging(logger_name=__name__)
 
@@ -19,11 +18,11 @@ class BaseError(Exception):
     """
 
     def __init__(
-        self,
-        message: str,
-        status_code: int,
-        body: Any,
-        errors: tuple[Exception, ...] | None = None,
+            self,
+            message: str,
+            status_code: int,
+            body: Any,
+            errors: tuple[Exception, ...] | None = None,
     ):
         """
         Initialize the ServiceError.
@@ -47,27 +46,21 @@ class BadRequestError(BaseError):
     pass
 
 
-class ElasticsearchConnectionError(ConnectionError):
-    """Elasticsearch connection error."""
-
-    pass
-
-
 class RedisConnectionError(ConnectionError):
     """Redis connection error."""
 
     pass
 
 
-async def not_found_exception_handler(request: Request, exc: NotFoundError) -> JSONResponse:
-    if isinstance(exc, NotFoundError):
-        logger.warning(f"NotFoundError: {exc}")
-        return JSONResponse(
-            status_code=404,
-            content={"message": "Item not found"},
-        )
-
-    raise exc
+# async def not_found_exception_handler(request: Request, exc: NotFoundError) -> JSONResponse:
+#     if isinstance(exc, NotFoundError):
+#         logger.warning(f"NotFoundError: {exc}")
+#         return JSONResponse(
+#             status_code=404,
+#             content={"message": "Item not found"},
+#         )
+#
+#     raise exc
 
 
 async def bad_request_exception_handler(request: Request, exc: BadRequestError) -> JSONResponse:
@@ -94,6 +87,6 @@ def register_exception_handlers(app: FastAPI) -> None:
     Args:
         app (FastAPI): The FastAPI application.
     """
-    app.add_exception_handler(NotFoundError, not_found_exception_handler)
+    # app.add_exception_handler(NotFoundError, not_found_exception_handler)
     app.add_exception_handler(BadRequestError, bad_request_exception_handler)
     app.add_exception_handler(Exception, generic_exception_handler)

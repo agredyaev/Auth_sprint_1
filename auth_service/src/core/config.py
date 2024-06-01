@@ -1,4 +1,4 @@
-from pydantic import Field, RedisDsn, PostgresDsn, SecretStr
+from pydantic import Field, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +7,11 @@ class DefaultSettings(BaseSettings):
 
 
 class JWTSettings(DefaultSettings):
-    secret_key: SecretStr = Field(...)
+    algorithm: str = Field("HS256")
+    access_token_expiration: int = Field(default=300)
+    refresh_token_expiration: int = Field(default=86400)
+    public_key: SecretStr = Field(default="")
+    private_key: SecretStr = Field(default="")
 
     model_config = SettingsConfigDict(env_prefix="AUTH_JWT_")
 
@@ -17,8 +21,8 @@ class PostgresSettings(DefaultSettings):
     port: int = Field(default=5432)
     user: SecretStr = Field(...)
     password: SecretStr = Field(...)
-    db_name: str = Field(...)
-    dsn: PostgresDsn = Field(...)
+    db: str = Field(...)
+    dsn: str = Field(...)
 
     echo_sql_queries: bool = Field(default=False)
 
@@ -31,7 +35,8 @@ class RedisSettings(DefaultSettings):
     db_number: int = Field(default=2)
     user: SecretStr = Field(...)
     password: SecretStr = Field(...)
-    dsn: RedisDsn = Field(...)
+    dsn: str = Field(...)
+    namespace: str = Field(default="auth")
 
     model_config = SettingsConfigDict(env_prefix="AUTH_REDIS_")
 
@@ -54,17 +59,18 @@ class GeneralSettings(DefaultSettings):
 
 
 class UvicornSettings(DefaultSettings):
-    app: str = Field(default="fastapi_service.src.main:app")
+    app: str = Field(default="auth_service.src.main:app")
     host: str = Field(default="0.0.0.0")
     port: int = Field(default=9090)
 
 
 class Settings(BaseSettings):
     pg: PostgresSettings = Field(default=PostgresSettings())
-    common: GeneralSettings = Field(default=GeneralSettings())
+    general: GeneralSettings = Field(default=GeneralSettings())
     redis: RedisSettings = Field(default=RedisSettings())
     api: ApiSettings = Field(default=ApiSettings())
     uvicorn: UvicornSettings = Field(default=UvicornSettings())
+    jwt: JWTSettings = Field(default=JWTSettings())
 
     model_config = SettingsConfigDict(validate_default=True)
 
