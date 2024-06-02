@@ -1,12 +1,13 @@
 import uuid
-from sqlalchemy import Column, String, DateTime, func, Table, ForeignKey
+
+from auth_service.src.db.postgres import Base
+from sqlalchemy import Column, DateTime, ForeignKey, String, Table, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from auth_service.src.db.postgres import Base
 from werkzeug.security import check_password_hash, generate_password_hash
 
-
-UsersRoles = Table('users_roles',
+UsersRoles = Table(
+    'users_roles',
     Base.metadata,
     Column('user_id', UUID, ForeignKey('users.id')),
     Column('role_id', UUID, ForeignKey('roles.id'))
@@ -16,7 +17,11 @@ UsersRoles = Table('users_roles',
 class Users(Base):
     __tablename__ = 'users'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True),
+                primary_key=True,
+                default=uuid.uuid4,
+                unique=True,
+                nullable=False)
     login = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
@@ -42,7 +47,11 @@ class Users(Base):
 class Roles(Base):
     __tablename__ = 'roles'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True),
+                primary_key=True,
+                default=uuid.uuid4,
+                unique=True,
+                nullable=False)
     name = Column(String, nullable=False)
 
     users = relationship("Users", secondary=UsersRoles, back_populates="roles")
@@ -57,7 +66,11 @@ class Roles(Base):
 class LoginHistory(Base):
     __tablename__ = 'login_history'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    id = Column(UUID(as_uuid=True),
+                primary_key=True,
+                default=uuid.uuid4,
+                unique=True,
+                nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     time = Column(DateTime, server_default=func.now())
     user_agent = Column(String)
