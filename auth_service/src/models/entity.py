@@ -3,8 +3,22 @@ import uuid
 from auth_service.src.db.postgres import Base
 from sqlalchemy import Column, DateTime, ForeignKey, String, Table, func
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
 from werkzeug.security import check_password_hash, generate_password_hash
+
+
+class UUIDMixin(object):
+
+    @declared_attr
+    def __tablename__(cls):
+        return cls.__name__.lower()
+    id = Column(UUID(as_uuid=True),
+                primary_key=True,
+                default=uuid.uuid4,
+                unique=True,
+                nullable=False)
+
 
 UsersRoles = Table(
     'users_roles',
@@ -14,14 +28,9 @@ UsersRoles = Table(
 )
 
 
-class Users(Base):
+class Users(UUIDMixin, Base):
     __tablename__ = 'users'
 
-    id = Column(UUID(as_uuid=True),
-                primary_key=True,
-                default=uuid.uuid4,
-                unique=True,
-                nullable=False)
     login = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
@@ -44,14 +53,9 @@ class Users(Base):
         return f'<User {self.login}>'
 
 
-class Roles(Base):
+class Roles(UUIDMixin, Base):
     __tablename__ = 'roles'
 
-    id = Column(UUID(as_uuid=True),
-                primary_key=True,
-                default=uuid.uuid4,
-                unique=True,
-                nullable=False)
     name = Column(String, nullable=False)
 
     users = relationship("Users", secondary=UsersRoles, back_populates="roles")
@@ -63,14 +67,9 @@ class Roles(Base):
         return f'<Role {self.name}>'
 
 
-class LoginHistory(Base):
+class LoginHistory(UUIDMixin, Base):
     __tablename__ = 'login_history'
 
-    id = Column(UUID(as_uuid=True),
-                primary_key=True,
-                default=uuid.uuid4,
-                unique=True,
-                nullable=False)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     time = Column(DateTime, server_default=func.now())
     user_agent = Column(String)
