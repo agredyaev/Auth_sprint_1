@@ -12,6 +12,7 @@ UsersRoles = Table('users_roles',
     Column('role_id', UUID, ForeignKey('roles.id'))
 )
 
+
 class Users(Base):
     __tablename__ = 'users'
 
@@ -51,3 +52,20 @@ class Roles(Base):
 
     def __repr__(self) -> str:
         return f'<Role {self.name}>'
+
+
+class LoginHistory(Base):
+    __tablename__ = 'login_history'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    time = Column(DateTime, server_default=func.now())
+    user_agent = Column(String)
+
+    users = relationship("Users", back_populates="login_history")
+
+    def __init__(self, id: uuid.uuid4) -> None:
+        self.id = id
+
+    def __repr__(self) -> str:
+        return f'<LoginHistory {self.id}>'
