@@ -6,6 +6,12 @@ from auth_service.src.db.postgres import Base
 from werkzeug.security import check_password_hash, generate_password_hash
 
 
+UsersRoles = Table('users_roles',
+    Base.metadata,
+    Column('user_id', UUID, ForeignKey('users.id')),
+    Column('role_id', UUID, ForeignKey('roles.id'))
+)
+
 class Users(Base):
     __tablename__ = 'users'
 
