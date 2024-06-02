@@ -14,5 +14,6 @@ async def get_lifespan(_: FastAPI) -> AsyncIterator[None]:
     await postgres.create_database()
     await redis.redis_open()
     yield
-    await redis.redis.close()
-    await postgres.engine.dispose()
+    if redis.redis:
+        await redis.redis.close()
+    await postgres.async_engine.dispose()
