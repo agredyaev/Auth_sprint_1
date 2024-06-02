@@ -9,6 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
 
+
 [tool.poetry.group.backend.dependencies]
 psycopg2-binary = "^2.9"
 django = "^4.2.5"
@@ -114,7 +115,7 @@ select = [
 extend-ignore = ["B904", "S311", "S104"]
 
 [tool.mypy]
-mypy_path = ["tests"]
+mypy_path = ["tests", "auth_service/src"]
 plugins = [
   "pydantic.mypy"
 ]
@@ -126,6 +127,7 @@ check_untyped_defs = true
 no_implicit_reexport = true
 disallow_untyped_defs = true
 no_implicit_optional = true
+explicit_package_bases = true
 
 
 [tool.pydantic-mypy]
