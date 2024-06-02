@@ -18,11 +18,11 @@ class BaseError(Exception):
     """
 
     def __init__(
-            self,
-            message: str,
-            status_code: int,
-            body: Any,
-            errors: tuple[Exception, ...] | None = None,
+        self,
+        message: str,
+        status_code: int,
+        body: Any,
+        errors: tuple[Exception, ...] | None = None,
     ):
         """
         Initialize the ServiceError.
@@ -42,12 +42,6 @@ class BaseError(Exception):
 
 class BadRequestError(BaseError):
     """Exception representing a 400 status code."""
-
-    pass
-
-
-class RedisConnectionError(ConnectionError):
-    """Redis connection error."""
 
     pass
 
