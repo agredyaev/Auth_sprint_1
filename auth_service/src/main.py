@@ -19,7 +19,7 @@ app = FastAPI(
 
 # app.include_router(api_router, prefix=config.settings.api.prefix)
 
-exceptions.register_exception_handlers(app=app)
+# exceptions.register_exception_handlers(app=app)
 
 if __name__ == "__main__":
     uvicorn.run(
