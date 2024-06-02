@@ -1,35 +1,40 @@
 import uuid
 
-from auth_service.src.db.postgres import Base
 from sqlalchemy import Column, DateTime, ForeignKey, String, Table, func
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from werkzeug.security import check_password_hash, generate_password_hash
+
+from auth_service.src.db.postgres import Base
 
 
 class UUIDMixin(object):
-
     @declared_attr
     def __tablename__(cls):
         return cls.__name__.lower()
-    id = Column(UUID(as_uuid=True),
-                primary_key=True,
-                default=uuid.uuid4,
-                unique=True,
-                nullable=False)
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+
+
+class UserIdMixin:
+    __slot__ = ("user_id",)
+
+    user_id: Mapped[UUID] = mapped_column(
+        ForeignKey(column="users.id"), nullable=False
+    )
 
 
 UsersRoles = Table(
-    'users_roles',
+    "users_roles",
     Base.metadata,
-    Column('user_id', UUID, ForeignKey('users.id')),
-    Column('role_id', UUID, ForeignKey('roles.id'))
+    Column("user_id", UUID, ForeignKey("users.id"), primary_key=True),
+    Column("role_id", UUID, ForeignKey("roles.id"), primary_key=True),
 )
 
 
 class Users(UUIDMixin, Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     login = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
@@ -50,11 +55,11 @@ class Users(UUIDMixin, Base):
         return check_password_hash(self.password, password)
 
     def __repr__(self) -> str:
-        return f'<User {self.login}>'
+        return f"<User {self.login}>"
 
 
 class Roles(UUIDMixin, Base):
-    __tablename__ = 'roles'
+    __tablename__ = "roles"
 
     name = Column(String, nullable=False)
 
@@ -64,13 +69,12 @@ class Roles(UUIDMixin, Base):
         self.name = name
 
     def __repr__(self) -> str:
-        return f'<Role {self.name}>'
+        return f"<Role {self.name}>"
 
 
-class LoginHistory(UUIDMixin, Base):
-    __tablename__ = 'login_history'
+class LoginHistory(UUIDMixin, UserIdMixin, Base):
+    __tablename__ = "login_history"
 
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     time = Column(DateTime, server_default=func.now())
     user_agent = Column(String)
 
@@ -80,4 +84,4 @@ class LoginHistory(UUIDMixin, Base):
         self.id = id
 
     def __repr__(self) -> str:
-        return f'<LoginHistory {self.id}>'
+        return f"<LoginHistory {self.id}>"
