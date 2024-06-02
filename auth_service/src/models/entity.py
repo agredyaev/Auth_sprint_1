@@ -30,3 +30,18 @@ class Users(Base):
 
     def __repr__(self) -> str:
         return f'<User {self.login}>'
+
+
+class Roles(Base):
+    __tablename__ = 'roles'
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    name = Column(String, nullable=False)
+
+    users = relationship("Users", secondary=UsersRoles, back_populates="roles")
+
+    def __init__(self, name: str) -> None:
+        self.name = name
+
+    def __repr__(self) -> str:
+        return f'<Role {self.name}>'
