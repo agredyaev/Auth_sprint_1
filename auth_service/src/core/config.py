@@ -18,6 +18,7 @@ class JWTSettings(DefaultSettings):
 
 class PostgresSettings(DefaultSettings):
     dsn: str = Field(default="")
+    db_schema: str = Field(default="auth")
 
     echo_sql_queries: bool = Field(default=False)
 
