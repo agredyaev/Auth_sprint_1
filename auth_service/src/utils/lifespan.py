@@ -4,6 +4,7 @@ from typing import AsyncIterator
 from fastapi import FastAPI
 
 from auth_service.src.db import postgres, redis
+import auth_service.src.models
 
 
 @asynccontextmanager
@@ -16,4 +17,4 @@ async def get_lifespan(_: FastAPI) -> AsyncIterator[None]:
     yield
     if redis.redis:
         await redis.redis.close()
-    await postgres.async_engine.dispose()
+    await postgres.purge_database()
