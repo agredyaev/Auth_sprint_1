@@ -1,7 +1,7 @@
 from redis.asyncio import Redis
 
 from auth_service.src.core.config import settings
-from auth_service.src.core.exceptions import RedisConnectionError
+from auth_service.src.core.exceptions.redis import RedisConnectionError
 from auth_service.src.core.logger import setup_logging
 
 logger = setup_logging(logger_name=__name__)
@@ -17,8 +17,8 @@ async def redis_open() -> None:
     redis = Redis(
         host=settings.redis.host,
         port=settings.redis.port,
-        username=settings.redis.user.get_secret_value(),
-        password=settings.redis.password.get_secret_value(),
+        username=settings.redis.dsn.username,
+        password=settings.redis.dsn.password,
         db=settings.redis.db_number,
     )
 

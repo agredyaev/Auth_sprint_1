@@ -1,4 +1,4 @@
-from pydantic import Field, SecretStr
+from pydantic import Field, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -7,7 +7,7 @@ class DefaultSettings(BaseSettings):
 
 
 class JWTSettings(DefaultSettings):
-    algorithm: str = Field("HS256")
+    algorithm: str = Field(default="HS256")
     access_token_expiration: int = Field(default=300)
     refresh_token_expiration: int = Field(default=86400)
     public_key: SecretStr = Field(default="")
@@ -17,12 +17,7 @@ class JWTSettings(DefaultSettings):
 
 
 class PostgresSettings(DefaultSettings):
-    host: str = Field("db")
-    port: int = Field(default=5432)
-    user: SecretStr = Field(...)
-    password: SecretStr = Field(...)
-    db: str = Field(...)
-    dsn: str = Field(...)
+    dsn: str = Field(default="")
 
     echo_sql_queries: bool = Field(default=False)
 
@@ -30,12 +25,10 @@ class PostgresSettings(DefaultSettings):
 
 
 class RedisSettings(DefaultSettings):
-    host: str = Field("redis")
+    host: str = Field(default="redis")
     port: int = Field(default=6379)
-    db_number: int = Field(default=2)
-    user: SecretStr = Field(...)
-    password: SecretStr = Field(...)
-    dsn: str = Field(...)
+    db_number: int = Field(default=0)
+    dsn: RedisDsn = Field(default="redis://localhost:6379")
     namespace: str = Field(default="auth")
 
     model_config = SettingsConfigDict(env_prefix="AUTH_REDIS_")
@@ -49,13 +42,10 @@ class ApiSettings(DefaultSettings):
 
 class GeneralSettings(DefaultSettings):
     log_level: str = Field(default="DEBUG")
-    package_name: str = Field(...)
     docs_url: str = Field(default="/api/openapi")
     openapi_url: str = Field(default="/api/openapi.json")
     version: str = Field(default="0.1.0")
     project_name: str = Field(default="Auth Service")
-
-    model_config = SettingsConfigDict(env_prefix="GENERAL_")
 
 
 class UvicornSettings(DefaultSettings):
@@ -65,12 +55,12 @@ class UvicornSettings(DefaultSettings):
 
 
 class Settings(BaseSettings):
-    pg: PostgresSettings = Field(default=PostgresSettings())
-    general: GeneralSettings = Field(default=GeneralSettings())
-    redis: RedisSettings = Field(default=RedisSettings())
-    api: ApiSettings = Field(default=ApiSettings())
-    uvicorn: UvicornSettings = Field(default=UvicornSettings())
-    jwt: JWTSettings = Field(default=JWTSettings())
+    pg: PostgresSettings = PostgresSettings()
+    general: GeneralSettings = GeneralSettings()
+    redis: RedisSettings = RedisSettings()
+    api: ApiSettings = ApiSettings()
+    uvicorn: UvicornSettings = UvicornSettings()
+    jwt: JWTSettings = JWTSettings()
 
     model_config = SettingsConfigDict(validate_default=True)
 
