@@ -12,12 +12,13 @@ clean:
 
 # Format Python code
 fmt:
-	poetry run ruff format
+	ruff format .
 
 lint-mp:
-	poetry run mypy .
+	mypy .
 lint-rf:
-	poetry run ruff check --fix .
+	ruff check --fix .
+
 
 # Help command
 help:
