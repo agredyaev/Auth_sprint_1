@@ -12,12 +12,6 @@ services:
   elasticsearch:
     scale: 0
 
-  nginx:
-    scale: 0
-
-#  app_server:
-#    scale: 0
-
   etl:
     scale: 0
 
@@ -30,8 +24,6 @@ services:
     restart: no
     expose:
       - "9090"
-    ports:
-      - "9090:9090"
     build:
       context: .
       dockerfile: ./auth_service/Dockerfile
@@ -44,7 +36,7 @@ services:
         condition: service_healthy
       db:
         condition: service_healthy
-#    healthcheck:
-#      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
 
 
