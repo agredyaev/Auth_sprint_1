@@ -1,5 +1,8 @@
+from dotenv import find_dotenv, load_dotenv
 from pydantic import Field, RedisDsn, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+load_dotenv(find_dotenv())
 
 
 class DefaultSettings(BaseSettings):
@@ -18,6 +21,7 @@ class JWTSettings(DefaultSettings):
 
 class PostgresSettings(DefaultSettings):
     dsn: str = Field(default="")
+    dsn_local: str = Field(default="")
     db_schema: str = Field(default="auth")
 
     echo_sql_queries: bool = Field(default=False)
@@ -47,6 +51,7 @@ class GeneralSettings(DefaultSettings):
     openapi_url: str = Field(default="/api/openapi.json")
     version: str = Field(default="0.1.0")
     project_name: str = Field(default="Auth Service")
+    project_folder: str = Field(default="auth_service")
 
 
 class UvicornSettings(DefaultSettings):
