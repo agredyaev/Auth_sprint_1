@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth_service.src.interfaces.repositories.role import RoleRepositoryProtocol
-from auth_service.src.models.role import Role
+from auth_service.src.models import Role
 from auth_service.src.repositories.postgres import PostgresRepository
 
 T = TypeVar("T")

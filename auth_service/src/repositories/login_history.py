@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth_service.src.core.logger import setup_logging
 from auth_service.src.interfaces.repositories.login_history import LoginHistoryRepositoryProtocol
-from auth_service.src.models.login_history import LoginHistory
+from auth_service.src.models import LoginHistory
 from auth_service.src.repositories.postgres import PostgresRepository
 
 T = TypeVar("T")

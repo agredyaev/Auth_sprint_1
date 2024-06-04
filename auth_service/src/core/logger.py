@@ -1,26 +1,14 @@
-# src/core/logger.py
 import logging
 import logging.config
 from typing import Any
 
 from auth_service.src.core.config import settings
 
-FMT = "[{levelname:^7}] {name}: {message}"
-
-FORMATS = {
-    logging.DEBUG: f"\33[38m{FMT}\33[0m",
-    logging.INFO: f"\33[36m{FMT}\33[0m",
-    logging.WARNING: f"\33[33m{FMT}\33[0m",
-    logging.ERROR: f"\33[31m{FMT}\33[0m",
-    logging.CRITICAL: f"\33[1m\33[31m{FMT}\33[0m",
-}
-
-
-class CustomFormatter(logging.Formatter):
-    def format(self, record: logging.LogRecord) -> str:
-        log_fmt = FORMATS.get(record.levelno)
-        formatter = logging.Formatter(log_fmt, style="{")
-        return formatter.format(record)
+LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+LOG_DEFAULT_HANDLERS = [
+    "console",
+]
+STREAM_HANDLER_CLASS = "logging.StreamHandler"
 
 
 def get_log_config(log_file: str | None = None, log_level: str = settings.general.log_level) -> dict[str, Any]:
@@ -31,11 +19,21 @@ def get_log_config(log_file: str | None = None, log_level: str = settings.genera
     :return: Logging configuration dictionary
     """
     handlers = {
+        "console": {
+            "level": log_level,
+            "formatter": "default",
+            "class": STREAM_HANDLER_CLASS,
+        },
         "default": {
             "level": log_level,
-            "formatter": "custom",
-            "class": "logging.StreamHandler",
-        }
+            "formatter": "default",
+            "class": STREAM_HANDLER_CLASS,
+        },
+        "access": {
+            "level": log_level,
+            "formatter": "access",
+            "class": STREAM_HANDLER_CLASS,
+        },
     }
 
     if log_file:
@@ -51,14 +49,34 @@ def get_log_config(log_file: str | None = None, log_level: str = settings.genera
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "custom": {"()": CustomFormatter},
+            "default": {
+                "format": "%(levelprefix)s %(message)s",
+                "class": "uvicorn.logging.DefaultFormatter",
+            },
+            "standard": {
+                "format": LOG_FORMAT,
+                "class": "logging.Formatter",
+            },
+            "verbose": {
+                "format": LOG_FORMAT,
+                "class": "logging.Formatter",
+            },
+            "access": {
+                "format": "%(levelprefix)s %(client_addr)s - '%(request_line)s' %(status_code)s",
+                "class": "uvicorn.logging.AccessFormatter",
+            },
         },
         "handlers": handlers,
         "loggers": {
-            "": {"handlers": ["default"], "level": log_level},
+            "": {"handlers": LOG_DEFAULT_HANDLERS, "level": log_level},
             "uvicorn": {"level": log_level},
             "uvicorn.error": {"level": log_level},
-            "uvicorn.access": {"handlers": ["default"], "level": log_level, "propagate": False},
+            "uvicorn.access": {"handlers": ["access"], "level": log_level, "propagate": False},
+        },
+        "root": {
+            "level": log_level,
+            "formatter": "verbose",
+            "handlers": LOG_DEFAULT_HANDLERS,
         },
     }
 

@@ -17,11 +17,11 @@ COPY auth_service /opt/app/auth_service
 
 ARG USERNAME=auth
 
-RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}"
-
+RUN ./setup_user.sh "${GID}" "${UID}" "${USERNAME}" && \
+    chmod +x ./auth_service/entrypoint.sh
 
 # Switch to non-root user
 USER "${USERNAME}"
 
 # Use entrypoint.sh to perform run tasks
-CMD ["gunicorn", "-c", "./auth_service/gunicorn_conf.py", "auth_service.src.main:app"]
+ENTRYPOINT ["./auth_service/entrypoint.sh"]

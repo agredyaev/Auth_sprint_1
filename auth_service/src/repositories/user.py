@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 
 from auth_service.src.core.logger import setup_logging
 from auth_service.src.interfaces.repositories.user import UserRepositoryProtocol
-from auth_service.src.models.user import User, UserRole
+from auth_service.src.models import User, UserRole
 from auth_service.src.repositories.postgres import PostgresRepository
 from auth_service.src.utils.db_operations import (
     commit_to_db,
@@ -32,6 +32,7 @@ class UserRepository(UserRepositoryProtocol[T], PostgresRepository[T]):
 
     async def assign_role(self, user_id: UUID, role_id: UUID) -> None:
         role_data = {"user_id": user_id, "role_id": role_id}
+        # TODO: check user role
         db_obj = UserRole.__table__(**role_data)
         await commit_to_db(self.db_session, db_obj, merge=True)
 
