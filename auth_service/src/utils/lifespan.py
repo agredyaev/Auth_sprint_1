@@ -3,8 +3,7 @@ from typing import AsyncIterator
 
 from fastapi import FastAPI
 
-from auth_service.src.db import postgres, redis
-import auth_service.src.models
+from auth_service.src.db import redis
 
 
 @asynccontextmanager
@@ -12,9 +11,8 @@ async def get_lifespan(_: FastAPI) -> AsyncIterator[None]:
     """
     Lifespan function for FastAPI
     """
-    await postgres.create_database()
-    await redis.redis_open()
-    yield
-    if redis.redis:
+    try:
+        await redis.redis_open()
+        yield
+    finally:
         await redis.redis.close()
-    await postgres.purge_database()
