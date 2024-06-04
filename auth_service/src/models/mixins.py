@@ -1,11 +1,11 @@
-import uuid
 from datetime import datetime, timezone
-from enum import Enum
-from typing import Annotated
+from uuid import UUID, uuid4
 
-from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
+
+from auth_service.src.core.config import settings
+from auth_service.src.models.base import STR_255
 
 
 def get_timestamp() -> datetime:
@@ -13,19 +13,12 @@ def get_timestamp() -> datetime:
     return datetime.now(timezone.utc)
 
 
-class DataType(Enum):
-    STR_255 = Annotated[str, 255]
-    STR_50 = Annotated[str, 50]
-
-
 class IdMixin:
     """Mixin that adds a UUID primary key field to a model."""
 
     __slot__ = ("id",)
 
-    id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False
-    )
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4, nullable=False)
 
 
 class CreatedAtMixin:
@@ -33,7 +26,7 @@ class CreatedAtMixin:
 
     __slot__ = ("created_at",)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, default=get_timestamp, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(default=get_timestamp, nullable=False)
 
 
 class UpdatedAtMixin:
@@ -41,7 +34,7 @@ class UpdatedAtMixin:
 
     __slot__ = ("modified_at",)
 
-    updated_at: Mapped[datetime] = mapped_column(DateTime, onupdate=get_timestamp, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(onupdate=get_timestamp, nullable=False)
 
 
 class UserIdMixin:
@@ -50,7 +43,7 @@ class UserIdMixin:
     __slot__ = ("user_id",)
 
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey(column="users.id", ondelete="CASCADE"), primary_key=True, nullable=False
+        ForeignKey(column=f"{settings.pg.db_schema}.user.id", ondelete="CASCADE"), primary_key=True, nullable=False
     )
 
 
@@ -59,7 +52,7 @@ class LoginTimeMixin:
 
     __slot__ = ("login_time",)
 
-    login_at: Mapped[datetime] = mapped_column(DateTime, default=get_timestamp)
+    login_at: Mapped[datetime] = mapped_column(default=get_timestamp)
 
 
 class LogoutTimeMixin:
@@ -67,7 +60,7 @@ class LogoutTimeMixin:
 
     __slot__ = ("logout_time",)
 
-    logout_at: Mapped[datetime] = mapped_column(DateTime, default=get_timestamp)
+    logout_at: Mapped[datetime] = mapped_column(default=get_timestamp)
 
 
 class NameMixin:
@@ -75,4 +68,4 @@ class NameMixin:
 
     __slot__ = ("name",)
 
-    name: Mapped[DataType.STR_255] = mapped_column(String(255), nullable=False)
+    name: Mapped[STR_255] = mapped_column(nullable=False)
