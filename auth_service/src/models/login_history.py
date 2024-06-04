@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 
 from auth_service.src.core.config import settings
-from auth_service.src.models.base import Base, STR_255
+from auth_service.src.models.base import STR_255, Base
 from auth_service.src.models.mixins import CreatedAtMixin, IdMixin, LoginTimeMixin, LogoutTimeMixin, UserIdMixin
 
 

@@ -3,7 +3,6 @@ from typing import Annotated, Any, Type
 from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
 
-
 STR_512 = Annotated[str, 512]
 STR_255 = Annotated[str, 255]
 STR_50 = Annotated[str, 50]
