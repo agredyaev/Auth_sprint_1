@@ -1,53 +1,51 @@
 import uuid
+from datetime import datetime
+from uuid import UUID
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Table, func
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import relationship, Mapped, mapped_column
-from werkzeug.security import check_password_hash, generate_password_hash
+from sqlalchemy import ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from werkzeug.security import check_password_hash
 
 from auth_service.src.db.postgres import Base
 
 
-class UUIDMixin(object):
-    @declared_attr
-    def __tablename__(cls):
-        return cls.__name__.lower()
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+class UUIDMixin:
+    id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
 
 
-class UserIdMixin:
-    __slot__ = ("user_id",)
+class CreatedAtMixin:
+    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+
+class UpdatedAtMixin:
+    updated_at: Mapped[datetime] = mapped_column(server_default=func.now(), server_onupdate=func.now())
+
+
+class UserRole(CreatedAtMixin, Base):
+    __tablename__ = "user_role"
 
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey(column="users.id"), nullable=False
+        ForeignKey(column="user.id", ondelete="CASCADE"), nullable=False, primary_key=True
+    )
+    role_id: Mapped[UUID] = mapped_column(
+        ForeignKey(column="role.id", ondelete="CASCADE"), nullable=False, primary_key=True
     )
 
 
-UsersRoles = Table(
-    "users_roles",
-    Base.metadata,
-    Column("user_id", UUID, ForeignKey("users.id"), primary_key=True),
-    Column("role_id", UUID, ForeignKey("roles.id"), primary_key=True),
-)
+class User(UUIDMixin, CreatedAtMixin, UpdatedAtMixin, Base):
+    __tablename__ = "user"
 
+    login: Mapped[str] = mapped_column(unique=True, nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
+    first_name: Mapped[str] = mapped_column(nullable=False)
+    last_name: Mapped[str] = mapped_column(nullable=False)
 
-class Users(UUIDMixin, Base):
-    __tablename__ = "users"
-
-    login = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    created_at = Column(DateTime, server_default=func.now())
-
-    roles = relationship("Roles", secondary=UsersRoles, back_populates="users")
-    login_history = relationship("LoginHistory", back_populates="users")
+    roles: Mapped[list["Role"]] = relationship(secondary="user_role")
+    login_history: Mapped[list["LoginHistory"]] = relationship(back_populates="user")
 
     def __init__(self, login: str, password: str, first_name: str, last_name: str) -> None:
         self.login = login
-        self.password = generate_password_hash(password)
+        self.password = password
         self.first_name = first_name
         self.last_name = last_name
 
@@ -58,12 +56,11 @@ class Users(UUIDMixin, Base):
         return f"<User {self.login}>"
 
 
-class Roles(UUIDMixin, Base):
-    __tablename__ = "roles"
+class Role(UUIDMixin, CreatedAtMixin, UpdatedAtMixin, Base):
+    __tablename__ = "role"
 
-    name = Column(String, nullable=False)
-
-    users = relationship("Users", secondary=UsersRoles, back_populates="roles")
+    name: Mapped[str] = mapped_column(unique=True, nullable=False)
+    users: Mapped[list["User"]] = relationship(secondary="user_role")
 
     def __init__(self, name: str) -> None:
         self.name = name
@@ -72,16 +69,18 @@ class Roles(UUIDMixin, Base):
         return f"<Role {self.name}>"
 
 
-class LoginHistory(UUIDMixin, UserIdMixin, Base):
+class LoginHistory(UUIDMixin, Base):
     __tablename__ = "login_history"
 
-    time = Column(DateTime, server_default=func.now())
-    user_agent = Column(String)
+    user_id: Mapped[UUID] = mapped_column(ForeignKey(column="user.id", ondelete="CASCADE"), nullable=False)
+    timestamp: Mapped[datetime] = mapped_column(server_default=func.now())
+    user_agent: Mapped[str] = mapped_column()
 
-    users = relationship("Users", back_populates="login_history")
+    user: Mapped["User"] = relationship(back_populates="login_history")
 
-    def __init__(self, id: uuid.uuid4) -> None:
+    def __init__(self, id: uuid.uuid4, user_agent: str) -> None:
         self.id = id
+        self.user_agent = user_agent
 
     def __repr__(self) -> str:
         return f"<LoginHistory {self.id}>"
