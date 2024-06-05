@@ -1,9 +1,10 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import sessionmaker, DeclarativeBase
 from auth_service.src.core.config import settings
 
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    """Base model class"""
 
 engine = create_async_engine(url=settings.pg.dsn, echo=settings.pg.echo_sql_queries, future=True)
 async_session = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
