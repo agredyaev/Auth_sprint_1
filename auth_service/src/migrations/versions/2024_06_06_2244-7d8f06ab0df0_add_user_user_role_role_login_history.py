@@ -1,8 +1,8 @@
-"""add user, role, login_history
+"""add user, user_role, role, login_history
 
-Revision ID: 182490d14cc0
+Revision ID: 7d8f06ab0df0
 Revises: 
-Create Date: 2024-06-05 23:48:30.704945
+Create Date: 2024-06-06 22:44:18.486850
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '182490d14cc0'
+revision: str = '7d8f06ab0df0'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -43,22 +43,24 @@ def upgrade() -> None:
     )
     op.create_table('login_history',
     sa.Column('user_agent', sa.String(), nullable=False),
-    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('id', sa.Uuid(), nullable=False),
+    sa.Column('user_id', sa.Uuid(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('login_at', sa.DateTime(), nullable=False),
     sa.Column('logout_at', sa.DateTime(), nullable=False),
-    sa.Column('user_id', sa.Uuid(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['auth.user.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id', 'user_id'),
+    sa.PrimaryKeyConstraint('id'),
     schema='auth'
     )
     op.create_table('user_role',
     sa.Column('role_id', sa.Uuid(), nullable=False),
+    sa.Column('id', sa.Uuid(), nullable=False),
     sa.Column('user_id', sa.Uuid(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=False),
-    sa.ForeignKeyConstraint(['role_id'], ['auth.role.id'], ),
+    sa.ForeignKeyConstraint(['role_id'], ['auth.role.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['auth.user.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('user_id'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'role_id', name='unique_user_role'),
     schema='auth'
     )
     # ### end Alembic commands ###
