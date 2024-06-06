@@ -114,11 +114,19 @@ select = [
     "W",  # pycodestyle
 ]
 extend-ignore = ["B904", "S311", "S104"]
+exclude = [
+    "auth_service/src/migrations",
+    "web_service/movies/migrations",
+]
 
 [tool.mypy]
 mypy_path = ["tests", "auth_service/src"]
 plugins = [
   "pydantic.mypy"
+]
+exclude = [
+    "auth_service/src/migrations",
+    "web_service/movies/migrations",
 ]
 follow_imports = "silent"
 warn_redundant_casts = true
@@ -138,7 +146,11 @@ warn_required_dynamic_aliases = true
 
 [tool.pytest.ini_options]
 addopts =  "-vv -p no:cacheprovider"
-testpaths = ["tests", "functional"]
+testpaths = [
+    "tests",
+    "tests/fastapi_service",
+    "tests/auth_service",
+]
 pythonpath = ["."]
 log_cli = true
 log_cli_level = "DEBUG"
