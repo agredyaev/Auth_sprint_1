@@ -11,7 +11,7 @@ from auth_service.src.core.exceptions.redis import (
     RedisUpdateError,
 )
 from auth_service.src.core.logger import setup_logging
-from auth_service.src.interfaces.repositories.redis_db import RedisRepositoryProtocol
+from auth_service.src.interfaces.repositories import RedisRepositoryProtocol
 
 logger = setup_logging(logger_name=__name__)
 
