@@ -5,7 +5,7 @@ from auth_service.src.models.base import STR_255, Base
 from auth_service.src.models.mixins import CreatedAtMixin, IdMixin, LoginTimeMixin, LogoutTimeMixin, UserIdMixin
 
 
-class LoginHistory(Base, CreatedAtMixin, IdMixin, LoginTimeMixin, LogoutTimeMixin, UserIdMixin):
+class LoginHistory(Base, IdMixin, UserIdMixin, CreatedAtMixin, LoginTimeMixin, LogoutTimeMixin):
     __tablename__ = "login_history"
     __table_args__ = {"schema": settings.pg.db_schema}
 
