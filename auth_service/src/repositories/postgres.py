@@ -5,8 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from auth_service.src.core.logger import setup_logging
-from auth_service.src.interfaces.repositories.base import CreateSchemaType, MergeSchemaType, UpdateSchemaType
-from auth_service.src.interfaces.repositories.postgres import PostgresRepositoryProtocol
+from auth_service.src.interfaces.repositories import (
+    CreateSchemaType,
+    MergeSchemaType,
+    PostgresRepositoryProtocol,
+    UpdateSchemaType,
+)
 from auth_service.src.utils.db_operations import (
     commit_to_db,
     delete_from_db,
@@ -22,7 +26,7 @@ T = TypeVar("T", bound=Any)
 
 class PostgresRepository(PostgresRepositoryProtocol[T]):
     """
-    Implementation of PostgresRepositoryProtocol using SQLAlchemy.
+    Implementation of PostgresRepositoryProtocol.
     """
 
     _model: Type[T]
@@ -31,7 +35,7 @@ class PostgresRepository(PostgresRepositoryProtocol[T]):
         self.db_session: AsyncSession = db_session
 
     async def create(self, obj_in: CreateSchemaType) -> None:
-        db_obj = self._model(**obj_in.dict())
+        db_obj = self._model(**obj_in.model_dump())
         await commit_to_db(self.db_session, db_obj)
 
     async def get(self, obj_id: UUID) -> T | None:
@@ -60,5 +64,5 @@ class PostgresRepository(PostgresRepositoryProtocol[T]):
         return await execute_list_query(self.db_session, query)
 
     async def merge(self, obj_in: MergeSchemaType) -> None:
-        db_obj = self._model(**obj_in.dict())
+        db_obj = self._model(**obj_in.model_dump())
         await commit_to_db(self.db_session, db_obj, merge=True)
