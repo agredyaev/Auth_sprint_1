@@ -12,11 +12,11 @@ sys.path.append(str(PROJECT_PATH))
 
 class AlembicMigrator:
     def __init__(
-            self,
-            base_path: Path = PROJECT_PATH,
-            project_folder: str = "",
-            config_file: str = "alembic.ini",
-            database_url: str | None = None,
+        self,
+        base_path: Path = PROJECT_PATH,
+        project_folder: str = "",
+        config_file: str = "alembic.ini",
+        database_url: str | None = None,
     ) -> None:
         """
         Initializes the Alembic migrator.
@@ -67,4 +67,3 @@ if __name__ == "__main__":
     project_name = settings.general.project_folder
     migrator = AlembicMigrator(project_folder=project_name, database_url=pg_dsn_with_fallback)
     migrator.upgrade()
-
