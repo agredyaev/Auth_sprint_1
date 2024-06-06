@@ -43,7 +43,7 @@ class UserIdMixin:
     __slot__ = ("user_id",)
 
     user_id: Mapped[UUID] = mapped_column(
-        ForeignKey(column=f"{settings.pg.db_schema}.user.id", ondelete="CASCADE"), primary_key=True, nullable=False
+        ForeignKey(column=f"{settings.pg.db_schema}.user.id", ondelete="CASCADE"), nullable=False
     )
 
 
