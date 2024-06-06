@@ -1,8 +1,8 @@
 """add user, user_role, role, login_history
 
-Revision ID: ae951db8e85e
+Revision ID: 7d8f06ab0df0
 Revises: 
-Create Date: 2024-06-06 22:04:17.930844
+Create Date: 2024-06-06 22:44:18.486850
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ae951db8e85e'
+revision: str = '7d8f06ab0df0'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -60,6 +60,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['role_id'], ['auth.role.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['user_id'], ['auth.user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id', 'role_id', name='unique_user_role'),
     schema='auth'
     )
     # ### end Alembic commands ###
