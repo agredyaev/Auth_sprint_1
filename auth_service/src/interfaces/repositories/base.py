@@ -18,25 +18,25 @@ class RepositoryProtocol(Protocol[T, CreateSchemaType, UpdateSchemaType, AttrTyp
         """
         Gets object by id
         """
-        ...
+        raise NotImplementedError
 
     async def update(self, obj_id: AttrType, obj_in: UpdateSchemaType) -> None:
         """
         Updates object
         """
-        ...
+        raise NotImplementedError
 
     async def delete(self, obj_id: AttrType) -> None:
         """
         Deletes object
         """
-        ...
+        raise NotImplementedError
 
     async def list(self, obj_id: AttrType | None = None) -> Sequence[T]:
         """
         Gets a sequence of objects
         """
-        ...
+        raise NotImplementedError
 
 
 class MergeRepositoryProtocol(Protocol[MergeSchemaType]):
@@ -44,4 +44,4 @@ class MergeRepositoryProtocol(Protocol[MergeSchemaType]):
         """
         Merge object
         """
-        ...
+        raise NotImplementedError
