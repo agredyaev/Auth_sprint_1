@@ -11,7 +11,7 @@ class DefaultSettings(BaseSettings):
 
 class JWTSettings(DefaultSettings):
     algorithm: str = Field(default="HS256")
-    access_token_expiration: int = Field(default=300)
+    access_token_expiration: int = Field(default=3600)
     refresh_token_expiration: int = Field(default=86400)
     public_key: SecretStr = Field(default="")
     private_key: SecretStr = Field(default="")
