@@ -1,12 +1,7 @@
-import datetime
-
-from auth_service.src.schemas.mixins import FullNameMixin, IdMixin, LoginMixin, ORMMixin, PasswordMixin, UserIdMixin
+from auth_service.src.schemas.mixins import FullNameMixin, LoginMixin, PasswordMixin
 
 
-class UserResponse(IdMixin, FullNameMixin, LoginMixin, ORMMixin):
-    ...
+class UserCreate(FullNameMixin, LoginMixin, PasswordMixin): ...
 
 
-class LoginHistory(IdMixin, UserIdMixin, LoginMixin, ORMMixin):
-    user_agent: str
-    login_time: datetime.datetime
+class UserUpdate(LoginMixin, PasswordMixin): ...
