@@ -16,7 +16,7 @@ def get_timestamp() -> datetime:
 class IdMixin:
     """Mixin that adds a UUID primary key field to a model."""
 
-    __slot__ = ("id",)
+    __slots__ = ()
 
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4, nullable=False)
 
@@ -24,7 +24,7 @@ class IdMixin:
 class CreatedAtMixin:
     """Mixin that adds a timestamp field to a model."""
 
-    __slot__ = ("created_at",)
+    __slots__ = ()
 
     created_at: Mapped[datetime] = mapped_column(default=get_timestamp, nullable=False)
 
@@ -32,7 +32,7 @@ class CreatedAtMixin:
 class UpdatedAtMixin:
     """Mixin that adds a timestamp field to a model."""
 
-    __slot__ = ("modified_at",)
+    __slots__ = ()
 
     updated_at: Mapped[datetime] = mapped_column(onupdate=get_timestamp, nullable=False)
 
@@ -40,7 +40,7 @@ class UpdatedAtMixin:
 class UserIdMixin:
     """Mixin that adds a UUID primary key field to a model."""
 
-    __slot__ = ("user_id",)
+    __slots__ = ()
 
     user_id: Mapped[UUID] = mapped_column(
         ForeignKey(column=f"{settings.pg.db_schema}.user.id", ondelete="CASCADE"), nullable=False
@@ -50,7 +50,7 @@ class UserIdMixin:
 class LoginTimeMixin:
     """Mixin that adds a timestamp field to a model."""
 
-    __slot__ = ("login_time",)
+    __slots__ = ()
 
     login_at: Mapped[datetime] = mapped_column(default=get_timestamp)
 
@@ -58,7 +58,7 @@ class LoginTimeMixin:
 class LogoutTimeMixin:
     """Mixin that adds a timestamp field to a model."""
 
-    __slot__ = ("logout_time",)
+    __slots__ = ()
 
     logout_at: Mapped[datetime] = mapped_column(default=get_timestamp)
 
@@ -66,6 +66,6 @@ class LogoutTimeMixin:
 class NameMixin:
     """Mixin that adds a name field to a model."""
 
-    __slot__ = ("name",)
+    __slots__ = ()
 
     name: Mapped[STR_255] = mapped_column(nullable=False)
