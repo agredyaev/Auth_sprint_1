@@ -1,10 +1,9 @@
-from role import *
-from user import UserCreate, UserResponse, UserUpdate, LoginHistory
-
+from auth_service.src.schemas.response.login_history import LoginHistoryResponse
+from auth_service.src.schemas.response.role import RoleResponse
+from auth_service.src.schemas.response.token import Token
 
 __all__ = [
-    "LoginHistory",
-    "UserCreate",
-    "UserResponse",
-    "UserUpdate",
+    "LoginHistoryResponse",
+    "Token",
+    "RoleResponse",
 ]
