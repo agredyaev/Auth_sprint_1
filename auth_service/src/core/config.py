@@ -10,11 +10,14 @@ class DefaultSettings(BaseSettings):
 
 
 class JWTSettings(DefaultSettings):
-    algorithm: str = Field(default="HS256")
-    access_token_expiration: int = Field(default=3600)
-    refresh_token_expiration: int = Field(default=86400)
     public_key: SecretStr = Field(default="")
     private_key: SecretStr = Field(default="")
+    authjwt_denylist_enabled: bool = Field(default=True)
+    authjwt_denylist_token_checks: set[str] = Field(default={"access", "refresh"})
+    authjwt_token_location: set[str] = Field(default={"cookies"})
+    authjwt_cookie_csrf_protection: bool = Field(default=True)
+    access_expires: int = Field(default=60 * 15)
+    refresh_expires: int = Field(default=60 * 60 * 24 * 7)
 
     model_config = SettingsConfigDict(env_prefix="AUTH_JWT_")
 
