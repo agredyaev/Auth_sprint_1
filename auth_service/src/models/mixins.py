@@ -60,7 +60,7 @@ class LogoutTimeMixin:
 
     __slots__ = ()
 
-    logout_at: Mapped[datetime] = mapped_column(default=get_timestamp)
+    logout_at: Mapped[datetime] = mapped_column(nullable=True)
 
 
 class NameMixin:
