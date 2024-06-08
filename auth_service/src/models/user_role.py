@@ -11,7 +11,7 @@ from auth_service.src.models.mixins import CreatedAtMixin, IdMixin, UserIdMixin
 class UserRole(Base, IdMixin, UserIdMixin, CreatedAtMixin):
     __tablename__ = "user_role"
     __table_args__ = (
-        UniqueConstraint('user_id', 'role_id', name='unique_user_role'),
+        UniqueConstraint("user_id", "role_id", name="unique_user_role"),
         {"schema": settings.pg.db_schema},
     )
     role_id: Mapped[UUID] = mapped_column(
