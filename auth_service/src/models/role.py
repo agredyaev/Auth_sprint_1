@@ -1,3 +1,4 @@
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from auth_service.src.core.config import settings
@@ -7,6 +8,9 @@ from auth_service.src.models.mixins import CreatedAtMixin, IdMixin, NameMixin, U
 
 class Role(Base, IdMixin, NameMixin, CreatedAtMixin, UpdatedAtMixin):
     __tablename__ = "role"
-    __table_args__ = {"schema": settings.pg.db_schema}
+    __table_args__ = (
+        UniqueConstraint("name", name="unique_role_name"),
+        {"schema": settings.pg.db_schema},
+    )
 
     description: Mapped[STR_255] = mapped_column(nullable=True)
