@@ -8,6 +8,7 @@ readme = "README.md"
 # Dependencies
 [tool.poetry.dependencies]
 python = ">=3.9, <4.0"
+passlib = "^1.7.4"
 
 
 [tool.poetry.group.backend.dependencies]
@@ -81,14 +82,14 @@ redis = "^5.0.4"
 orjson = "^3.10.3"
 pydantic = "^2.7.2"
 pydantic-settings = "^2.2.1"
-async-fastapi-jwt-auth = "^0.6.5"
+async-fastapi-jwt-auth = {version = "^0.6.5", extras = ["asymmetric"]}
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.30"}
 asyncpg = "^0.29.0"
 uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_python_implementation == 'CPython'", version = "^0.19.0"}
 gunicorn = "^21.2.0"
 uvicorn = "^0.26.0"
 alembic = "^1.13.1"
-werkzeug = "^3.0.3"
+passlib = "^1.7.4"
 python-dotenv ="^1.0.1"
 
 [build-system]
