@@ -1,8 +1,40 @@
-from pydantic import BaseModel, ConfigDict
+from uuid import UUID
+
+from passlib.context import CryptContext
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+class PasswordMixin(BaseModel):
+    password: str = Field(..., min_length=8)
+
+    @field_validator("password", mode="before")
+    def hash_password(cls, v: str) -> str:
+        return pwd_context.hash(v)
+
+    def verify_password(self, plain_password: str) -> bool:
+        return pwd_context.verify(plain_password, self.password)
+
+
+class EmailMixin(BaseModel):
+    """
+    Mixin that adds an email field to a model.
+    """
+
+    email: EmailStr
+
+
+class UUIDMixin(BaseModel):
+    """
+    Mixin that adds a id field to a model.
+    """
+
+    id: UUID
 
 
 class IdMixin(BaseModel):
-    """Mixin that adds a UUID primary key field to a model."""
+    """Mixin that adds a id field to a model."""
 
     id: str
 
@@ -61,14 +93,6 @@ class LoginMixin(BaseModel):
     login: str
 
 
-class PasswordMixin(BaseModel):
-    """
-    Mixin that adds a password field to a model.
-    """
-
-    password: str
-
-
 class FullNameMixin(BaseModel):
     """
     Mixin that adds a full name field to a model.
@@ -84,3 +108,19 @@ class ORMMixin(BaseModel):
     """
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserAgentMixin(BaseModel):
+    """
+    Mixin that adds a user agent field to a model.
+    """
+
+    user_agent: str = Field(min_length=1, max_length=255)
+
+
+class UserNameMixin(BaseModel):
+    """
+    Mixin that adds a username field to a model.
+    """
+
+    username: str = Field(min_length=1, max_length=255)
