@@ -14,8 +14,8 @@ class User(Base, IdMixin, CreatedAtMixin, UpdatedAtMixin):
         {"schema": settings.pg.db_schema},
     )
 
-    email: Mapped[STR_255] = mapped_column(unique=True, nullable=True)
-    username: Mapped[STR_255] = mapped_column(unique=True, nullable=False)
+    email: Mapped[STR_255] = mapped_column(unique=True, nullable=False)
+    username: Mapped[STR_255] = mapped_column(unique=True, nullable=True)
     password: Mapped[STR_512] = mapped_column(nullable=False)
     first_name: Mapped[STR_50] = mapped_column(nullable=True)
     last_name: Mapped[STR_50] = mapped_column(nullable=True)

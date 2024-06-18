@@ -7,8 +7,14 @@ P = TypeVar("P", bound=Any)
 
 
 class UserRepositoryProtocol(PostgresRepositoryProtocol[T]):
-    async def create_user(self, user_data: P) -> None:
+    async def create_user(self, user_data: P) -> T:
+        """Create user."""
         raise NotImplementedError
 
-    async def update_password(self, user_data: P) -> None:
+    async def get_user_by_id(self, user_data: P) -> T | None:
+        """Get user by id."""
+        raise NotImplementedError
+
+    async def get_user_by_email(self, user_data: P) -> T | None:
+        """Get user by email."""
         raise NotImplementedError
