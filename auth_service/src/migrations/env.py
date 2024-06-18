@@ -7,6 +7,8 @@ from sqlalchemy import engine_from_config, pool
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 sys.path.append(str(PROJECT_ROOT))
+sys.path.append(str(PROJECT_ROOT / "auth_service"))
+
 
 from auth_service.src.core.config import settings  # noqa
 from auth_service.src.models.base import Base  # noqa
@@ -21,7 +23,7 @@ target_metadata = Base.metadata
 
 URL = "sqlalchemy.url"
 
-if URL not in config.get_section(config.config_ini_section):
+if URL not in config.get_section(config.config_ini_section):  # type: ignore
     config.set_main_option(URL, f"{settings.pg.dsn_local}?async_fallback=True")
 
 

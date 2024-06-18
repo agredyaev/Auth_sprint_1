@@ -1,17 +1,11 @@
-from typing import Any, Sequence, Type, TypeVar, Union
+from typing import Any, Sequence, TypeVar
 
-from sqlalchemy import Select
-from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from auth_service.src.core.logger import setup_logging
-
-logger = setup_logging(logger_name=__name__)
 
 T = TypeVar("T", bound=Any)
 
 
-async def commit_to_db(session: AsyncSession, db_obj: Any, merge: bool = False) -> None:
+async def commit_to_db(session: AsyncSession, db_obj: T, merge: bool = False) -> T:
     """
     Commit object to database
     :param session:
@@ -19,17 +13,12 @@ async def commit_to_db(session: AsyncSession, db_obj: Any, merge: bool = False) 
     :param merge:
     :return:
     """
-    async with session.begin():
-        try:
-            if merge:
-                await session.merge(db_obj)
-            else:
-                session.add(db_obj)
-            await session.commit()
-        except SQLAlchemyError as e:
-            logger.exception("Database operation failed:", exc_info=e)
-            await session.rollback()
-            raise e
+    if merge:
+        db_obj = await session.merge(db_obj)
+    else:
+        session.add(db_obj)
+    await session.flush()
+    return db_obj
 
 
 async def delete_from_db(session: AsyncSession, db_obj: Any) -> None:
@@ -39,44 +28,29 @@ async def delete_from_db(session: AsyncSession, db_obj: Any) -> None:
     :param db_obj:
     :return:
     """
-    async with session.begin():
-        try:
-            await session.delete(db_obj)
-            await session.commit()
-        except SQLAlchemyError as e:
-            logger.exception("Failed to delete object:", exc_info=e)
-            await session.rollback()
-            raise e
+    await session.delete(db_obj)
 
 
-async def execute_single_query(session: AsyncSession, query: Select) -> Union[T, None]:
+async def execute_single_query(session: AsyncSession, query: Any) -> T | None:
     """
     Execute query and return a single result
-    :param session:
-    :param query:
-    :return:
+    :param session: SQLAlchemy async session
+    :param query: SQLAlchemy query (Select, Delete, Insert)
+    :return: single result or none
     """
-    try:
-        result = await session.execute(query)
-        return result.scalar_one_or_none()
-    except SQLAlchemyError as e:
-        logger.exception("Failed to execute query:", exc_info=e)
-        raise e
+    result = await session.execute(query)
+    return result.scalar_one_or_none()
 
 
-async def execute_list_query(session: AsyncSession, query: Select) -> Sequence[T]:
+async def execute_list_query(session: AsyncSession, query: Any) -> Sequence[T]:
     """
     Execute query and return a list of results
-    :param session:
-    :param query:
-    :return:
+    :param session: SQLAlchemy async session
+    :param query: SQLAlchemy query (Select, Delete, Insert)
+    :return: List of results for Select query, empty list for Delete and Insert queries
     """
-    try:
-        result = await session.execute(query)
-        return result.scalars().all()
-    except SQLAlchemyError as e:
-        logger.exception("Failed to execute query:", exc_info=e)
-        raise e
+    result = await session.execute(query)
+    return result.scalars().all()
 
 
 def update_object(db_obj: Any, obj_in: Any) -> None:
@@ -88,11 +62,3 @@ def update_object(db_obj: Any, obj_in: Any) -> None:
     """
     for key, value in obj_in.dict(exclude_unset=True).items():
         setattr(db_obj, key, value)
-
-
-def to_pydantic(db_obj: T, pydantic_model: Type[Any]) -> Any | None:
-    try:
-        return pydantic_model(**db_obj.__dict__)
-    except (TypeError, AttributeError) as e:
-        logger.exception("Failed to convert object to Pydantic model:", exc_info=e)
-        return None
