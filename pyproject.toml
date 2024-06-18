@@ -16,7 +16,7 @@ psycopg2-binary = "^2.9"
 django = "^4.2.5"
 python-dotenv = "^1.0.1"
 django-split-settings = "^1.2.0"
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 django-cors-headers = "^4.3.1"
 django-extensions = "^3.2.3"
 
@@ -32,7 +32,7 @@ redis = "^5.0.3"
 fastapi = "^0.109.0"
 uvicorn = "^0.26.0"
 redis = "^5.0.3"
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 elasticsearch = { version = "^8.12.1", extras = ["async"] }
 orjson = "^3.9.12"
 pydantic = "^2.7.0"
@@ -83,14 +83,16 @@ orjson = "^3.10.3"
 pydantic = "^2.7.2"
 pydantic-settings = "^2.2.1"
 async-fastapi-jwt-auth = {version = "^0.6.5", extras = ["asymmetric"]}
-sqlalchemy = {extras = ["asyncio"], version = "^2.0.30"}
+sqlalchemy = {extras = ["asyncio", "asyncpg"], version = "^2.0.30"}
 asyncpg = "^0.29.0"
 uvloop = {platform = "linux", markers = "sys_platform != 'win32' or platform_python_implementation == 'CPython'", version = "^0.19.0"}
-gunicorn = "^21.2.0"
+gunicorn = "^22.0.0"
 uvicorn = "^0.26.0"
 alembic = "^1.13.1"
-passlib = "^1.7.4"
+passlib = {version = "^1.7.4", extras = ["bcrypt"]}
 python-dotenv ="^1.0.1"
+fastapi-limiter = "^0.1.6"
+email-validator = "^2.1.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -115,20 +117,14 @@ select = [
     "W",  # pycodestyle
 ]
 extend-ignore = ["B904", "S311", "S104"]
-exclude = [
-    "auth_service/src/migrations",
-    "web_service/movies/migrations",
-]
+exclude = ["migrations"]
 
 [tool.mypy]
 mypy_path = ["tests", "auth_service/src"]
 plugins = [
   "pydantic.mypy"
 ]
-exclude = [
-    "auth_service/src/migrations",
-    "web_service/movies/migrations",
-]
+exclude = ["migrations"]
 follow_imports = "silent"
 warn_redundant_casts = true
 warn_unused_ignores = true
@@ -137,7 +133,6 @@ check_untyped_defs = true
 no_implicit_reexport = true
 disallow_untyped_defs = true
 no_implicit_optional = true
-explicit_package_bases = true
 
 
 [tool.pydantic-mypy]
