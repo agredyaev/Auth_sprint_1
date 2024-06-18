@@ -1,20 +1,34 @@
+import datetime
 from uuid import UUID
 
-from passlib.context import CryptContext
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from auth_service.src.utils import get_password_hash, get_timestamp
+from auth_service.src.utils.date_format import format_datetime_with_timezone
+
+
+class HashPasswordMixin(BaseModel):
+    """
+    Mixin that adds a password field to a model.
+    Hashes the password before saving it to the database.
+    """
+
+    password: str = Field(...)
+
+    @field_validator("password", mode="before")
+    @staticmethod
+    def hash_password(v: str) -> str:
+        if len(v) < 8:
+            raise ValueError("Password must be at least 8 characters long")
+        return get_password_hash(v)
 
 
 class PasswordMixin(BaseModel):
-    password: str = Field(..., min_length=8)
+    """
+    Mixin that adds a password field to a model.
+    """
 
-    @field_validator("password", mode="before")
-    def hash_password(cls, v: str) -> str:
-        return pwd_context.hash(v)
-
-    def verify_password(self, plain_password: str) -> bool:
-        return pwd_context.verify(plain_password, self.password)
+    password: str
 
 
 class EmailMixin(BaseModel):
@@ -33,10 +47,18 @@ class UUIDMixin(BaseModel):
     id: UUID
 
 
+class LogoutMixin(BaseModel):
+    """
+    Mixin that adds a login field to a model.
+    """
+
+    logout_at: datetime.datetime = Field(default_factory=get_timestamp)
+
+
 class IdMixin(BaseModel):
     """Mixin that adds a id field to a model."""
 
-    id: str
+    id: UUID
 
 
 class NameMixin(BaseModel):
@@ -66,7 +88,7 @@ class UserIdMixin(BaseModel):
     Mixin that adds a user id field to a model.
     """
 
-    user_id: str
+    user_id: UUID
 
 
 class RoleIdMixin(BaseModel):
@@ -74,7 +96,7 @@ class RoleIdMixin(BaseModel):
     Mixin that adds a role field to a model.
     """
 
-    role_id: str
+    role_id: UUID
 
 
 class DescriptionMixin(BaseModel):
@@ -85,21 +107,13 @@ class DescriptionMixin(BaseModel):
     description: str | None = None
 
 
-class LoginMixin(BaseModel):
-    """
-    Mixin that adds a login field to a model.
-    """
-
-    login: str
-
-
 class FullNameMixin(BaseModel):
     """
     Mixin that adds a full name field to a model.
     """
 
-    first_name: str
-    last_name: str
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class ORMMixin(BaseModel):
@@ -107,7 +121,11 @@ class ORMMixin(BaseModel):
     Mixin that add a ORM mode to a model.
     """
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(
+        from_attributes=True,
+        use_enum_values=True,
+        json_encoders={datetime.datetime: lambda v: format_datetime_with_timezone(v, 3)},
+    )
 
 
 class UserAgentMixin(BaseModel):
@@ -115,7 +133,7 @@ class UserAgentMixin(BaseModel):
     Mixin that adds a user agent field to a model.
     """
 
-    user_agent: str = Field(min_length=1, max_length=255)
+    user_agent: str
 
 
 class UserNameMixin(BaseModel):
@@ -123,4 +141,12 @@ class UserNameMixin(BaseModel):
     Mixin that adds a username field to a model.
     """
 
-    username: str = Field(min_length=1, max_length=255)
+    username: str | None = Field(default=None, min_length=5, max_length=255)
+
+
+class DetailMixin(BaseModel):
+    """
+    Mixin that adds a detail field to a model.
+    """
+
+    detail: str
