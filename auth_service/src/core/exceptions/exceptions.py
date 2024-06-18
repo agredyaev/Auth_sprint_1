@@ -1,7 +1,12 @@
 from typing import Any
 
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from async_fastapi_jwt_auth.exceptions import AuthJWTException  # type: ignore
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import ORJSONResponse, Response
+from starlette import status
+from starlette.responses import JSONResponse
 
 from auth_service.src.core.logger import setup_logging
 
@@ -46,31 +51,38 @@ class BadRequestError(BaseError):
     pass
 
 
-# async def not_found_exception_handler(request: Request, exc: NotFoundError) -> JSONResponse:
-#     if isinstance(exc, NotFoundError):
-#         logger.warning(f"NotFoundError: {exc}")
-#         return JSONResponse(
-#             status_code=404,
-#             content={"message": "Item not found"},
-#         )
-#
-#     raise exc
-
-
-async def bad_request_exception_handler(request: Request, exc: BadRequestError) -> JSONResponse:
-    if isinstance(exc, BadRequestError):
-        logger.error(f"BadRequestError: {exc}")
-        return JSONResponse(
-            status_code=exc.status_code,
-            content={"message": exc.message, "body": exc.body, "errors": [str(error) for error in exc.errors]},
-        )
-    raise exc
-
-
-async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    logger.error(f"Unhandled exception: {exc}")
+async def validation_exception_handler(request: Request, exc: RequestValidationError) -> Response:
     return JSONResponse(
-        status_code=500,
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
+    )
+
+
+async def http_exception_handler(request: Request, exc: HTTPException) -> Response:
+    logger.error(f"HTTPException: {exc}")
+    return ORJSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
+
+async def jwt_exception_handler(request: Request, exc: AuthJWTException) -> Response:
+    logger.error(f"AuthJWTException: {exc}")
+    return ORJSONResponse(status_code=exc.status_code, content={"message": exc.message})
+
+
+async def bad_request_exception_handler(request: Request, exc: BadRequestError) -> Response:
+    logger.error(f"BadRequestError: {exc}")
+    return ORJSONResponse(
+        status_code=exc.status_code,
+        content={"message": exc.message, "body": exc.body, "errors": [str(error) for error in exc.errors]},
+    )
+
+
+async def generic_exception_handler(request: Request, exc: Exception) -> Response:
+    logger.error(f"Unhandled exception: {exc}")
+    return ORJSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={"message": "Internal Server Error"},
     )
 
@@ -81,6 +93,8 @@ def register_exception_handlers(app: FastAPI) -> None:
     Args:
         app (FastAPI): The FastAPI application.
     """
-    # app.add_exception_handler(NotFoundError, not_found_exception_handler)
-    app.add_exception_handler(BadRequestError, bad_request_exception_handler)
+    app.add_exception_handler(RequestValidationError, validation_exception_handler)  # type: ignore
+    app.add_exception_handler(HTTPException, http_exception_handler)  # type: ignore
+    app.add_exception_handler(AuthJWTException, jwt_exception_handler)
+    app.add_exception_handler(BadRequestError, bad_request_exception_handler)  # type: ignore
     app.add_exception_handler(Exception, generic_exception_handler)
