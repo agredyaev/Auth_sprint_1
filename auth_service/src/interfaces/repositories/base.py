@@ -8,7 +8,11 @@ AttrType = TypeVar("AttrType", bound=Any, contravariant=True)
 
 
 class RepositoryProtocol(Protocol[T, CreateSchemaType, UpdateSchemaType, AttrType]):
-    async def create(self, obj_in: CreateSchemaType) -> None:
+    """
+    Base repository interface
+    """
+
+    async def create(self, obj_in: CreateSchemaType) -> T:
         """
         Creates a new object
         """
@@ -40,7 +44,7 @@ class RepositoryProtocol(Protocol[T, CreateSchemaType, UpdateSchemaType, AttrTyp
 
 
 class MergeRepositoryProtocol(Protocol[MergeSchemaType]):
-    async def merge(self, obj_in: MergeSchemaType) -> None:
+    async def merge(self, obj_in: MergeSchemaType) -> T:
         """
         Merge object
         """
