@@ -11,7 +11,7 @@ set -x
 
 {
   echo "user $REDIS_USER on >$REDIS_PASSWORD ~* &* +@all"
-  echo "user $AUTH_REDIS_USER on >$AUTH_REDIS_PASSWORD ~auth:* &auth:* +get +set +del +select"
+  echo "user $AUTH_REDIS_USER on >$AUTH_REDIS_PASSWORD ~* &* +@all"
   echo "user $APP_REDIS_USER on >$APP_REDIS_PASSWORD ~movies:* &movies:* +get +set +del +select"
 } > /etc/redis/users.acl
 
