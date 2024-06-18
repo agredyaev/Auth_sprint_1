@@ -1,3 +1,5 @@
+from typing import Any
+
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
@@ -14,7 +16,7 @@ from auth_service.src.interfaces.repositories import CreateSchemaType, RedisRepo
 logger = setup_logging(logger_name=__name__)
 
 
-class RedisRepository(RedisRepositoryProtocol):
+class RedisRepository(RedisRepositoryProtocol[Any]):
     """
     Implementation of RedisRepositoryProtocol
     """
