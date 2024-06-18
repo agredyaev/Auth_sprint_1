@@ -34,13 +34,15 @@ class PostgresRepository(PostgresRepositoryProtocol[T]):
     def __init__(self, db_session: AsyncSession) -> None:
         self.db_session: AsyncSession = db_session
 
-    async def create(self, obj_in: CreateSchemaType) -> None:
+    async def create(self, obj_in: CreateSchemaType) -> T:
         db_obj = self._model(**obj_in.model_dump())
         await commit_to_db(self.db_session, db_obj)
+        return db_obj
 
     async def get(self, obj_id: UUID) -> T | None:
         query = select(self._model).filter(self._model.id == obj_id)
-        return await execute_single_query(self.db_session, query)
+        db_obj: T | None = await execute_single_query(self.db_session, query)
+        return db_obj
 
     async def update(self, obj_id: UUID, obj_in: UpdateSchemaType) -> None:
         db_obj = await self.get(obj_id)
@@ -63,6 +65,7 @@ class PostgresRepository(PostgresRepositoryProtocol[T]):
             query = query.filter(self._model.id == obj_id)
         return await execute_list_query(self.db_session, query)
 
-    async def merge(self, obj_in: MergeSchemaType) -> None:
+    async def merge(self, obj_in: MergeSchemaType) -> T:
         db_obj = self._model(**obj_in.model_dump())
         await commit_to_db(self.db_session, db_obj, merge=True)
+        return db_obj

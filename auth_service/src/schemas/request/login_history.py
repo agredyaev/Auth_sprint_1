@@ -1,8 +1,9 @@
-import datetime
-
-from auth_service.src.schemas.mixins import IdMixin, LoginMixin, ORMMixin, UserIdMixin
+from auth_service.src.schemas.mixins import IdMixin, LogoutMixin, UserAgentMixin, UserIdMixin
 
 
-class LoginHistoryCreate(IdMixin, UserIdMixin, LoginMixin, ORMMixin):
-    user_agent: str
-    login_time: datetime.datetime
+class LoginHistoryCreate(UserIdMixin, UserAgentMixin):
+    pass
+
+
+class LoginHistoryLogout(IdMixin, LogoutMixin):
+    pass

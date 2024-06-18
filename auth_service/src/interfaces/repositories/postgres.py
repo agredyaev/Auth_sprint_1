@@ -5,5 +5,5 @@ from auth_service.src.interfaces.repositories.base import MergeRepositoryProtoco
 T = TypeVar("T")
 
 
-class PostgresRepositoryProtocol(RepositoryProtocol[T, Any, Any, Any], MergeRepositoryProtocol):
+class PostgresRepositoryProtocol(RepositoryProtocol[T, Any, Any, Any], MergeRepositoryProtocol[Any]):
     pass

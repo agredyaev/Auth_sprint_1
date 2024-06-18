@@ -21,6 +21,7 @@ async def redis_open() -> None:
         password=settings.redis.dsn.password,
         db=settings.redis.db_number,
     )
+    logger.debug("Redis client has been initialized")
 
 
 async def get_redis() -> Redis:

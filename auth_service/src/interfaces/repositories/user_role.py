@@ -1,14 +1,33 @@
-from typing import Any, TypeVar
+from typing import Any, Sequence, TypeVar
 
 from auth_service.src.interfaces.repositories.postgres import PostgresRepositoryProtocol
 
 T = TypeVar("T")
 P = TypeVar("P", bound=Any)
+Q = TypeVar("Q", bound=Any)
 
 
 class UserRoleRepositoryProtocol(PostgresRepositoryProtocol[T]):
-    async def assign_role(self, user_role_data: P) -> None:
+    async def create_records(self, user_data: P) -> Sequence[T]:
+        """
+        Create new user roles.
+        """
         raise NotImplementedError
 
-    async def revoke_role(self, user_role_data: P) -> None:
+    async def delete_records(self, user_data: P) -> Sequence[T]:
+        """
+        Delete user roles.
+        """
+        raise NotImplementedError
+
+    async def get_records(self, user_data: P) -> Sequence[T]:
+        """
+        Get user roles.
+        """
+        raise NotImplementedError
+
+    async def check_records(self, user_data: P) -> Sequence[T]:
+        """
+        Check user roles.
+        """
         raise NotImplementedError

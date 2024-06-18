@@ -2,17 +2,20 @@ from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
 from fastapi import FastAPI
-
-from auth_service.src.db import redis
+from fastapi_limiter import FastAPILimiter
 
 
 @asynccontextmanager
 async def get_lifespan(_: FastAPI) -> AsyncIterator[None]:
+    from auth_service.src.db import redis
+
     """
     Lifespan function for FastAPI
     """
     try:
         await redis.redis_open()
+        await FastAPILimiter.init(redis=redis.redis)
         yield
     finally:
-        await redis.redis.close()
+        if redis.redis is not None:
+            await redis.redis.close()

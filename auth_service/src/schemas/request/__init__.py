@@ -1,18 +1,80 @@
-from auth_service.src.schemas.request.login_history import LoginHistoryCreate
-from auth_service.src.schemas.request.role import RoleCreate, RoleUpdate
-from auth_service.src.schemas.request.token import LogoutRequest, TokenCreate, TokenRefreshRequest
-from auth_service.src.schemas.request.user import UserCreate, UserUpdate
-from auth_service.src.schemas.request.user_role import UserRoleAssign, UserRoleRevoke
+from auth_service.src.schemas.request.auth import LoginRequest
+from auth_service.src.schemas.request.login_history import LoginHistoryCreate, LoginHistoryLogout
+from auth_service.src.schemas.request.role import (
+    PermissionLevelList,
+    RoleCreate,
+    RoleDelete,
+    RoleGetPermissions,
+    RoleIdFromPermission,
+    RolePermissionCreate,
+    RolePermissionRowCreate,
+    RolePermissionUpdate,
+    RoleReCreate,
+    RoleUpdate,
+)
+from auth_service.src.schemas.request.role_permissions import RoleId, RolePermissionSingle, RolePermissionsList
+from auth_service.src.schemas.request.token import (
+    Token,
+    TokenAccessToDenylist,
+    TokenGet,
+    TokenRefreshData,
+    TokenRefreshStore,
+    TokenRefreshToDenylist,
+    TokensCreate,
+)
+from auth_service.src.schemas.request.user import (
+    AdminCreate,
+    UserApplyNewPassword,
+    UserCreate,
+    UserGetByEmail,
+    UserGetById,
+    UserPasswords,
+    UserPasswordUpdate,
+)
+from auth_service.src.schemas.request.user_role import (
+    UserGetRolePermissions,
+    UserRoleAssign,
+    UserRoleCreate,
+    UserRoleDelete,
+    UserRoleRevoke,
+    UserRoleVerify,
+)
 
 __all__ = [
     "RoleCreate",
     "RoleUpdate",
     "LoginHistoryCreate",
-    "TokenCreate",
-    "TokenRefreshRequest",
-    "LogoutRequest",
     "UserCreate",
-    "UserUpdate",
+    "UserPasswords",
     "UserRoleAssign",
     "UserRoleRevoke",
+    "Token",
+    "TokenRefreshStore",
+    "TokenRefreshToDenylist",
+    "TokenAccessToDenylist",
+    "TokenGet",
+    "TokensCreate",
+    "TokenRefreshData",
+    "UserPasswordUpdate",
+    "LoginRequest",
+    "LoginHistoryLogout",
+    "UserApplyNewPassword",
+    "UserGetById",
+    "UserGetByEmail",
+    "AdminCreate",
+    "UserGetRolePermissions",
+    "RoleDelete",
+    "RoleGetPermissions",
+    "UserRoleCreate",
+    "UserRoleDelete",
+    "UserRoleVerify",
+    "RolePermissionCreate",
+    "RolePermissionRowCreate",
+    "RolePermissionsList",
+    "RolePermissionSingle",
+    "RoleId",
+    "PermissionLevelList",
+    "RolePermissionUpdate",
+    "RoleIdFromPermission",
+    "RoleReCreate",
 ]

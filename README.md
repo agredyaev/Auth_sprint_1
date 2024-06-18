@@ -9,19 +9,26 @@
 ![Docker](https://img.shields.io/badge/Docker-20.10-blue)
 [![License](https://img.shields.io/badge/License-MIT-green)](https://opensource.org/licenses/MIT)
 
-Key Components:
-* **Fake data generator**: Generates fake data for the application and loads it into the database.
-* **Extractor**: Connects to PostgreSQL to retrieve data based on specified criteria.
-* **Transformer**: Processes data to fit the target schema, which includes cleaning, normalizing, and enriching the data.
-* **Loader**: Loads the transformed data into Elasticsearch, ensuring that the data is indexed correctly for optimal search performance.
-* **API**: Provides a RESTful API for the application, allowing for data retrieval, filtering, and aggregation.
-* **Tests**: Functional and performance tests to ensure the API is working as expected.
+This project involves the development of an authentication service. The implementation includes business logic and endpoints for user management, such as registration, role assignment/verification, and password changes. Below is a structured and concise overview of the key features:
 
-## Sprint Update
----
-In this sprint, we are working on 
-* Refactoring the API implementation regarding SOLID principles.
-* Adding functional tests to ensure the API is working as expected.
+## User Management
+- **Registration**: Endpoints for new user registration.
+- **Role Assignment/Verification**: Assign roles to users and verify their roles.
+- **Password Change**: Allow users to change their passwords.
+
+## Authentication
+- **Login**: Users can log in and receive tokens for access.
+- **Logout**: Users can log out, and their tokens will be added to a blacklist to prevent further use.
+- **Token Refresh**: Refresh access tokens using refresh tokens.
+- **Login/Logout History**: View the login and logout history of users.
+
+## Role Management
+- **Create Roles**: Endpoints to create new roles.
+- **Update Roles**: Endpoints to update existing roles.
+- **Delete Roles**: Endpoints to delete roles.
+
+## Authorization
+- **Access Control**: A system to check user permissions for accessing specific endpoints.
 
 ## Getting Started
 ---
@@ -33,10 +40,10 @@ Instructions to set up the project locally.
 curl -sSL https://install.python-poetry.org | python3 -
 
 # Clone the repository 
-https://github.com/agredyaev/Async_API_sprint_2.git
+https://github.com/agredyaev/Auth_sprint_1.git
  
 # Navigate to the project directory
-cd Async_API_sprint_2
+cd Auth_sprint_1
 
 # Create .env file
 cp .env.example .env

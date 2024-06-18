@@ -1,13 +1,12 @@
+from pydantic import BaseModel
+
 from auth_service.src.schemas.mixins import AccessTokenMixin, RefreshTokenMixin
 
 
-class Token(AccessTokenMixin, RefreshTokenMixin):
-    token_type: str
+class TokensResponse(AccessTokenMixin, RefreshTokenMixin):
+    token_type: str = "Bearer"
 
 
-class TokenRefreshRequest(RefreshTokenMixin):
-    ...
-
-
-class LogoutRequest(AccessTokenMixin):
-    ...
+class TokenStatusResponse(BaseModel):
+    status: str
+    detail: str

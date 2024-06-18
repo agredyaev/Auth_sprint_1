@@ -1,7 +1,25 @@
-from auth_service.src.schemas.mixins import RoleIdMixin, UserIdMixin
+from auth_service.src.schemas.mixins import EmailMixin, NameMixin, RoleIdMixin, UserIdMixin
 
 
-class UserRoleAssign(UserIdMixin, RoleIdMixin): ...
+class UserRoleCreate(UserIdMixin, RoleIdMixin):
+    pass
 
 
-class UserRoleRevoke(UserRoleAssign): ...
+class UserRoleDelete(UserRoleCreate):
+    pass
+
+
+class UserRoleAssign(UserIdMixin):
+    roles: list[RoleIdMixin]
+
+
+class UserRoleRevoke(UserRoleAssign):
+    pass
+
+
+class UserGetRolePermissions(UserIdMixin):
+    pass
+
+
+class UserRoleVerify(EmailMixin):
+    role_names: list[NameMixin]
