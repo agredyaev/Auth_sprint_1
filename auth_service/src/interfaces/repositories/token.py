@@ -10,8 +10,5 @@ class TokenRepositoryProtocol(RedisRepositoryProtocol[T]):
     async def set_token(self, obj_in: P) -> None:
         raise NotImplementedError
 
-    async def get_token(self, obj_in: P) -> None:
-        raise NotImplementedError
-
-    async def is_in_denylist_or_not_exist(self, obj_in: P) -> bool:
+    async def get_token(self, obj_in: P) -> Any | None:
         raise NotImplementedError

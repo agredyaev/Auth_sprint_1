@@ -1,7 +1,15 @@
+from typing import Sequence
+from uuid import UUID
+
 from pydantic import BaseModel, Field, field_validator
 
 from auth_service.src.core.config import settings as conf
-from auth_service.src.schemas.mixins import AccessTokenMixin, RefreshTokenMixin, UserAgentMixin, UserNameMixin
+from auth_service.src.schemas.mixins import (
+    NameMixin,
+    RefreshTokenMixin,
+    UserAgentMixin,
+    UserIdMixin,
+)
 
 
 class Token(BaseModel):
@@ -10,12 +18,13 @@ class Token(BaseModel):
     value: str = Field(default="false", description="is_in_denylist")
 
     @field_validator("name", mode="before")
-    def set_name(cls, v: str) -> str:
+    @staticmethod
+    def set_name(v: str) -> str:
         return f"{conf.redis.namespace}:{v}"
 
 
 class TokenRefreshStore(Token):
-    time: int = conf.jwt.refresh_expires
+    time: int = conf.jwt.authjwt_refresh_token_expires
 
 
 class TokenRefreshToDenylist(TokenRefreshStore):
@@ -23,26 +32,28 @@ class TokenRefreshToDenylist(TokenRefreshStore):
 
 
 class TokenAccessToDenylist(Token):
-    time: int = conf.jwt.access_expires
+    time: int = conf.jwt.authjwt_access_token_expires
     value: str = "true"
 
 
-class TokenGet(Token):
+class TokenGet(NameMixin):
     pass
 
 
-class TokensCreate(UserNameMixin, UserAgentMixin):
-    pass
-
-
-class Login(UserNameMixin):
-    username: str
-    password: str
-
-
-class Logout(AccessTokenMixin):
-    pass
+class TokensCreate(UserIdMixin):
+    session_id: str | UUID
+    permissions: Sequence[str]
 
 
 class TokenRefreshData(RefreshTokenMixin, UserAgentMixin):
     pass
+
+
+class TokenPair(BaseModel):
+    access_token_cookie: str
+    refresh_token_cookie: str
+
+
+class TokenJTI(BaseModel):
+    refresh_token_jti: TokenRefreshToDenylist
+    access_token_jti: TokenAccessToDenylist
