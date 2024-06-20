@@ -24,10 +24,11 @@ from auth_service.src.services import (
     get_role_management_service,
 )
 from auth_service.src.utils import check_if_token_in_denylist  # noqa
+from auth_service.src.core.config import settings as config
 
 router = APIRouter(prefix="/role", tags=["Role"])
 
-get_limiter = RateLimiter(times=2, seconds=5)
+get_limiter = RateLimiter(times=config.api.limiter_times, seconds=config.api.limiter_seconds)
 
 
 @router.post(

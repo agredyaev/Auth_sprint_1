@@ -54,6 +54,5 @@ class AuthJWTService(AuthJWTProtocol[Any, Any]):
         await self.authjwt.unset_jwt_cookies()
 
     async def extract_jti(self, encoded_token: str) -> str:
-        print(await self.authjwt.get_raw_jwt(encoded_token))
         jti = await self.authjwt.get_jti(encoded_token)
         return jti

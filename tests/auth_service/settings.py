@@ -1,59 +1,56 @@
-from typing import Any
-
-from pydantic import Field
+from dotenv import find_dotenv, load_dotenv
+from pydantic import Field, RedisDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from tests.fastapi_service.testdata import es_mapping
+load_dotenv(find_dotenv())
 
 
 class DefaultSettings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
 
+class AuthSuperuserSettings(DefaultSettings):
+    username: str = Field(default="admin")
+    password: str = Field(default="123")
+    email: str = Field(default="admin@example.com")
+    role_id: str = Field(default="8c6976e5-b541-0415-bde9-08bd4dee15df")
+
+    model_config = SettingsConfigDict(env_prefix="AUTH_SUPERUSER_")
+
+
 class ApiSettings(DefaultSettings):
     dsn: str = Field(default="http://nginx:80")
-    health_check: str = Field(default="http://nginx:80/api/healthcheck")
-
-
-class ElasticSearchSettings(DefaultSettings):
-    dsn: str = Field(default="http://elasticsearch:9200")
-    index: str = Field(default="movies")
-    mapping: dict[str, Any] = Field(es_mapping.MOVIES_MAPPING)
+    health_check: str = Field(default="http://nginx:80/api/v1/healthcheck")
+    api_path: str = Field(default="/api/v1")
 
 
 class RedisSettings(DefaultSettings):
     host: str = Field("redis")
     port: int = Field(default=6379)
+    db_number: int = Field(default=2)
+    namespace: str = Field(default="auth")
+    dsn: RedisDsn = Field(default="redis://redis:6379/2")  # type: ignore
 
-    model_config = SettingsConfigDict(env_prefix="REDIS_")
-
-
-class FilmSettings(ElasticSearchSettings):
-    index: str = Field(default="movies")
-    mapping: dict[str, Any] = Field(es_mapping.MOVIES_MAPPING)
+    model_config = SettingsConfigDict(env_prefix="AUTH_REDIS")
 
 
-class GenreSettings(ElasticSearchSettings):
-    index: str = Field(default="genres")
-    mapping: dict[str, Any] = Field(es_mapping.GENRES_MAPPING)
+class PostgresSettings(DefaultSettings):
+    dsn: str = Field(default="")
+    db_schema: str = Field(default="auth")
+    echo_sql_queries: bool = Field(default=False)
 
-
-class PersonSettings(ElasticSearchSettings):
-    index: str = Field(default="people")
-    mapping: dict[str, Any] = Field(es_mapping.PERSONS_MAPPING)
+    model_config = SettingsConfigDict(env_prefix="AUTH_POSTGRES_")
 
 
 class InfrastructureSettings(BaseSettings):
     api: ApiSettings = Field(default=ApiSettings())
-    es: ElasticSearchSettings = Field(default=ElasticSearchSettings())
+    pg: PostgresSettings = Field(default=PostgresSettings())
     redis: RedisSettings = Field(default=RedisSettings())
 
 
 class Settings(BaseSettings):
     infra: InfrastructureSettings = Field(default=InfrastructureSettings())
-    film: FilmSettings = Field(default=FilmSettings())
-    genre: GenreSettings = Field(default=GenreSettings())
-    person: PersonSettings = Field(default=PersonSettings())
+    su: AuthSuperuserSettings = Field(default=AuthSuperuserSettings())
 
 
 config = Settings()

@@ -78,10 +78,12 @@ class ApiSettings(DefaultSettings):
     default_page_size: int = 50
     prefix: str = Field(default="/api")
     version: str = Field(default="v1")
+    limiter_times: int = Field(default=200)
+    limiter_seconds: int = Field(default=5)
 
 
 class GeneralSettings(DefaultSettings):
-    log_level: str = Field(default="DEBUG")
+    log_level: str = Field(default="WARNING")
     docs_url: str = Field(default="/api/openapi")
     openapi_url: str = Field(default="/api/openapi.json")
     version: str = Field(default="0.1.0")

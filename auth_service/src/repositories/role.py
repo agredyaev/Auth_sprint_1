@@ -1,7 +1,7 @@
 from typing import Sequence, Type
 from uuid import UUID
 
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth_service.src.core.logger import setup_logging
@@ -35,11 +35,12 @@ class RoleRepository(RoleRepositoryProtocol[Role], PostgresRepository[Role]):
         return await self.merge(role_data)
 
     async def delete_role(self, role_id: UUID) -> Role:
-        query = delete(self._model).where(self._model.id == role_id).returning(self._model)
+        query = select(self._model).where(self._model.id == role_id)
         role: Role | None = await execute_single_query(self.db_session, query)
         if not role:
             logger.error(f"Role with id {role_id} not found")
             raise NotFoundError(f"Role with id {role_id} not found")
+        await self.db_session.delete(role)
         return role
 
     async def list_roles(self) -> Sequence[Role]:

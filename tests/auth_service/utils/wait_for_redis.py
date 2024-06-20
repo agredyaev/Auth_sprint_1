@@ -1,8 +1,7 @@
 import backoff
-
 from redis import Redis, exceptions
 
-from tests.fastapi_service.settings import config
+from tests.auth_service.settings import config
 
 
 @backoff.on_exception(backoff.expo, exceptions.ConnectionError, max_time=60, max_tries=50)

@@ -37,6 +37,18 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/healthcheck/ || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://127.0.0.1:9090/api/v1/healthcheck || exit 1"]
+
+  functional_tests:
+    container_name: functional_tests
+    image: functional_tests
+    build:
+      context: .
+      dockerfile: tests/auth_service/Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      app_server:
+        condition: service_started
 
 
