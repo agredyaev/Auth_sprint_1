@@ -1,17 +1,19 @@
-import aiohttp
 import asyncio
+
+import aiohttp
 import backoff
-from tests.fastapi_service.settings import config
+
+from tests.auth_service.settings import config
 
 
-async def check_nginx(session):
+async def check_nginx(session: aiohttp.ClientSession) -> None:
     async with session.get(config.infra.api.health_check) as response:
         if response.status != 200:
             raise aiohttp.ClientError("Nginx is not available. Backoff...")
 
 
 @backoff.on_exception(backoff.expo, aiohttp.ClientError, max_time=60, max_tries=50)
-async def wait_for_nginx():
+async def wait_for_nginx() -> None:
     async with aiohttp.ClientSession() as session:
         await check_nginx(session)
 

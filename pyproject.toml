@@ -67,14 +67,20 @@ aiofiles = "23.2.1"
 python-dotenv = "1.0.1"
 
 [tool.poetry.group.functionaltest.dependencies]
-pydantic = "^2.7.0"
-pydantic-settings = "^2.2.1"
 redis = "^5.0.4"
 elasticsearch = { version = "^8.12.1", extras = ["async"] }
 pytest = "^7.4.4"
 pytest-asyncio = "0.21.1"
 Faker = "25.2.0"
 backoff = "^2.2.1"
+pydantic = "^2.7.2"
+pydantic-settings = "^2.2.1"
+async-fastapi-jwt-auth = {version = "^0.6.5", extras = ["asymmetric"]}
+sqlalchemy = {extras = ["asyncio", "asyncpg"], version = "^2.0.30"}
+asyncpg = "^0.29.0"
+python-dotenv ="^1.0.1"
+email-validator = "^2.1.1"
+
 
 
 [tool.poetry.group.auth.dependencies]
