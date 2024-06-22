@@ -1,5 +1,5 @@
 # Base stage for docker environment setup
-FROM python:3.10.13-alpine3.19 AS python-base
+FROM --platform=linux/amd64 python:3.10.13-alpine3.19 AS python-base
 
 # Set work directory
 WORKDIR /opt/app

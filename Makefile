@@ -9,6 +9,10 @@ compose-down:
 clean:
 	docker compose down -v
 	docker system prune -af --volumes
+	docker network rm $(docker network ls -q)
+	docker rmi -f $(docker images -q)
+	docker rm -f $(docker ps -a -q)
+
 
 # Format Python code
 fmt:
