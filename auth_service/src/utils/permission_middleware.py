@@ -86,10 +86,10 @@ class PermissionMiddleware(BaseHTTPMiddleware):
                     )
 
             except AuthJWTException as e:
-                logger.error(f"AuthJWTException: {e}")
+                logger.error(f"AuthJWTException: Session expired. {e}")
                 return JSONResponse(
                     status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                    content={"detail": e.message},
+                    content={"detail": "Session expired."},
                 )
 
         response = await call_next(request)
